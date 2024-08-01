@@ -1,0 +1,25 @@
+.steps {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  
+  .step {
+    text-align: center;
+  }
+  
+  .step-text {
+    font-size: 1rem;
+    transition: font-weight 0.3s ease;
+  }
+  
+  .step-text.font-bold {
+    font-weight: bold;
+  }
+  
+  .active .step-text {
+    color: #ff8c00; /* ou outra cor que destaque o passo ativo */
+  }
+  

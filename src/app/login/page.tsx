@@ -35,7 +35,7 @@ const LoginPage = () => {
     return (
         <div className="flex h-screen">
             <div className="flex flex-col items-center justify-center flex-1 bg-gray-100 p-8 gap-4">
-                <Label htmlFor="email" className="text-2xl font-semibold text-center">Acesse sua conta</Label>
+                <Label htmlFor="email" className="text-2xl font-semibold text-center uppercase">Acesse sua conta</Label>
                 <img
                     src="/img/logo.png"
                     alt="Logo Mata Fome Delivery"
@@ -68,15 +68,15 @@ const LoginPage = () => {
                     </div>
                     <div className="flex justify-end -mt-5">
                         <Button
-                            variant="blueLink"
+                            variant="orangeLink"
                             type="button"
-                            onClick={() => router.push('/forgot')}
+                            onClick={() => router.push('/forgot-password')}
                         >
                             Esqueci a Senha
                         </Button>
                     </div>
                     <Button variant="orange" type="submit" className="w-full">Acessar</Button>
-                    <Button variant="blueLink" className="w-full -mt-5" type="button" onClick={() => router.push('/register')}
+                    <Button variant="orangeLink" className="w-full -mt-5" type="button" onClick={() => router.push('/register')}
                     >
                         Não tenho uma conta. Criar agora!
                     </Button>
