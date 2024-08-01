@@ -75,7 +75,7 @@ const LoginPage = () => {
                             Esqueci a Senha
                         </Button>
                     </div>
-                    <Button variant="orange" type="submit" className="w-full">Acessar</Button>
+                    <Button variant="orange" type="submit" className="w-full" onClick={() => router.push('/area-logada')}>Acessar</Button>
                     <Button variant="orangeLink" className="w-full -mt-5" type="button" onClick={() => router.push('/register')}
                     >
                         Não tenho uma conta. Criar agora!
