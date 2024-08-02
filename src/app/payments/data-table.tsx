@@ -66,7 +66,7 @@ export function DataTable<TData, TValue>({
     })
 
     const [pageIndex, setPageIndex] = useState(0);
-    const rowsPerPage = 5;
+    const rowsPerPage = 4;
 
     const startRowIndex = pageIndex * rowsPerPage;
     const endRowIndex = startRowIndex + rowsPerPage;
@@ -85,7 +85,7 @@ export function DataTable<TData, TValue>({
                 />
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="ml-auto">
+                        <Button variant="outline" className="ml-auto mb-2">
                             Colunas
                         </Button>
                     </DropdownMenuTrigger>

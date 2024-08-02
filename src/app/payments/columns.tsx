@@ -31,7 +31,7 @@ export const columns: ColumnDef<Payment>[] = [
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         className="flex items-center space-x-2"
       >
-        <span>Nº Pedido</span>
+        <span>Nº</span>
         <ArrowUpDown className="h-4 w-4" />
       </Button>
     ),
@@ -83,7 +83,7 @@ export const columns: ColumnDef<Payment>[] = [
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         className="flex items-center space-x-2"
       >
-        <span>Valor Total</span>
+        <span>R$ Total</span>
         <ArrowUpDown className="h-4 w-4" />
       </Button>
     ),
