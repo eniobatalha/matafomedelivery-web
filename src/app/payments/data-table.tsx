@@ -66,7 +66,7 @@ export function DataTable<TData, TValue>({
     })
 
     const [pageIndex, setPageIndex] = useState(0);
-    const rowsPerPage = 4;
+    const rowsPerPage = 5;
 
     const startRowIndex = pageIndex * rowsPerPage;
     const endRowIndex = startRowIndex + rowsPerPage;

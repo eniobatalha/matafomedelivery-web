@@ -63,7 +63,17 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+
+  li::marker,
+  li::before {
+    content: none !important;
+  }
+  .dropdown-menu-item-hover:hover {
+    background-color: #fb923c; /* Tailwind CSS orange-500 */
+    color: #ffffff; /* white */
   }
 }

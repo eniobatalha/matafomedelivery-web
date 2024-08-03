@@ -29,11 +29,14 @@ export const columns: ColumnDef<Payment>[] = [
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center space-x-2"
+        className="flex items-center justify-center space-x-2 w-full"
       >
         <span>Nº</span>
         <ArrowUpDown className="h-4 w-4" />
       </Button>
+    ),
+    cell: ({ row }) => (
+      <div className="text-center">{row.getValue("pedido")}</div>
     ),
   },
   {
@@ -42,11 +45,14 @@ export const columns: ColumnDef<Payment>[] = [
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center space-x-2"
+        className="flex items-center justify-center space-x-2 w-full"
       >
         <span>Cliente</span>
         <ArrowUpDown className="h-4 w-4" />
       </Button>
+    ),
+    cell: ({ row }) => (
+      <div className="text-center">{row.getValue("cliente")}</div>
     ),
   },
   {
@@ -55,11 +61,14 @@ export const columns: ColumnDef<Payment>[] = [
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center space-x-2"
+        className="flex items-center justify-center space-x-2 w-full"
       >
         <span>Status</span>
         <ArrowUpDown className="h-4 w-4" />
       </Button>
+    ),
+    cell: ({ row }) => (
+      <div className="text-center">{row.getValue("status")}</div>
     ),
   },
   {
@@ -68,11 +77,14 @@ export const columns: ColumnDef<Payment>[] = [
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center space-x-2"
+        className="flex items-center justify-center space-x-2 w-full"
       >
         <span>Bairro</span>
         <ArrowUpDown className="h-4 w-4" />
       </Button>
+    ),
+    cell: ({ row }) => (
+      <div className="text-center">{row.getValue("bairro")}</div>
     ),
   },
   {
@@ -81,7 +93,7 @@ export const columns: ColumnDef<Payment>[] = [
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center space-x-2"
+        className="flex items-center justify-center space-x-2 w-full"
       >
         <span>R$ Total</span>
         <ArrowUpDown className="h-4 w-4" />
@@ -94,7 +106,7 @@ export const columns: ColumnDef<Payment>[] = [
         currency: "BRL",
       }).format(total)
 
-      return <div className="text-right font-medium">{formatted}</div>
+      return <div className="text-center font-medium">{formatted}</div>
     },
   },
   {
@@ -107,7 +119,7 @@ export const columns: ColumnDef<Payment>[] = [
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
+              <span className="sr-only">Abrir menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
