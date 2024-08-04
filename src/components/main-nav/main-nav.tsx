@@ -21,7 +21,7 @@ export function MainNav({
         Dashboard
       </Link>
       <Link
-        href="/acompanhar-pedidos"
+        href="/pedidos"
         className="flex items-center text-sm text-white font-medium transition-colors  hover:text-orange-700"
       >
         <GiKnifeFork className="mr-2" />

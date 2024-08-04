@@ -19,13 +19,12 @@ import { CalendarDateRangePicker } from "@/components/date-ranger-picker/date-ra
 import { MainNav } from "@/components/main-nav/main-nav"
 import { Overview } from "@/components/overview/overview"
 import { RecentSales } from "@/components/recent-sales/recent-sales"
-import { Search } from "@/components/search/search"
-import TeamSwitcher from "@/components/team-switcher/team-switcher"
 import { UserNav } from "@/components/user-nav/user-nav"
 import PieChart from "@/components/pie-chart/pie-chart"
 import BasicBars from "@/components/bar-chart/bar-chart"
 import { TableClientes } from "@/components/table-top-clientes/table-top-clientes"
 import BairroBars from "@/components/bar-chart-bairros/bar-chart-bairros"
+import { Footer } from "@/components/footer/footer"
 
 export const metadata: Metadata = {
   title: "Dashboard",
