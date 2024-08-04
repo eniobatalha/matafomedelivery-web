@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { FaHome } from "react-icons/fa";
 import { GiKnifeFork } from "react-icons/gi";
+import { FaChartBar } from "react-icons/fa";
 import { MdMenuBook, MdHistory } from "react-icons/md";
 import { cn } from "@/lib/utils";
 
@@ -17,8 +17,8 @@ export function MainNav({
         href="/dashboard"
         className="flex items-center text-sm text-white font-medium transition-colors  hover:text-orange-700"
       >
-        <FaHome className="mr-2" />
-        Início
+        <FaChartBar className="mr-2" />
+        Dashboard
       </Link>
       <Link
         href="/acompanhar-pedidos"
