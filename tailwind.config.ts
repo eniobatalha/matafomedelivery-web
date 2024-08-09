@@ -7,7 +7,7 @@ const config = {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
-  ],
+	],
   prefix: "",
   theme: {
     container: {
@@ -71,19 +71,6 @@ const config = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-      },
-      screens: {
-        'hd': {'raw': '(min-width: 1280px) and (max-width: 1366px)'},
-        'fhd': {'raw': '(min-width: 1920px) and (max-width: 2560px)'},
-        'qhd': {'raw': '(min-width: 2560px) and (max-width: 3440px)'},
-        'uhd': {'raw': '(min-width: 3440px) and (max-width: 3840px)'},
-        '4k': {'raw': '(min-width: 3840px) and (max-width: 5120px)'},
-        '8k': {'raw': '(min-width: 7680px)'},
-        'uw-fhd': {'raw': '(min-width: 2560px) and (max-width: 3440px)'},
-        'uw-qhd': {'raw': '(min-width: 3440px) and (max-width: 3840px)'},
-        'uw-dqhd': {'raw': '(min-width: 5120px)'},
-        'tablet-small': {'raw': '(min-width: 768px) and (max-width: 1024px)'},
-        'tablet-large': {'raw': '(min-width: 1024px) and (max-width: 1280px)'},
       },
     },
   },
