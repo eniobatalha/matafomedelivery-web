@@ -25,17 +25,22 @@ import {
   DialogTitle,
   DialogDescription,
   DialogOverlay,
-} from '@/components/ui/dialog'; // Importe os componentes do Dialog
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input'; // Input field component
+import { Label } from '@/components/ui/label'; // Label component
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'; // Select component
 
 export function UserNav() {
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false); // Estado para controlar a abertura do diálogo
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [dialogContent, setDialogContent] = useState<string>(''); // Estado para controlar o conteúdo do diálogo
 
-  const handleOpenDialog = () => {
-    setIsDialogOpen(true); // Abre o diálogo
+  const handleOpenDialog = (content: string) => {
+    setDialogContent(content);
+    setIsDialogOpen(true);
   };
 
   const handleCloseDialog = () => {
-    setIsDialogOpen(false); // Fecha o diálogo
+    setIsDialogOpen(false);
   };
 
   return (
@@ -60,11 +65,17 @@ export function UserNav() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            {/* Botão para abrir o diálogo */}
-            <DropdownMenuItem onClick={handleOpenDialog} className="hover:bg-orange-500 hover:text-white">
+            {/* Botões para abrir o diálogo com diferentes conteúdos */}
+            <DropdownMenuItem 
+              onClick={() => handleOpenDialog('Gerenciar Conta')} 
+              className="hover:bg-orange-500 hover:text-white"
+            >
               Gerenciar Conta
             </DropdownMenuItem>
-            <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
+            <DropdownMenuItem 
+              onClick={() => handleOpenDialog('Gerenciar Estabelecimento')} 
+              className="hover:bg-orange-500 hover:text-white"
+            >
               Gerenciar Estabelecimento
             </DropdownMenuItem>
           </DropdownMenuGroup>
@@ -82,18 +93,76 @@ export function UserNav() {
         <DialogOverlay />
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Gerenciar Conta</DialogTitle>
+            <DialogTitle>{dialogContent}</DialogTitle>
             <DialogDescription>
-              Aqui você pode gerenciar suas informações de conta.
+              {dialogContent === 'Gerenciar Conta' 
+                ? 'Aqui você pode gerenciar suas informações de conta.'
+                : 'Aqui você pode gerenciar as informações do seu estabelecimento.'}
             </DialogDescription>
           </DialogHeader>
-          <div className="mt-4">
-            {/* Conteúdo do diálogo */}
-            <p>Adicione seu conteúdo ou formulário aqui.</p>
-          </div>
+          
+          {/* Formulário dentro do Dialog */}
+          <form className="space-y-4">
+            {/* Campos específicos para cada conteúdo */}
+            {dialogContent === 'Gerenciar Conta' ? (
+              <>
+                <div>
+                  <Label htmlFor="name">Nome</Label>
+                  <Input id="name" type="text" placeholder="Seu nome" />
+                </div>
+                <div>
+                  <Label htmlFor="email">E-mail</Label>
+                  <Input id="email" type="email" placeholder="Seu e-mail" />
+                </div>
+                
+                <div>
+                  <Label htmlFor="role">Função</Label>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione uma função" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="user">Usuário</SelectItem>
+                      <SelectItem value="guest">Convidado</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <Label htmlFor="establishment-name">Nome do Estabelecimento</Label>
+                  <Input id="establishment-name" type="text" placeholder="Nome do estabelecimento" />
+                </div>
+                <div>
+                  <Label htmlFor="establishment-address">Endereço</Label>
+                  <Input id="establishment-address" type="text" placeholder="Endereço do estabelecimento" />
+                </div>
+                
+                <div>
+                  <Label htmlFor="establishment-type">Tipo de Estabelecimento</Label>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o tipo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="restaurant">Restaurante</SelectItem>
+                      <SelectItem value="cafe">Café</SelectItem>
+                      <SelectItem value="shop">Loja</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </>
+            )}
+          </form>
+
           <DialogFooter>
             <Button onClick={handleCloseDialog} className="bg-orange-500 text-white">
               Fechar
+            </Button>
+            <Button type="submit" className="bg-blue-500 text-white">
+              Salvar
             </Button>
           </DialogFooter>
         </DialogContent>
