@@ -43,6 +43,18 @@ export function UserNav() {
     setIsDialogOpen(false);
   };
 
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+
+  const toggleDaySelection = (day: string) => {
+    if (selectedDays.includes(day)) {
+      setSelectedDays(selectedDays.filter(d => d !== day));
+    } else {
+      setSelectedDays([...selectedDays, day]);
+    }
+  };
+
+  const daysOfWeek = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+
   return (
     <>
       <DropdownMenu>
@@ -66,14 +78,14 @@ export function UserNav() {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             {/* Botões para abrir o diálogo com diferentes conteúdos */}
-            <DropdownMenuItem 
-              onClick={() => handleOpenDialog('Gerenciar Conta')} 
+            <DropdownMenuItem
+              onClick={() => handleOpenDialog('Gerenciar Conta')}
               className="hover:bg-orange-500 hover:text-white"
             >
               Gerenciar Conta
             </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => handleOpenDialog('Gerenciar Estabelecimento')} 
+            <DropdownMenuItem
+              onClick={() => handleOpenDialog('Gerenciar Estabelecimento')}
               className="hover:bg-orange-500 hover:text-white"
             >
               Gerenciar Estabelecimento
@@ -95,39 +107,34 @@ export function UserNav() {
           <DialogHeader>
             <DialogTitle>{dialogContent}</DialogTitle>
             <DialogDescription>
-              {dialogContent === 'Gerenciar Conta' 
+              {dialogContent === 'Gerenciar Conta'
                 ? 'Aqui você pode gerenciar suas informações de conta.'
                 : 'Aqui você pode gerenciar as informações do seu estabelecimento.'}
             </DialogDescription>
           </DialogHeader>
-          
+
           {/* Formulário dentro do Dialog */}
           <form className="space-y-4">
             {/* Campos específicos para cada conteúdo */}
             {dialogContent === 'Gerenciar Conta' ? (
               <>
                 <div>
-                  <Label htmlFor="name">Nome</Label>
-                  <Input id="name" type="text" placeholder="Seu nome" />
+                  <Label htmlFor="name">Razão Social</Label>
+                  <Input id="name" type="text" placeholder="Razão Social" />
                 </div>
                 <div>
                   <Label htmlFor="email">E-mail</Label>
-                  <Input id="email" type="email" placeholder="Seu e-mail" />
+                  <Input id="email" type="email" placeholder="E-mail" />
                 </div>
-                
                 <div>
-                  <Label htmlFor="role">Função</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione uma função" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="user">Usuário</SelectItem>
-                      <SelectItem value="guest">Convidado</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="name">Telefone Fixo</Label>
+                  <Input id="name" type="text" placeholder="Telefone Fixo" />
                 </div>
+                <div>
+                  <Label htmlFor="name">Telefone Celular</Label>
+                  <Input id="name" type="text" placeholder="Telefone Celular" />
+                </div>
+
               </>
             ) : (
               <>
@@ -135,11 +142,12 @@ export function UserNav() {
                   <Label htmlFor="establishment-name">Nome do Estabelecimento</Label>
                   <Input id="establishment-name" type="text" placeholder="Nome do estabelecimento" />
                 </div>
+
                 <div>
                   <Label htmlFor="establishment-address">Endereço</Label>
                   <Input id="establishment-address" type="text" placeholder="Endereço do estabelecimento" />
                 </div>
-                
+
                 <div>
                   <Label htmlFor="establishment-type">Tipo de Estabelecimento</Label>
                   <Select>
@@ -153,6 +161,36 @@ export function UserNav() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                <div>
+                  <Label htmlFor="working-days">Dias de Funcionamento</Label>
+                  <div className="flex space-x-2">
+                    {daysOfWeek.map((day) => (
+                      <button
+                        type="button"
+                        key={day}
+                        onClick={() => toggleDaySelection(day)}
+                        className={`cursor-pointer px-2 py-1 rounded-md ${
+                          selectedDays.includes(day) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
+                        }`}
+                      >
+                        {day}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex space-x-4">
+                  <div>
+                    <Label htmlFor="opening-time">Abre de:</Label>
+                    <Input id="opening-time" type="time" />
+                  </div>
+                  <div>
+                    <Label htmlFor="closing-time">Fecha de:</Label>
+                    <Input id="closing-time" type="time" />
+                  </div>
+                </div>
+
               </>
             )}
           </form>
