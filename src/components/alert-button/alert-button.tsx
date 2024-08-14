@@ -28,4 +28,8 @@ const AlertButton: React.FC = () => {
   );
 };
 
+<<<<<<< HEAD
 export default AlertButton;
+=======
+export default AlertButton;
+>>>>>>> main

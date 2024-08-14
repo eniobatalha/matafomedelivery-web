@@ -34,4 +34,8 @@ const CardConteudoProduto: React.FC<ProductProps> = ({
     </div>
 );
 
+<<<<<<< HEAD
 export default CardConteudoProduto;
+=======
+export default CardConteudoProduto;
+>>>>>>> main

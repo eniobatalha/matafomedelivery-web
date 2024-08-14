@@ -3,6 +3,8 @@ import { MainNav } from '@/components/main-nav/main-nav';
 import { Button } from '@/components/ui/button';
 import { UserNav } from '@/components/user-nav/user-nav';
 import { GiHamburgerMenu } from "react-icons/gi";
+import { FaPlus } from "react-icons/fa6";
+import { GiTomato } from "react-icons/gi";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import {
     Dialog,
@@ -50,7 +52,10 @@ export default function categoria() {
                         <h2 className="text-3xl font-bold tracking-tight">Categorias</h2>
                         <Dialog>
                             {/* <DialogTrigger asChild> Dialog agora ficou dentro do componente */}
-                            <Button className='bg-orange-300 hover:bg-orange-200'>Adicionar Categoria</Button>
+                            <Button variant="outlineOrange" className='gap-2'>
+                                <FaPlus />
+                                Adicionar Categoria
+                            </Button>
                             {/* </DialogTrigger> */}
                             <DialogContent className="sm:max-w-[450px]">
                                 <DialogHeader className="border-b border-gray-300 pb-2 mb-2">
@@ -118,7 +123,6 @@ export default function categoria() {
                     </div>
                     <div className="px-8 mb-8">
                         <div className="mb-4">
-                            
                         </div>
                         {/* Grid Layout for Cards */}
                         <div className="grid grid-cols-1 gap-8">
@@ -128,7 +132,6 @@ export default function categoria() {
                                     <div className="flex justify-between items-center">
                                         <div className="flex gap-4">
                                             <h2 className="text-xl font-bold tracking-tight">Comida Japonesa</h2>
-                                            
                                         </div>
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
@@ -146,87 +149,89 @@ export default function categoria() {
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </div>
-                                    
                                 </CardHeader>
                                 <CardContent className="pb-2 mb-4 mt-4 flex-1">
                                     <div className='flex'>
 
                                         <div className=''>
                                             <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="transparentOrange" className="p-1">
-                                                    <GiHamburgerMenu className="h-5 w-5" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent className="w-56" align="end" forceMount>
-                                                <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
-                                                    Editar Produto
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
-                                                    Excluir Produto
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="transparentOrange" className="p-1">
+                                                        <GiHamburgerMenu className="h-5 w-5" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent className="w-56" align="end" forceMount>
+                                                    <DropdownMenuItem>
+                                                        Editar Produto
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
+                                                        Excluir Produto
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
 
-                                            
-                                        </DropdownMenu>
+
+                                            </DropdownMenu>
                                         </div>
-                                        
+
                                         <div className='ml-2 flex-1'>
-                                             <CardConteudoProduto
-                                                image="/img/sushi.jpg"
+                                            <CardConteudoProduto
+                                                image="/img/produtos/sushi.jpg"
                                                 description="Sushi"
                                                 quantity={1}
                                                 unitPrice="22,90"
                                                 totalPrice="22,90"
                                                 additions={[]} />
-                                        
+
 
                                         </div>
-                                    
-                                       
-                                          
+
+
+
                                     </div>
 
                                     <div className='flex'>
 
                                         <div className=''>
                                             <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="transparentOrange" className="p-1">
-                                                    <GiHamburgerMenu className="h-5 w-5" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent className="w-56" align="end" forceMount>
-                                                <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
-                                                    Editar Produto
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
-                                                    Excluir Produto
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="transparentOrange" className="p-1">
+                                                        <GiHamburgerMenu className="h-5 w-5" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent className="w-56" align="end" forceMount>
+                                                    <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
+                                                        Editar Produto
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
+                                                        Excluir Produto
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
 
-                                            
-                                        </DropdownMenu>
+
+                                            </DropdownMenu>
                                         </div>
-                                        
-                                        <div className='ml-2 flex-1'>
-                                            
-                                        <CardConteudoProduto
-                                        image="/img/ramen.png"
-                                        description="Ramen"
-                                        quantity={1}
-                                        unitPrice="20,00"
-                                        totalPrice="20,00"
-                                        additions={[]} />
 
-                                        </div>   
-                                          
+                                        <div className='ml-2 flex-1'>
+
+                                            <CardConteudoProduto
+                                                image="/img/produtos/ramen.png"
+                                                description="Ramen"
+                                                quantity={1}
+                                                unitPrice="20,00"
+                                                totalPrice="20,00"
+                                                additions={[]} />
+
+                                        </div>
+
                                     </div>
-                                    
+
                                 </CardContent>
                                 <div className="h-20 border-t border-gray-300 pt-6">
                                     <div className="flex justify-between px-6 mb-4">
-                                        <Button className='bg-orange-200 text-stone-950'>Adicionar produto</Button>
+                                        <Button variant="orange" className="gap-2">
+                                            <GiTomato className="h-5 w-5" />
+                                            Adicionar produto
+                                        </Button>
                                     </div>
                                 </div>
                             </Card>
@@ -251,91 +256,94 @@ export default function categoria() {
                                                 <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
                                                     Excluir Categoria
                                                 </DropdownMenuItem>
-                                                
+
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </div>
-                                </CardHeader> 
+                                </CardHeader>
 
                                 <CardContent className="pb-2 mb-4 mt-4 flex-1">
-                                    
-                                <div className='flex'>
 
-                        <div className=''>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="transparentOrange" className="p-1">
-                                        <GiHamburgerMenu className="h-5 w-5" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                               <DropdownMenuContent className="w-56" align="end" forceMount>
-                                    <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
-                                        Editar Produto
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
-                                        Excluir Produto
-                                    </DropdownMenuItem>
-                              </DropdownMenuContent>
+                                    <div className='flex'>
 
-    
-                            </DropdownMenu>
-                        </div>
-
-                            <div className='ml-2 flex-1'>
-    
-                                        <CardConteudoProduto
-                                        image="/img/macarronada.png"
-                                        description="Macarronada"
-                                        quantity={1}
-                                        unitPrice="18,00"
-                                        totalPrice="18,00"
-                                        additions={[]} />
-
-                            </div>   
-  
-                    </div>
+                                        <div className=''>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="transparentOrange" className="p-1">
+                                                        <GiHamburgerMenu className="h-5 w-5" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent className="w-56" align="end" forceMount>
+                                                    <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
+                                                        Editar Produto
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
+                                                        Excluir Produto
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
 
 
-                    <div className='flex'>
+                                            </DropdownMenu>
+                                        </div>
 
-                        <div className=''>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                            <Button variant="transparentOrange" className="p-1">
-                            <GiHamburgerMenu className="h-5 w-5" />
-                            </Button>
-                                </DropdownMenuTrigger>
-                                    <DropdownMenuContent className="w-56" align="end" forceMount>
-                                        <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
-                                            Editar Produto
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
-                                            Excluir Produto
-                                        </DropdownMenuItem>
-                                </DropdownMenuContent>
+                                        <div className='ml-2 flex-1'>
 
-                            </DropdownMenu>
-                        </div>
+                                            <CardConteudoProduto
+                                                image="/img/produtos/macarronada.png"
+                                                description="Macarronada"
+                                                quantity={1}
+                                                unitPrice="18,00"
+                                                totalPrice="18,00"
+                                                additions={[]} />
 
-                                    <div className='ml-2 flex-1'>
-    
-                                        <CardConteudoProduto
-                                        image="/img/raviole.jpg"
-                                        description="Raviole"
-                                        quantity={1}
-                                        unitPrice="12,00"
-                                        totalPrice="12,00"
-                                        additions={[]} />
+                                        </div>
 
-                                    </div>   
-  
-                    </div>
-                                     
-                                    
+                                    </div>
+
+
+                                    <div className='flex'>
+
+                                        <div className=''>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="transparentOrange" className="p-1">
+                                                        <GiHamburgerMenu className="h-5 w-5" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent className="w-56" align="end" forceMount>
+                                                    <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
+                                                        Editar Produto
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
+                                                        Excluir Produto
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+
+                                            </DropdownMenu>
+                                        </div>
+
+                                        <div className='ml-2 flex-1'>
+
+                                            <CardConteudoProduto
+                                                image="/img/produtos/raviole.jpg"
+                                                description="Raviole"
+                                                quantity={1}
+                                                unitPrice="12,00"
+                                                totalPrice="12,00"
+                                                additions={[]} />
+
+                                        </div>
+
+                                    </div>
+
+
                                 </CardContent>
                                 <div className="h-20 border-t border-gray-300 pt-6">
                                     <div className="flex justify-between px-6 mb-4">
-                                        <Button className='bg-orange-200 text-stone-950'>Adicionar produto</Button>
+                                        <Button variant="orange" className="gap-2">
+                                            <GiTomato className="h-5 w-5" />
+                                            Adicionar produto
+                                        </Button>
                                     </div>
                                 </div>
                             </Card>
@@ -355,7 +363,7 @@ export default function categoria() {
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent className="w-56" align="end" forceMount>
                                                 <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
-                                                    Editar Categoria 
+                                                    Editar Categoria
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
                                                     Excluir Categoria
@@ -365,85 +373,88 @@ export default function categoria() {
                                     </div>
                                 </CardHeader>
                                 <CardContent className="pb-2 mb-4 mt-4 flex-1">
-                                    
-                                <div className='flex'>
 
-                                    <div className=''>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="transparentOrange" className="p-1">
-                                                    <GiHamburgerMenu className="h-5 w-5" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent className="w-56" align="end" forceMount>
-                                                <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
-                                                    Editar Produto
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
-                                                    Excluir Produto
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
+                                    <div className='flex'>
+
+                                        <div className=''>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="transparentOrange" className="p-1">
+                                                        <GiHamburgerMenu className="h-5 w-5" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent className="w-56" align="end" forceMount>
+                                                    <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
+                                                        Editar Produto
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
+                                                        Excluir Produto
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
 
 
-                                        </DropdownMenu>
+                                            </DropdownMenu>
+                                        </div>
+
+                                        <div className='ml-2 flex-1'>
+
+                                            <CardConteudoProduto
+                                                image="/img/produtos/hamburger.png"
+                                                description="hamburger"
+                                                quantity={1}
+                                                unitPrice="15,00"
+                                                totalPrice="15,00"
+                                                additions={[]} />
+
+                                        </div>
+
                                     </div>
 
-                                    <div className='ml-2 flex-1'>
+                                    <div className='flex'>
 
-                                        <CardConteudoProduto
-                                        image="/img/hamburger.png"
-                                        description="hamburger"
-                                        quantity={1}
-                                        unitPrice="15,00"
-                                        totalPrice="15,00"
-                                        additions={[]} />
-
-                                    </div>   
-
-                                </div>
-                                    
-                                <div className='flex'>
-
-                                    <div className=''>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="transparentOrange" className="p-1">
-                                                    <GiHamburgerMenu className="h-5 w-5" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent className="w-56" align="end" forceMount>
-                                                <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
-                                                    Editar Produto
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
-                                                    Excluir Produto
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
+                                        <div className=''>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="transparentOrange" className="p-1">
+                                                        <GiHamburgerMenu className="h-5 w-5" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent className="w-56" align="end" forceMount>
+                                                    <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
+                                                        Editar Produto
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
+                                                        Excluir Produto
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
 
 
-                                        </DropdownMenu>
+                                            </DropdownMenu>
+                                        </div>
+
+                                        <div className='ml-2 flex-1'>
+
+                                            <CardConteudoProduto
+                                                image="/img/produtos/batata frita.jpg"
+                                                description="Refrigerante Lata"
+                                                quantity={1}
+                                                unitPrice="10,00"
+                                                totalPrice="10,00"
+                                                additions={[]} />
+
+                                        </div>
+
                                     </div>
 
-                                    <div className='ml-2 flex-1'>
-
-                                        <CardConteudoProduto
-                                        image="/img/batata frita.jpg"
-                                        description="Refrigerante Lata"
-                                        quantity={1}
-                                        unitPrice="10,00"
-                                        totalPrice="10,00"
-                                        additions={[]} />
-
-                                    </div>   
-
-                                </div>
 
 
-                                    
                                 </CardContent>
                                 <div className="h-20 border-t border-gray-300 pt-6">
                                     <div className="flex justify-between px-6 mb-4">
-                                        <Button className='bg-orange-200 text-stone-950'>Adicionar produto</Button>
+                                        <Button variant="orange" className="gap-2">
+                                            <GiTomato className="h-5 w-5" />
+                                            Adicionar produto
+                                        </Button>
                                     </div>
                                 </div>
                             </Card>
@@ -454,7 +465,6 @@ export default function categoria() {
                                     <div className="flex justify-between items-center">
                                         <div className="flex gap-4">
                                             <h2 className="text-xl font-bold tracking-tight">Pizza</h2>
-                                            
                                         </div>
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
@@ -467,25 +477,25 @@ export default function categoria() {
                                                     Editar Categoria
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
-                                                    Excluir Categoria 
+                                                    Excluir Categoria
                                                 </DropdownMenuItem>
-                                               
+
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </div>
-                                   
+
                                 </CardHeader>
                                 <CardContent className="pb-2 mb-4 mt-4 flex-1">
-                                    
-                                <div className='flex'>
 
-                                    <div className=''>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="transparentOrange" className="p-1">
-                                                    <GiHamburgerMenu className="h-5 w-5" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
+                                    <div className='flex'>
+
+                                        <div className=''>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="transparentOrange" className="p-1">
+                                                        <GiHamburgerMenu className="h-5 w-5" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
                                                 <DropdownMenuContent className="w-56" align="end" forceMount>
                                                     <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
                                                         Editar Produto
@@ -496,32 +506,32 @@ export default function categoria() {
                                                 </DropdownMenuContent>
 
 
-                                        </DropdownMenu>
+                                            </DropdownMenu>
+                                        </div>
+
+                                        <div className='ml-2 flex-1'>
+
+                                            <CardConteudoProduto
+                                                image="/img/produtos/pizza calabresa.png"
+                                                description="Pizza de Calabresa"
+                                                quantity={1}
+                                                unitPrice="36,00"
+                                                totalPrice="36,00"
+                                                additions={[]} />
+
+                                        </div>
+
                                     </div>
 
-                                    <div className='ml-2 flex-1'>
+                                    <div className='flex'>
 
-                                        <CardConteudoProduto
-                                        image="/img/pizza calabresa.png"
-                                        description="Pizza de Calabresa"
-                                        quantity={1}
-                                        unitPrice="36,00"
-                                        totalPrice="36,00"
-                                        additions={[]} />
-
-                                    </div>   
-
-                                </div>
-                                    
-                                <div className='flex'>
-
-                                    <div className=''>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="transparentOrange" className="p-1">
-                                                    <GiHamburgerMenu className="h-5 w-5" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
+                                        <div className=''>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="transparentOrange" className="p-1">
+                                                        <GiHamburgerMenu className="h-5 w-5" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
                                                 <DropdownMenuContent className="w-56" align="end" forceMount>
                                                     <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
                                                         Editar Produto
@@ -532,32 +542,35 @@ export default function categoria() {
                                                 </DropdownMenuContent>
 
 
-                                        </DropdownMenu>
+                                            </DropdownMenu>
+                                        </div>
+
+                                        <div className='ml-2 flex-1'>
+
+                                            <CardConteudoProduto
+                                                image="/img/produtos/pizza chocolate.jpg"
+                                                description="Pizza de Chocolate"
+                                                quantity={1}
+                                                unitPrice="36,00"
+                                                totalPrice="36,00"
+                                                additions={[]} />
+
+                                        </div>
+
                                     </div>
 
-                                    <div className='ml-2 flex-1'>
 
-                                        <CardConteudoProduto
-                                        image="/img/pizza chocolate.jpg"
-                                        description="Pizza de Chocolate"
-                                        quantity={1}
-                                        unitPrice="36,00"
-                                        totalPrice="36,00"
-                                        additions={[]} />
-
-                                    </div>   
-
-                                </div>    
-
-                                    
                                 </CardContent>
                                 <div className="h-20 border-t border-gray-300 pt-6">
                                     <div className="flex justify-between px-6 mb-4">
-                                        <Button className='bg-orange-200 text-stone-950'>Adicionar produto</Button>
+                                        <Button variant="orange" className="gap-2">
+                                            <GiTomato className="h-5 w-5" />
+                                            Adicionar produto
+                                        </Button>
                                     </div>
                                 </div>
                             </Card>
-                           
+
                         </div>
                     </div>
                 </div>
