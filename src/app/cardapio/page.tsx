@@ -8,15 +8,17 @@ import {  Tabs, TabsContent, TabsList, TabsTrigger,} from "@/components/ui/tabs"
 const Cardapio = () => {
   const [showPriceInput, setShowPriceInput] = useState(false);
   const [price, setPrice] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
-  const fileInputRef = useRef(null);
+  const [selectedFile, setSelectedFile] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAddPhotoClick = () => {
-    fileInputRef.current.click();
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
   };
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (file) {
       setSelectedFile(URL.createObjectURL(file));
     }
@@ -26,7 +28,7 @@ const Cardapio = () => {
     setShowPriceInput(true);
   };
 
-  const handlePriceChange = (event) => {
+  const handlePriceChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
     setPrice(event.target.value);
   };
 
@@ -104,7 +106,7 @@ const Cardapio = () => {
       <input
         type="file"
         ref={fileInputRef}
-        onChange={handleFileChange}
+        onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleFileChange(event)}
         className="hidden"
       />
 
