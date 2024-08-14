@@ -114,7 +114,7 @@ export function UserNav() {
           </DialogHeader>
 
           {/* Formulário dentro do Dialog */}
-          <form className="space-y-4">
+          <form className="space-y-4 mt-4">
             {/* Campos específicos para cada conteúdo */}
             {dialogContent === 'Gerenciar Conta' ? (
               <>
@@ -139,17 +139,17 @@ export function UserNav() {
             ) : (
               <>
                 <div>
-                  <Label htmlFor="establishment-name">Nome do Estabelecimento</Label>
+                  <Label htmlFor="establishment-name" className="flex mb-2">Nome do Estabelecimento</Label>
                   <Input id="establishment-name" type="text" placeholder="Nome do estabelecimento" />
                 </div>
 
                 <div>
-                  <Label htmlFor="establishment-address">Endereço</Label>
+                  <Label htmlFor="establishment-address" className="flex mb-2">Endereço</Label>
                   <Input id="establishment-address" type="text" placeholder="Endereço do estabelecimento" />
                 </div>
 
                 <div>
-                  <Label htmlFor="establishment-type">Tipo de Estabelecimento</Label>
+                  <Label htmlFor="establishment-type" className="flex mb-2">Tipo de Estabelecimento</Label>
                   <Select>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione o tipo" />
@@ -163,7 +163,7 @@ export function UserNav() {
                 </div>
 
                 <div>
-                  <Label htmlFor="working-days">Dias de Funcionamento</Label>
+                  <Label htmlFor="working-days" className="flex mb-2">Dias de Funcionamento</Label>
                   <div className="flex space-x-2">
                     {daysOfWeek.map((day) => (
                       <button
@@ -171,7 +171,7 @@ export function UserNav() {
                         key={day}
                         onClick={() => toggleDaySelection(day)}
                         className={`cursor-pointer px-2 py-1 rounded-md ${
-                          selectedDays.includes(day) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
+                          selectedDays.includes(day) ? 'bg-orange-500 text-white' : 'bg-gray-200 text-black'
                         }`}
                       >
                         {day}
@@ -182,11 +182,11 @@ export function UserNav() {
 
                 <div className="flex space-x-4">
                   <div>
-                    <Label htmlFor="opening-time">Abre de:</Label>
+                    <Label htmlFor="opening-time" className="flex mb-2">Abre de:</Label>
                     <Input id="opening-time" type="time" />
                   </div>
                   <div>
-                    <Label htmlFor="closing-time">Fecha de:</Label>
+                    <Label htmlFor="closing-time" className="flex mb-2">Fecha de:</Label>
                     <Input id="closing-time" type="time" />
                   </div>
                 </div>
@@ -196,10 +196,10 @@ export function UserNav() {
           </form>
 
           <DialogFooter>
-            <Button onClick={handleCloseDialog} className="bg-orange-500 text-white">
+            <Button onClick={handleCloseDialog} variant="destructive">
               Fechar
             </Button>
-            <Button type="submit" className="bg-blue-500 text-white">
+            <Button type="submit" variant="orange">
               Salvar
             </Button>
           </DialogFooter>
