@@ -61,11 +61,12 @@
 
 @layer base {
   * {
-    @apply border-border;
+    border: 1px solid var(--border);
   }
 
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--background);
+    color: var(--foreground);
   }
 
   li::marker,
