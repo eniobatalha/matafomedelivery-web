@@ -31,16 +31,16 @@ import { Label } from '@/components/ui/label'; // Label component
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'; // Select component
 
 export function UserNav() {
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [isDialogOpen, setIsDialogOpen] = useState<string | null>(null);
   const [dialogContent, setDialogContent] = useState<string>(''); // Estado para controlar o conteúdo do diálogo
 
   const handleOpenDialog = (content: string) => {
     setDialogContent(content);
-    setIsDialogOpen(true);
+    setIsDialogOpen(content);
   };
 
   const handleCloseDialog = () => {
-    setIsDialogOpen(false);
+    setIsDialogOpen(null);
   };
 
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
@@ -90,6 +90,12 @@ export function UserNav() {
             >
               Gerenciar Estabelecimento
             </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => handleOpenDialog('Alterar Senha')}
+              className="hover:bg-orange-500 hover:text-white"
+            >
+              Alterar Senha
+            </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <Link href="/login" passHref>
@@ -101,7 +107,7 @@ export function UserNav() {
       </DropdownMenu>
 
       {/* Componente Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isDialogOpen !== null} onOpenChange={(open) => open ? null : handleCloseDialog()}>
         <DialogOverlay />
         <DialogContent>
           <DialogHeader>
@@ -109,7 +115,9 @@ export function UserNav() {
             <DialogDescription>
               {dialogContent === 'Gerenciar Conta'
                 ? 'Aqui você pode gerenciar suas informações de conta.'
-                : 'Aqui você pode gerenciar as informações do seu estabelecimento.'}
+                : dialogContent === 'Gerenciar Estabelecimento'
+                ? 'Aqui você pode gerenciar as informações do seu estabelecimento.'
+                : 'Aqui você pode alterar sua senha.'}
             </DialogDescription>
           </DialogHeader>
 
@@ -127,16 +135,15 @@ export function UserNav() {
                   <Input id="email" type="email" placeholder="E-mail" />
                 </div>
                 <div>
-                  <Label htmlFor="name">Telefone Fixo</Label>
-                  <Input id="name" type="text" placeholder="Telefone Fixo" />
+                  <Label htmlFor="phone">Telefone Fixo</Label>
+                  <Input id="phone" type="text" placeholder="Telefone Fixo" />
                 </div>
                 <div>
-                  <Label htmlFor="name">Telefone Celular</Label>
-                  <Input id="name" type="text" placeholder="Telefone Celular" />
+                  <Label htmlFor="mobile">Telefone Celular</Label>
+                  <Input id="mobile" type="text" placeholder="Telefone Celular" />
                 </div>
-
               </>
-            ) : (
+            ) : dialogContent === 'Gerenciar Estabelecimento' ? (
               <>
                 <div>
                   <Label htmlFor="establishment-name" className="flex mb-2">Nome do Estabelecimento</Label>
@@ -190,9 +197,23 @@ export function UserNav() {
                     <Input id="closing-time" type="time" />
                   </div>
                 </div>
-
               </>
-            )}
+            ) : dialogContent === 'Alterar Senha' ? (
+              <>
+                <div>
+                  <Label htmlFor="current-password">Digite a Senha Atual</Label>
+                  <Input id="current-password" type="password" placeholder="Senha Atual" />
+                </div>
+                <div>
+                  <Label htmlFor="new-password">Digite a Nova Senha</Label>
+                  <Input id="new-password" type="password" placeholder="Nova Senha" />
+                </div>
+                <div>
+                  <Label htmlFor="confirm-new-password">Confirme a Nova Senha</Label>
+                  <Input id="confirm-new-password" type="password" placeholder="Confirmar Nova Senha" />
+                </div>
+              </>
+            ) : null}
           </form>
 
           <DialogFooter>

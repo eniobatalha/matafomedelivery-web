@@ -1,7 +1,7 @@
-import { MainNav } from "@/components/main-nav/main-nav"
+import React from "react"
 import { Payment, columns } from "./columns"
 import { DataTable } from "./data-table"
-import { UserNav } from "@/components/user-nav/user-nav"
+import MenuCompleto from "@/components/menu-completo/menu-completo"
 
 async function getData(): Promise<Payment[]> {
     // Fetch data from your API here.
@@ -156,17 +156,7 @@ export default async function PaymentsPage() {
     return (
         <>
             <div className="border-b">
-                <div className="flex h-16 items-center px-4 bg-orange-500">
-                    <img
-                        src="/img/LogoNome.png"
-                        alt="Logo Nome Mata Fome Delivery"
-                        className="w-32 h-auto ml-4 mr-8"
-                    />
-                    <MainNav className="mx-6" />
-                    <div className="ml-auto flex items-center space-x-8">
-                        <UserNav />
-                    </div>
-                </div>
+                <MenuCompleto/>
                 <div className="p-8">
                     <h2 className="text-3xl font-bold tracking-tight">Histórico de Pedidos</h2>
                     <DataTable columns={columns} data={data} />
