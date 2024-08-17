@@ -1,7 +1,5 @@
 import React from 'react';
-import { MainNav } from '@/components/main-nav/main-nav';
 import { Button } from '@/components/ui/button';
-import { UserNav } from '@/components/user-nav/user-nav';
 import { GiHamburgerMenu } from "react-icons/gi";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import {
@@ -29,22 +27,15 @@ import {
 import Tag from '@/components/tag-pedido/tag-pedido';
 import CardConteudoProduto from '@/components/card-conteudo-produto/card-conteudo-produto';
 import AlertButton from '@/components/alert-button/alert-button';
+import MenuCompleto from '@/components/menu-completo/menu-completo';
+import { Footer } from '@/components/footer/footer';
 
 const pedidos = () => {
     return (
         <>
-            <div className="mb-8">
-                <div className="flex h-16 items-center px-4 bg-orange-500">
-                    <img
-                        src="/img/LogoNome.png"
-                        alt="Logo Nome Mata Fome Delivery"
-                        className="w-32 h-auto ml-4 mr-8" />
-                    <MainNav className="mx-6" />
-                    <div className="ml-auto flex items-center space-x-8">
-                        <UserNav />
-                    </div>
-                </div>
-            </div><div>
+            <MenuCompleto />
+            
+            <div>
                 <div>
                     <div className="flex justify-between p-8">
                         <h2 className="text-3xl font-bold tracking-tight">Acompanhamento de Pedidos</h2>
@@ -468,6 +459,7 @@ const pedidos = () => {
                             </Card>
                         </div>
                     </div>
+                    <Footer />
                 </div>
             </div>
         </>
