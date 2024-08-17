@@ -23,6 +23,7 @@ import BasicBars from "@/components/bar-chart/bar-chart"
 import { TableClientes } from "@/components/table-top-clientes/table-top-clientes"
 import BairroBars from "@/components/bar-chart-bairros/bar-chart-bairros"
 import MenuCompleto from "@/components/menu-completo/menu-completo"
+import { Footer } from "@/components/footer/footer"
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -451,6 +452,7 @@ export default function DashboardPage() {
             </TabsContent>
           </Tabs>
         </div>
+        <Footer />
       </div>
     </>
   )

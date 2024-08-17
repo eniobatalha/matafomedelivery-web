@@ -89,7 +89,8 @@ const CardapioPage: React.FC = () => {
                             throw new Error('Function not implemented.');
                         } } onProductDelete={function (produto: Produto): void {
                             throw new Error('Function not implemented.');
-                        } }                 />
+                        } }
+                    />
                  
                 ))}
             </div>
