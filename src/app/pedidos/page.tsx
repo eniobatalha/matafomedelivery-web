@@ -28,6 +28,7 @@ import Tag from '@/components/tag-pedido/tag-pedido';
 import CardConteudoProduto from '@/components/card-conteudo-produto/card-conteudo-produto';
 import AlertButton from '@/components/alert-button/alert-button';
 import MenuCompleto from '@/components/menu-completo/menu-completo';
+import { Footer } from '@/components/footer/footer';
 
 const pedidos = () => {
     return (
@@ -458,6 +459,7 @@ const pedidos = () => {
                             </Card>
                         </div>
                     </div>
+                    <Footer />
                 </div>
             </div>
         </>
