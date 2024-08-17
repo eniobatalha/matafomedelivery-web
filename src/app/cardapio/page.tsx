@@ -19,6 +19,7 @@ interface Produto {
 import { Button } from '@/components/ui/button';
 import MenuCompleto from '@/components/menu-completo/menu-completo';
 import { FaPlus } from "react-icons/fa6";
+import { Footer } from '@/components/footer/footer';
 
 
 const CardapioPage: React.FC = () => {
@@ -94,6 +95,7 @@ const CardapioPage: React.FC = () => {
                  
                 ))}
             </div>
+            <Footer />
         </div>
     );
 };

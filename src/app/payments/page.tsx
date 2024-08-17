@@ -2,6 +2,7 @@ import React from "react"
 import { Payment, columns } from "./columns"
 import { DataTable } from "./data-table"
 import MenuCompleto from "@/components/menu-completo/menu-completo"
+import { Footer } from "@/components/footer/footer"
 
 async function getData(): Promise<Payment[]> {
     // Fetch data from your API here.
@@ -161,6 +162,7 @@ export default async function PaymentsPage() {
                     <h2 className="text-3xl font-bold tracking-tight">Histórico de Pedidos</h2>
                     <DataTable columns={columns} data={data} />
                 </div>
+                <Footer />
             </div>
         </>
     )
