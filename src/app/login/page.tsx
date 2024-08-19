@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'; // Atualize o import para usar o ho
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from "@/components/ui/button";
+import Image from 'next/image';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');

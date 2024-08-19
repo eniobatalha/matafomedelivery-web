@@ -61,7 +61,7 @@ const ForgotPasswordPage = () => {
 
   const steps = [
     <div key="step1">
-      <Label htmlFor="otp" className="text-sm font-semibold">Digite o email usado no cadastro</Label>
+      <Label htmlFor="email" className="text-sm font-semibold">Digite o email usado no cadastro</Label>
       <Input
         type="email"
         id="email"
@@ -89,7 +89,7 @@ const ForgotPasswordPage = () => {
       {errors.otp && <p className="text-orange-500 text-sm">{errors.otp}</p>}
     </div>,
     <div key="step3">
-      <Label htmlFor="otp" className="text-sm font-semibold text-center">Digite a nova senha</Label>
+      <Label htmlFor="password" className="text-sm font-semibold text-center">Digite a nova senha</Label>
       <Input
         type="password"
         id="password"
@@ -119,15 +119,24 @@ const ForgotPasswordPage = () => {
         <Steps currentStep={currentStep} />
         <form onSubmit={handleSubmit} className="w-full max-w-sm flex flex-col gap-4">
           {currentComponent}
-          <div className="flex gap-4">
-            {currentStep > 0 && (
-              <Button type="button" variant="destructive" onClick={handleBack}>
-                Voltar
-              </Button>
-            )}
-            {currentStep === 0 && <Button variant="orange" type="submit" className="w-full">Recuperar</Button>}
-            {currentStep === 1 && <Button variant="orange" type="submit" className="w-full">Confirmar</Button>}
-            {currentStep === 2 && <Button variant="orange" type="submit" className="w-full">Salvar</Button>}
+          <div className="flex flex-col gap-4">
+            <div className="flex gap-4">
+              {currentStep > 0 && (
+                <Button type="button" variant="destructive" onClick={handleBack}>
+                  Voltar
+                </Button>
+              )}
+              {currentStep === 0 && (
+                <div className="flex-row w-full">
+                  <Button variant="orange" type="submit" className="w-full mb-2">Recuperar</Button>
+                  <Button type="button" variant="orangeLink" onClick={() => router.push('/login')} className="w-full">
+                    Voltar para Login
+                  </Button>
+                </div>
+              )}
+              {currentStep === 1 && <Button variant="orange" type="submit" className="w-full">Confirmar</Button>}
+              {currentStep === 2 && <Button variant="orange" type="submit" className="w-full">Salvar</Button>}
+            </div>
           </div>
         </form>
         {showAlert && (

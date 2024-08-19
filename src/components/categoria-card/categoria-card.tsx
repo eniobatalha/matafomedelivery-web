@@ -1,53 +1,35 @@
-"use client";
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { FaPlus } from "react-icons/fa6";
-import {
-    Dialog,
-    DialogTrigger,
-    DialogContent,
-    DialogTitle,
-    DialogOverlay,
-    DialogHeader,
-    DialogDescription,
-    DialogFooter,
-} from "@/components/ui/dialog";
+import { FaPlus } from "react-icons/fa";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
+    DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-
-interface Produto {
-    image: string;
-    description: string;
-    unitPrice: string;
-    totalPrice: string;
-    additions: string[];
-}
+import DialogEditCategory from "@/components/dialog-edit-categoria/dialog-edit-categoria";
+import DialogDeleteCategory from "@/components/dialog-del-categoria/dialog-del-categoria";
+import { Produto } from '@/types/types';
 
 interface CategoriaCardProps {
+    categoriaId: string;
     categoriaNome: string;
     produtos: Produto[];
     onProductEdit: (produto: Produto) => void;
     onProductDelete: (produto: Produto) => void;
+    onCategoryUpdated: () => void;
 }
 
 const CategoriaCard: React.FC<CategoriaCardProps> = ({
+    categoriaId,
     categoriaNome,
     produtos,
     onProductEdit,
     onProductDelete,
+    onCategoryUpdated,
 }) => {
     const [selectedProduct, setSelectedProduct] = useState<Produto | null>(null);
     const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
-
     const [newProduct, setNewProduct] = useState({
         image: '',
         description: '',
@@ -55,6 +37,8 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
         additions: [''],
     });
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
     const handleOpenDetailDialog = (produto: Produto) => {
         setSelectedProduct(produto);
@@ -78,6 +62,22 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
             unitPrice: '',
             additions: [''],
         });
+    };
+
+    const handleOpenEditDialog = () => {
+        setIsEditDialogOpen(true);
+    };
+
+    const handleCloseEditDialog = () => {
+        setIsEditDialogOpen(false);
+    };
+
+    const handleOpenDeleteDialog = () => {
+        setIsDeleteDialogOpen(true);
+    };
+
+    const handleCloseDeleteDialog = () => {
+        setIsDeleteDialogOpen(false);
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
@@ -128,10 +128,16 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="end" forceMount>
-                        <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
+                        <DropdownMenuItem
+                            onClick={() => handleOpenEditDialog()}
+                            className="hover:bg-orange-500 hover:text-white"
+                        >
                             Editar Categoria
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
+                        <DropdownMenuItem
+                            onClick={() => handleOpenDeleteDialog()}
+                            className="hover:bg-orange-500 hover:text-white"
+                        >
                             Excluir Categoria
                         </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -143,184 +149,95 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
                         <div className="flex items-center">
                             <img src={produto.image} alt={produto.description} className="w-24 h-24 object-cover mr-4" />
                             <div className="flex flex-col items-start">
-                                <p className="font-semibold">{produto.description}</p>
-                                <Button variant="orangeLink" className="text-gray-500" onClick={() => handleOpenDetailDialog(produto)}>
-                                    Ver detalhes
-                                </Button>
+                                <p className="font-bold">{produto.description}</p>
+                                <p className="text-sm text-gray-600">R${produto.unitPrice}</p>
+                                <Button onClick={() => handleOpenDetailDialog(produto)} variant="outline">Detalhes</Button>
                             </div>
                         </div>
-                        <div className="text-right">
-                            <p className="font-semibold">{produto.unitPrice}</p>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="transparentOrange" className="p-1">
-                                        <GiHamburgerMenu className="h-5 w-5" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-48" align="end" forceMount>
-                                    <DropdownMenuItem
-                                        onClick={() => onProductEdit(produto)}
-                                        className="hover:bg-orange-500 hover:text-white"
-                                    >
-                                        Editar Produto
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        onClick={() => onProductDelete(produto)}
-                                        className="hover:bg-orange-500 hover:text-white"
-                                    >
-                                        Excluir Produto
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </div>
+                        <Button onClick={() => onProductDelete(produto)} variant="destructive">Excluir</Button>
                     </div>
                 ))}
             </CardContent>
-            <CardFooter className="flex justify-start">
-                <Button variant="orange" className="gap-2" onClick={handleOpenAddDialog}>
-                    <FaPlus className="h-5 w-5" />
-                    Adicionar produto
+            <CardFooter className="flex justify-between">
+                <Button onClick={handleOpenAddDialog} variant="orange">
+                    <FaPlus className="h-5 w-5 mr-2" />
+                    Adicionar Produto
                 </Button>
             </CardFooter>
 
-            {/* Componente Dialog para Detalhes do Produto */}
-            {selectedProduct && (
-                <Dialog open={isDetailDialogOpen} onOpenChange={handleCloseDetailDialog}>
-                    <DialogOverlay />
-                    <DialogContent className="w-2/3">
-                        <DialogHeader>
-                            <DialogTitle>Detalhes do Produto</DialogTitle>
-                            <DialogDescription>
-                                {selectedProduct.description}
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="space-y-4 mt-4">
-                            <img src={selectedProduct.image} alt={selectedProduct.description} className="w-48 h-48 object-cover mb-4" />
-                            <p className="text-sm text-gray-500 font-bold">Preço unitário: {selectedProduct.unitPrice}</p>
-                            <p className="text-sm text-gray-500 font-bold">Adicionais:</p>
-                            <ul className="list-disc pl-5">
-                                {(selectedProduct.additions || []).map((addition, index) => (
-                                    <li key={index} className="text-sm text-gray-500">{addition}</li>
-                                ))}
-                            </ul>
-                        </div>
-                        <DialogFooter>
-                            <Button onClick={handleCloseDetailDialog} variant="destructive">
-                                Fechar
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+            {/* Dialog de Edição de Categoria */}
+            {isEditDialogOpen && (
+                <DialogEditCategory
+                    categoriaId={categoriaId}
+                    categoriaNome={categoriaNome}
+                    onClose={handleCloseEditDialog}
+                    onCategoryUpdated={onCategoryUpdated}
+                />
             )}
 
-            {/* Componente Dialog para Adicionar Novo Produto */}
-            <Dialog open={isAddDialogOpen} onOpenChange={handleCloseAddDialog}>
-                <DialogOverlay />
-                <DialogContent className="max-h-screen max-w-screen-lg">
-                    <div className="flex space-x-4">
-                        <div className="w-1/2 p-4 border-r border-gray-300">
-                            <DialogHeader>
-                                <DialogTitle className="mb-4 text-orange-500">Informações do Produto</DialogTitle>
-                            </DialogHeader>
-                            <div className="space-y-4">
-                                <div>
-                                    <Label>Nome</Label>
-                                    <Input
-                                        type="text"
-                                        value={newProduct.description}
-                                        onChange={(e) => handleChange(e, "description")}
-                                    />
-                                </div>
-                                <div>
-                                    <Label>Imagem</Label>
-                                    <Input
-                                        type="file"
-                                        onChange={handleImageUpload}
-                                    />
-                                </div>
-                                <div>
-                                    <Label>Preço Unitário</Label>
-                                    <Input
-                                        type="text"
-                                        value={newProduct.unitPrice}
-                                        onChange={(e) => handleChange(e, "unitPrice")}
-                                    />
-                                </div>
-                                <div>
-                                    <Label>Adicionais</Label>
-                                    <div className="max-h-40 overflow-y-auto">
-                                        {newProduct.additions.map((addition, index) => (
-                                            <div key={index} className="flex items-center mb-2">
-                                                <Input
-                                                    type="text"
-                                                    value={addition}
-                                                    onChange={(e) => handleChangeAddition(index, e.target.value)}
-                                                />
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <Button
-                                        onClick={handleAddAddition}
-                                        variant="outline"
-                                        className="mt-2"
-                                    >
-                                        + Adicionais
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="w-1/2 p-4">
-                            <DialogHeader>
-                                <DialogTitle className="mb-4 text-orange-500">Visualização</DialogTitle>
-                            </DialogHeader>
-                            <div className="space-y-4">
-                                <div className="flex justify-center items-center">
-                                    {newProduct.image ? (
-                                        <img src={newProduct.image} alt="Product Preview" className="w-1/3 h-1/3 object-cover" />
-                                    ) : (
-                                        <p className="text-gray-500">Nenhuma imagem selecionada</p>
-                                    )}
-                                </div>
-                                <div>
-                                    <p className="text-sm font-semibold">Nome:</p>
-                                    <p className="text-gray-700">{newProduct.description || "Nenhuma descrição fornecida"}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-semibold">Preço Unitário:</p>
-                                    <p className="text-gray-700">{'R$ '+ newProduct.unitPrice || "Nenhum preço fornecido"}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-semibold">Adicionais:</p>
-                                    {newProduct.additions.length > 0 ? (
-                                        <ul className="list-disc pl-5 text-gray-700">
-                                            {newProduct.additions.map((addition, index) => (
-                                                <li key={index}>{addition}</li>
-                                            ))}
-                                        </ul>
-                                    ) : (
-                                        <p className="text-gray-500">Nenhum adicional fornecido</p>
-                                    )}
-                                </div>
-                            </div>
+            {/* Dialog de Exclusão de Categoria */}
+            {isDeleteDialogOpen && (
+                <DialogDeleteCategory
+                    categoriaId={categoriaId}
+                    categoriaNome={categoriaNome}
+                    onClose={handleCloseDeleteDialog}
+                    onCategoryDeleted={onCategoryUpdated}
+                />
+            )}
+
+            {/* Dialog de Adição de Produto */}
+            {isAddDialogOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg">
+                        <h3 className="text-lg font-semibold mb-4">Adicionar Produto</h3>
+                        <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="mb-4"
+                        />
+                        <Input
+                            value={newProduct.description}
+                            onChange={(e) => handleChange(e, 'description')}
+                            placeholder="Descrição do Produto"
+                            className="mb-4"
+                        />
+                        <Input
+                            value={newProduct.unitPrice}
+                            onChange={(e) => handleChange(e, 'unitPrice')}
+                            placeholder="Preço Unitário"
+                            className="mb-4"
+                        />
+                        {newProduct.additions.map((addition, index) => (
+                            <Input
+                                key={index}
+                                value={addition}
+                                onChange={(e) => handleChangeAddition(index, e.target.value)}
+                                placeholder={`Adição ${index + 1}`}
+                                className="mb-2"
+                            />
+                        ))}
+                        <Button onClick={handleAddAddition} variant="outline">Adicionar Adição</Button>
+                        <div className="flex gap-4 mt-4">
+                            <Button onClick={handleCloseAddDialog} variant="orange">Salvar</Button>
+                            <Button onClick={handleCloseAddDialog} variant="destructive">Cancelar</Button>
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button onClick={handleCloseAddDialog} variant="destructive">
-                            Cancelar
-                        </Button>
-                        <Button
-                            onClick={() => {
-                                console.log("Novo produto adicionado:", newProduct);
-                                handleCloseAddDialog();
-                            }}
-                            variant="orange"
-                        >
-                            Adicionar Produto
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
+                </div>
+            )}
+            
+            {/* Dialog de Detalhes do Produto */}
+            {isDetailDialogOpen && selectedProduct && (
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg">
+                        <h3 className="text-lg font-semibold mb-4">Detalhes do Produto</h3>
+                        <img src={selectedProduct.image} alt={selectedProduct.description} className="w-48 h-48 object-cover mb-4" />
+                        <p className="text-lg font-bold">{selectedProduct.description}</p>
+                        <p className="text-sm text-gray-600">Preço Unitário: R${selectedProduct.unitPrice}</p>
+                        <Button onClick={handleCloseDetailDialog} variant="destructive" className="mt-4">Fechar</Button>
+                    </div>
+                </div>
+            )}
         </Card>
     );
 };
