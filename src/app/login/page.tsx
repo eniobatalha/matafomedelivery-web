@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation'; // Atualize o import para usar o ho
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from "@/components/ui/button";
-import Image from 'next/image';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
@@ -84,7 +83,7 @@ const LoginPage = () => {
                 </form>
             </div>
             <div className="flex-1">
-                <img src="/img/pic-login.jpg" alt="Login" className="w-full h-full object-cover" />
+                <Image src="/img/pic-login.jpg" alt="Login" className="w-full h-full object-cover" />
             </div>
         </div>
     );

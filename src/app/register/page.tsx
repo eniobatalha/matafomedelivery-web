@@ -9,6 +9,7 @@ import axios from 'axios';
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from 'next/navigation';
 import { FaSearch } from 'react-icons/fa';
+import Image from 'next/image';
 
 type FormValues = {
   razaoSocial: string;
