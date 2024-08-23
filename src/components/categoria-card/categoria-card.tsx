@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Image from 'next/image';
 import { Button } from "@/components/ui/button";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { FaPlus } from "react-icons/fa";
@@ -148,7 +147,7 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
                 {produtos.map((produto, index) => (
                     <div key={index} className="flex items-center justify-between mb-2 p-2 border-b border-gray-300">
                         <div className="flex items-center">
-                            <Image src={produto.image} alt={produto.description} className="w-24 h-24 object-cover mr-4" />
+                            <img src={produto.image} alt={produto.description} className="w-24 h-24 object-cover mr-4" />
                             <div className="flex flex-col items-start">
                                 <p className="font-bold">{produto.description}</p>
                                 <p className="text-sm text-gray-600">R${produto.unitPrice}</p>
@@ -232,7 +231,7 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
                 <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg">
                         <h3 className="text-lg font-semibold mb-4">Detalhes do Produto</h3>
-                        <Image src={selectedProduct.image} alt={selectedProduct.description} className="w-48 h-48 object-cover mb-4" />
+                        <img src={selectedProduct.image} alt={selectedProduct.description} className="w-48 h-48 object-cover mb-4" />
                         <p className="text-lg font-bold">{selectedProduct.description}</p>
                         <p className="text-sm text-gray-600">Preço Unitário: R${selectedProduct.unitPrice}</p>
                         <Button onClick={handleCloseDetailDialog} variant="destructive" className="mt-4">Fechar</Button>

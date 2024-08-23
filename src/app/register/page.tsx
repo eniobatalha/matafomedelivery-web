@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -9,14 +9,14 @@ import axios from 'axios';
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from 'next/navigation';
 import { FaSearch } from 'react-icons/fa';
-import Image from 'next/image';
+import cx from 'classnames';
 
 type FormValues = {
   razaoSocial: string;
   email: string;
   cnpj: string;
   telefone: string;
-  nomeFantasia?: string;
+  nomeFantasia: string;  // Agora obrigatório
   senha: string;
   confirmarSenha: string;
   cep: string;
@@ -26,6 +26,9 @@ type FormValues = {
   bairro: string;
   cidade: string;
   estado: string;
+  horarioAbertura: string;
+  horarioFechamento: string;
+  categoria: string;
 };
 
 const states = [
@@ -58,8 +61,23 @@ const states = [
   { value: 'TO', label: 'TO' },
 ];
 
+const categorias = [
+  { value: 'hamburgueria', label: 'Hamburgueria' },
+  { value: 'sorveteria', label: 'Sorveteria' },
+  { value: 'acaiteria', label: 'Açaíteria' },
+  { value: 'lanchonete', label: 'Lanchonete' },
+  { value: 'pizzaria', label: 'Pizzaria' },
+  { value: 'comedoria', label: 'Comedoria' },
+  { value: 'churrascaria', label: 'Churrascaria' },
+  { value: 'cafeteria', label: 'Cafeteria' },
+  { value: 'padaria', label: 'Padaria' },
+  { value: 'sushibar', label: 'Sushi Bar' },
+  { value: 'restaurante', label: 'Restaurante' },
+  { value: 'outro', label: 'Outro' },
+];
+
 const RegisterPage = () => {
-  const { register, handleSubmit, formState: { errors }, setValue, getValues } = useForm<FormValues>();
+  const { register, handleSubmit, formState: { errors }, setValue, getValues, trigger } = useForm<FormValues>();
   const { toast } = useToast();
   const router = useRouter();
 
@@ -71,8 +89,8 @@ const RegisterPage = () => {
     if (cnpjRef.current) {
       IMask(cnpjRef.current, {
         mask: '00.000.000/0000-00',
-        lazy: false, // So it will format instantly
-        prepare: (str) => str.replace(/\D/g, '') // Remove non-numeric characters
+        lazy: false,
+        prepare: (str) => str.replace(/\D/g, '')
       }).on('accept', () => {
         setValue('cnpj', cnpjRef.current?.value || '');
       });
@@ -81,8 +99,8 @@ const RegisterPage = () => {
     if (telefoneRef.current) {
       IMask(telefoneRef.current, {
         mask: '(00) 00000-0000',
-        lazy: false, // So it will format instantly
-        prepare: (str) => str.replace(/\D/g, '') // Remove non-numeric characters
+        lazy: false,
+        prepare: (str) => str.replace(/\D/g, '')
       }).on('accept', () => {
         setValue('telefone', telefoneRef.current?.value || '');
       });
@@ -91,91 +109,13 @@ const RegisterPage = () => {
     if (cepRef.current) {
       IMask(cepRef.current, {
         mask: '00000-000',
-        lazy: false, // So it will format instantly
-        prepare: (str) => str.replace(/\D/g, '') // Remove non-numeric characters
+        lazy: false,
+        prepare: (str) => str.replace(/\D/g, '')
       }).on('accept', () => {
         setValue('cep', cepRef.current?.value || '');
       });
     }
   }, [setValue]);
-
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    try {
-      // URL da API onde as empresas estão registradas
-      const url_api_fake_empresa = 'http://localhost:3001/empresa';
-    
-      // Função para verificar se o e-mail já existe
-      const checkEmailExists = async (email: string) => {
-        try {
-          const response = await fetch(url_api_fake_empresa);
-          const responseData = await response.json();
-          
-          // Verifica se algum restaurante tem o e-mail que está sendo verificado
-          const emails = responseData.empresa.map((empresa: any) => empresa.email);
-          return emails.includes(email);
-        } catch (error) {
-          console.error("Erro ao verificar o e-mail:", error);
-          return false;
-        }
-      };
-    
-      const email = getValues('email');
-      if (await checkEmailExists(email)) {
-        // Se o e-mail já existir, exibe o toast de erro e para a execução
-        toast({
-          title: "Erro ao registrar",
-          description: "Este e-mail já foi utilizado.",
-          variant: "destructive",
-        });
-        return; // Para o fluxo, não prossegue com o registro
-      }
-    
-      // Payload para registrar a nova empresa
-      const payload = {
-        razao_social: data.razaoSocial,
-        nome_fantasia: data.nomeFantasia || "",
-        cnpj: data.cnpj,
-        email: data.email,
-        password: data.senha,
-        endereco: {
-          cep: data.cep,
-          logradouro: data.logradouro,
-          numero: data.numero,
-          complemento: data.complemento || "",
-          bairro: data.bairro,
-          cidade: data.cidade,
-          estado: data.estado,
-        },
-        horario: "5:20 - 10:30"
-      };
-     
-      // Registro da empresa
-      const response = await axios.post(url_api_fake_empresa, payload);
-    
-      // Exibe mensagem de sucesso
-      toast({
-        title: "Registro bem-sucedido!",
-        description: "A empresa foi registrada com sucesso.",
-        variant: "success",
-      });
-    
-      // Redireciona para a página de login após 3 segundos
-      setTimeout(() => {
-        router.push('/login');
-      }, 3000);
-    
-    } catch (error) {
-      console.error("Erro ao registrar a empresa:", error);
-    
-      // Exibe mensagem de erro
-      toast({
-        title: "Erro ao registrar",
-        description: "Houve um problema ao tentar registrar a empresa.",
-        variant: "destructive",
-      });
-    }
-  };
-   
 
   const validatePasswords = (value: string) => {
     const senha = getValues('senha');
@@ -203,18 +143,129 @@ const RegisterPage = () => {
     }
   };
 
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    const formatCNPJ = (cnpj: string) => cnpj.replace(/\D/g, '');
+
+    try {
+      const url_api_empresa = 'https://matafome-api.ashyfield-34914be1.brazilsouth.azurecontainerapps.io/api/empresas';
+
+      const payload = {
+        email: data.email,
+        password: data.senha,
+        razao_social: data.razaoSocial,
+        nome_fantasia: data.nomeFantasia,  // Agora obrigatório
+        cnpj: formatCNPJ(data.cnpj),
+        taxa_frete: 5,
+        telefone: data.telefone,
+        cep: data.cep,
+        logradouro: data.logradouro,
+        numero: data.numero,
+        bairro: data.bairro,
+        cidade: data.cidade,
+        estado: data.estado,
+        complemento: data.complemento || "",
+        categoria: data.categoria,
+        horario_abertura: data.horarioAbertura + ":00",  // Ajuste para enviar como string
+        horario_fechamento: data.horarioFechamento + ":00",  // Ajuste para enviar como string
+        img_capa: "teste.png",
+        img_perfil: "teste.png",
+        tempo_entrega: "00:30:00"  // Exemplo fixo, ajustar conforme necessário
+      };
+
+      const response = await axios.post(url_api_empresa, payload);
+
+      toast({
+        title: "Registro bem-sucedido!",
+        description: "A empresa foi registrada com sucesso.",
+        variant: "success",
+      });
+
+      setTimeout(() => {
+        router.push('/login');
+      }, 3000);
+
+    } catch (error) {
+      console.error("Erro ao registrar a empresa:", error);
+
+      toast({
+        title: "Erro ao registrar",
+        description: "Houve um problema ao tentar registrar a empresa.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleValidation = async () => {
+    const isValid = await trigger(); // Trigger validation manually
+    if (isValid) {
+      handleSubmit(onSubmit)(); // Submit the form if validation passes
+    } else {
+      const invalidFields = Object.keys(errors);
+      const invalidFieldNames = invalidFields.map((field) => {
+        switch (field) {
+          case 'razaoSocial':
+            return 'Razão Social';
+          case 'email':
+            return 'E-mail';
+          case 'cnpj':
+            return 'CNPJ';
+          case 'telefone':
+            return 'Telefone';
+          case 'senha':
+            return 'Senha';
+          case 'confirmarSenha':
+            return 'Confirmação de Senha';
+          case 'cep':
+            return 'CEP';
+          case 'logradouro':
+            return 'Logradouro';
+          case 'numero':
+            return 'Número';
+          case 'bairro':
+            return 'Bairro';
+          case 'cidade':
+            return 'Cidade';
+          case 'estado':
+            return 'Estado';
+          case 'horarioAbertura':
+            return 'Hora de Abertura';
+          case 'horarioFechamento':
+            return 'Hora de Fechamento';
+          case 'categoria':
+            return 'Categoria';
+          case 'nomeFantasia':  // Adicionando a validação de Nome Fantasia
+            return 'Nome Fantasia';
+          default:
+            return field;
+        }
+      });
+
+      if (invalidFields.length === 1) {
+        toast({
+          title: "Erro de Validação",
+          description: `O campo ${invalidFieldNames[0]} não foi preenchido.`,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Erro de Validação",
+          description: `Existem ${invalidFields.length} campos obrigatórios não preenchidos: ${invalidFieldNames.join(', ')}.`,
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   return (
     <div className="flex h-screen">
       <div className="flex-1">
         <img src="/img/pic-register.jpg" alt="Cadastro" className="w-full h-full object-cover" />
       </div>
       <div className="flex flex-col items-center justify-start flex-1 bg-white p-8 gap-4">
-        <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-3xl flex flex-col gap-2">
+        <form className="w-full max-w-3xl flex flex-col gap-2">
           <div className="mb-2">
             <h1 className="text-3xl font-bold text-center mt-2">Cadastro do Restaurante</h1>
           </div>
-
-          {/* Campos do formulário */}
 
           <div className="flex gap-4">
             <div className="flex-1">
@@ -222,21 +273,9 @@ const RegisterPage = () => {
               <Input
                 id="razao-social"
                 placeholder="Razão Social"
+                className={cx("w-full", { "bg-orange-100": errors.razaoSocial })}
                 {...register('razaoSocial', { required: 'Razão Social é obrigatória.' })}
-                className="w-full"
               />
-              {errors.razaoSocial && <p className="text-red-500 text-xs">{String(errors.razaoSocial.message)}</p>}
-            </div>
-            <div className="flex-1">
-              <Label htmlFor="email" className="text-sm font-semibold">E-mail</Label>
-              <Input
-                type="email"
-                id="email"
-                placeholder="E-mail"
-                {...register('email', { required: 'E-mail é obrigatório.' })}
-                className="w-full"
-              />
-              {errors.email && <p className="text-red-500 text-xs">{String(errors.email.message)}</p>}
             </div>
           </div>
 
@@ -246,19 +285,18 @@ const RegisterPage = () => {
               <Input
                 id="cnpj"
                 placeholder="99.999.999/9999-99"
+                className={cx("w-full", { "bg-orange-100": errors.cnpj })}
                 {...register('cnpj', { required: 'CNPJ é obrigatório.' })}
-                className="w-full"
                 ref={cnpjRef}
               />
-              {errors.cnpj && <p className="text-red-500 text-xs">{String(errors.cnpj.message)}</p>}
             </div>
             <div className="flex-1">
-              <Label htmlFor="nome-fantasia" className="text-sm font-semibold">Nome Fantasia (opcional)</Label>
+              <Label htmlFor="nome-fantasia" className="text-sm font-semibold">Nome Fantasia</Label>
               <Input
                 id="nome-fantasia"
                 placeholder="Nome Fantasia"
-                {...register('nomeFantasia')}
-                className="w-full"
+                className={cx("w-full", { "bg-orange-100": errors.nomeFantasia })}
+                {...register('nomeFantasia', { required: 'Nome Fantasia é obrigatório.' })}
               />
             </div>
           </div>
@@ -269,11 +307,10 @@ const RegisterPage = () => {
               <Input
                 id="telefone"
                 placeholder="(99) 99999-9999"
+                className={cx("w-full", { "bg-orange-100": errors.telefone })}
                 {...register('telefone', { required: 'Telefone é obrigatório.' })}
-                className="w-full"
                 ref={telefoneRef}
               />
-              {errors.telefone && <p className="text-red-500 text-xs">{String(errors.telefone.message)}</p>}
             </div>
             <div className="flex-1">
               <Label htmlFor="cep" className="text-sm font-semibold">CEP</Label>
@@ -281,8 +318,8 @@ const RegisterPage = () => {
                 <Input
                   id="cep"
                   placeholder="00000-000"
+                  className={cx("w-full", { "bg-orange-100": errors.cep })}
                   {...register('cep', { required: 'CEP é obrigatório.' })}
-                  className="w-full"
                   ref={cepRef}
                 />
                 <Button
@@ -294,7 +331,6 @@ const RegisterPage = () => {
                   <FaSearch />
                 </Button>
               </div>
-              {errors.cep && <p className="text-red-500 text-xs">{String(errors.cep.message)}</p>}
             </div>
           </div>
 
@@ -304,20 +340,18 @@ const RegisterPage = () => {
               <Input
                 id="logradouro"
                 placeholder="Logradouro"
+                className={cx("w-full", { "bg-orange-100": errors.logradouro })}
                 {...register('logradouro', { required: 'Logradouro é obrigatório.' })}
-                className="w-full"
               />
-              {errors.logradouro && <p className="text-red-500 text-xs">{String(errors.logradouro.message)}</p>}
             </div>
             <div className="flex-1">
               <Label htmlFor="numero" className="text-sm font-semibold">Número</Label>
               <Input
                 id="numero"
                 placeholder="Número"
+                className={cx("w-full", { "bg-orange-100": errors.numero })}
                 {...register('numero', { required: 'Número é obrigatório.' })}
-                className="w-full"
               />
-              {errors.numero && <p className="text-red-500 text-xs">{String(errors.numero.message)}</p>}
             </div>
           </div>
 
@@ -327,8 +361,8 @@ const RegisterPage = () => {
               <Input
                 id="complemento"
                 placeholder="Complemento"
+                className={cx("w-full", { "bg-orange-100": errors.complemento })}
                 {...register('complemento')}
-                className="w-full"
               />
             </div>
             <div className="flex-1">
@@ -336,10 +370,9 @@ const RegisterPage = () => {
               <Input
                 id="bairro"
                 placeholder="Bairro"
+                className={cx("w-full", { "bg-orange-100": errors.bairro })}
                 {...register('bairro', { required: 'Bairro é obrigatório.' })}
-                className="w-full"
               />
-              {errors.bairro && <p className="text-red-500 text-xs">{String(errors.bairro.message)}</p>}
             </div>
           </div>
 
@@ -349,17 +382,16 @@ const RegisterPage = () => {
               <Input
                 id="cidade"
                 placeholder="Cidade"
+                className={cx("w-full", { "bg-orange-100": errors.cidade })}
                 {...register('cidade', { required: 'Cidade é obrigatória.' })}
-                className="w-full"
               />
-              {errors.cidade && <p className="text-red-500 text-xs">{String(errors.cidade.message)}</p>}
             </div>
             <div className="flex-1">
               <Label htmlFor="estado" className="text-sm font-semibold">Estado</Label>
               <select
                 id="estado"
+                className={cx("w-full border rounded px-3 py-2 shadow-md se", { "bg-orange-100": errors.estado })}
                 {...register('estado', { required: 'Estado é obrigatório.' })}
-                className="w-full border rounded px-3 py-2 shadow-md se"
               >
                 <option value="">Selecione</option>
                 {states.map(state => (
@@ -368,21 +400,66 @@ const RegisterPage = () => {
                   </option>
                 ))}
               </select>
-              {errors.estado && <p className="text-red-500 text-xs">{String(errors.estado.message)}</p>}
+            </div>
+          </div>
+
+          <div className="flex space-x-4">
+            <div className="flex-2">
+              <Label htmlFor="opening-time" className="flex mb-2">Abertura</Label>
+              <Input
+                id="opening-time"
+                type="time"
+                className={cx({ "bg-orange-100": errors.horarioAbertura })}
+                {...register('horarioAbertura', { required: 'Hora de Abertura é obrigatória.' })}
+              />
+            </div>
+            <div className="flex-2">
+              <Label htmlFor="closing-time" className="flex mb-2">Fechamento</Label>
+              <Input
+                id="closing-time"
+                type="time"
+                className={cx({ "bg-orange-100": errors.horarioFechamento })}
+                {...register('horarioFechamento', { required: 'Hora de Fechamento é obrigatória.' })}
+              />
+            </div>
+            <div className="flex-1">
+              <Label htmlFor="categoria" className="flex mb-2">Categoria</Label>
+              <select
+                id="categoria"
+                className={cx("w-full border rounded px-3 py-2 shadow-md", { "bg-orange-100": errors.categoria })}
+                {...register('categoria', { required: 'Categoria é obrigatória.' })}
+              >
+                <option value="">Selecione uma categoria</option>
+                {categorias.map(categoria => (
+                  <option key={categoria.value} value={categoria.value}>
+                    {categoria.label}
+                  </option>
+                ))}
+              </select>
+              {errors.categoria && <p className="text-red-500 text-xs">{String(errors.categoria.message)}</p>}
             </div>
           </div>
 
           <div className="flex gap-4">
+            <div className="flex-2">
+              <Label htmlFor="email" className="text-sm font-semibold">E-mail</Label>
+              <Input
+                type="email"
+                id="email"
+                placeholder="E-mail"
+                className={cx("w-full", { "bg-orange-100": errors.email })}
+                {...register('email', { required: 'E-mail é obrigatório.' })}
+              />
+            </div>
             <div className="flex-1">
               <Label htmlFor="senha" className="text-sm font-semibold">Senha</Label>
               <Input
                 type="password"
                 id="senha"
-                placeholder="Senha"
+                placeholder="Min. 8 caract."
+                className={cx("w-full", { "bg-orange-100": errors.senha })}
                 {...register('senha', { required: 'Senha é obrigatória.' })}
-                className="w-full"
               />
-              {errors.senha && <p className="text-red-500 text-xs">{String(errors.senha.message)}</p>}
             </div>
             <div className="flex-1">
               <Label htmlFor="confirmar-senha" className="text-sm font-semibold">Confirmar Senha</Label>
@@ -390,10 +467,9 @@ const RegisterPage = () => {
                 type="password"
                 id="confirmar-senha"
                 placeholder="Confirmar Senha"
-                {...register('confirmarSenha', { required: 'Confirmação de Senha é obrigatória.', validate: validatePasswords })}
-                className="w-full"
+                className={cx("w-full", { "bg-orange-100": errors.confirmarSenha })}
+                {...register('confirmarSenha', { required: 'Confirmação de Senha não preenchido ou As senhas não estão iguais.', validate: validatePasswords })}
               />
-              {errors.confirmarSenha && <p className="text-red-500 text-xs">{String(errors.confirmarSenha.message)}</p>}
             </div>
           </div>
 
@@ -405,7 +481,7 @@ const RegisterPage = () => {
             >
               Voltar para o Login
             </Button>
-            <Button type="submit" variant="orange" className='w-full'>Registrar</Button>
+            <Button type="button" variant="orange" className='w-full' onClick={handleValidation}>Registrar</Button>
           </div>
         </form>
       </div>

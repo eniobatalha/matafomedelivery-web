@@ -83,7 +83,7 @@ const LoginPage = () => {
                 </form>
             </div>
             <div className="flex-1">
-                <Image src="/img/pic-login.jpg" alt="Login" className="w-full h-full object-cover" />
+                <img src="/img/pic-login.jpg" alt="Login" className="w-full h-full object-cover" />
             </div>
         </div>
     );
