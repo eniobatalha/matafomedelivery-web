@@ -10,13 +10,15 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from 'next/navigation';
 import { FaSearch } from 'react-icons/fa';
 import cx from 'classnames';
+import Cookies from 'js-cookie';
+
 
 type FormValues = {
   razaoSocial: string;
   email: string;
   cnpj: string;
   telefone: string;
-  nomeFantasia: string;  // Agora obrigatório
+  nomeFantasia: string; // Agora obrigatório
   senha: string;
   confirmarSenha: string;
   cep: string;
@@ -115,7 +117,11 @@ const RegisterPage = () => {
         setValue('cep', cepRef.current?.value || '');
       });
     }
-  }, [setValue]);
+    const token = Cookies.get('token');
+    if (token) {
+      router.push('/dashboard');
+    }
+  }, [router, setValue]);
 
   const validatePasswords = (value: string) => {
     const senha = getValues('senha');
@@ -153,7 +159,7 @@ const RegisterPage = () => {
         email: data.email,
         password: data.senha,
         razao_social: data.razaoSocial,
-        nome_fantasia: data.nomeFantasia,  // Agora obrigatório
+        nome_fantasia: data.nomeFantasia, // Agora obrigatório
         cnpj: formatCNPJ(data.cnpj),
         taxa_frete: 5,
         telefone: data.telefone,
@@ -165,11 +171,11 @@ const RegisterPage = () => {
         estado: data.estado,
         complemento: data.complemento || "",
         categoria: data.categoria,
-        horario_abertura: data.horarioAbertura + ":00",  // Ajuste para enviar como string
-        horario_fechamento: data.horarioFechamento + ":00",  // Ajuste para enviar como string
+        horario_abertura: data.horarioAbertura + ":00", // Ajuste para enviar como string
+        horario_fechamento: data.horarioFechamento + ":00", // Ajuste para enviar como string
         img_capa: "teste.png",
         img_perfil: "teste.png",
-        tempo_entrega: "00:30:00"  // Exemplo fixo, ajustar conforme necessário
+        tempo_entrega: "00:30:00" // Exemplo fixo, ajustar conforme necessário
       };
 
       const response = await axios.post(url_api_empresa, payload);
@@ -233,7 +239,7 @@ const RegisterPage = () => {
             return 'Hora de Fechamento';
           case 'categoria':
             return 'Categoria';
-          case 'nomeFantasia':  // Adicionando a validação de Nome Fantasia
+          case 'nomeFantasia': // Adicionando a validação de Nome Fantasia
             return 'Nome Fantasia';
           default:
             return field;

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,6 +12,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import Cookies from 'js-cookie';
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
@@ -22,6 +23,14 @@ const ForgotPasswordPage = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   const router = useRouter();
+
+  useEffect(() => {
+    // Verifica se o token já está presente, se sim, redireciona para o dashboard
+    const token = Cookies.get('token');
+    if (token) {
+      router.push('/dashboard');
+    }
+  }, [router]);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();

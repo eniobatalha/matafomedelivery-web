@@ -1,24 +1,34 @@
 "use client";
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Atualize o import para usar o hook correto
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from "@/components/ui/button";
+import axios from 'axios';
+import { useToast } from "@/components/ui/use-toast";
+import Cookies from 'js-cookie';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
-    const router = useRouter(); // Utilize o useRouter do next/navigation
+    const { toast } = useToast();
+    const router = useRouter();
 
-    const handleSubmit = (event: React.FormEvent) => {
+    useEffect(() => {
+        // Verifica se o token já está presente, se sim, redireciona para o dashboard
+        const token = Cookies.get('token');
+        if (token) {
+            router.push('/dashboard');
+        }
+    }, [router]);
+
+    const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
 
-        // Reset errors
         setErrors({});
 
-        // Basic validation
         const newErrors: { email?: string; password?: string } = {};
         if (!email) newErrors.email = 'O email é obrigatório.';
         if (!password) newErrors.password = 'A senha é obrigatória.';
@@ -28,8 +38,29 @@ const LoginPage = () => {
             return;
         }
 
-        // Handle form submission here
-        console.log('Form submitted:', { email, password });
+        try {
+            const response = await axios.post('https://matafome-api.ashyfield-34914be1.brazilsouth.azurecontainerapps.io/api/auth', {
+                username: email,
+                password: password,
+            });
+
+            const { token, EmpresaData } = response.data;
+
+            // Armazena o token no cookie (expira em 1 dia)
+            Cookies.set('token', token, { expires: 1 });
+
+            // Armazena os dados da empresa no localStorage
+            localStorage.setItem('empresaData', JSON.stringify(EmpresaData));
+
+            // Redireciona para o dashboard
+            router.push('/dashboard');
+        } catch (error) {
+            toast({
+                title: "Erro ao entrar",
+                description: "E-mail ou senha inválidos. Por favor, tente novamente.",
+                variant: "destructive",
+            });
+        }
     };
 
     return (
@@ -43,7 +74,6 @@ const LoginPage = () => {
                 />
                 <form onSubmit={handleSubmit} className="w-full max-w-sm flex flex-col gap-4">
                     <div>
-
                         <Input
                             type="email"
                             id="email"
@@ -64,7 +94,6 @@ const LoginPage = () => {
                             className="w-full"
                         />
                         {errors.password && <p className="text-orange-500 text-sm">{errors.password}</p>}
-
                     </div>
                     <div className="flex justify-end -mt-5">
                         <Button
@@ -75,9 +104,8 @@ const LoginPage = () => {
                             Esqueci a Senha
                         </Button>
                     </div>
-                    <Button variant="orange" type="submit" className="w-full" onClick={() => router.push('/dashboard')}>Acessar</Button>
-                    <Button variant="orangeLink" className="w-full -mt-5" type="button" onClick={() => router.push('/register')}
-                    >
+                    <Button variant="orange" type="submit" className="w-full">Acessar</Button>
+                    <Button variant="orangeLink" className="w-full -mt-5" type="button" onClick={() => router.push('/register')}>
                         Não tenho uma conta. Criar agora!
                     </Button>
                 </form>
