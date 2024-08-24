@@ -244,7 +244,7 @@ const pedidos = () => {
                                     <CardConteudoProduto
                                         id="4"
                                         name="Cheeseburger"
-                                        image="/img/produtos/cheeseburguer1.jpg"
+                                        image="/img/produtos/cheeseburguer1.png"
                                         description="Cheeseburger"
                                         quantity={2}
                                         unitPrice="18,00"
@@ -253,7 +253,7 @@ const pedidos = () => {
                                     <CardConteudoProduto
                                         id="5"
                                         name="Batata Frita"
-                                        image="/img/produtos/fritas.jpg"
+                                        image="/img/produtos/fritas.png"
                                         description="Batata Frita"
                                         quantity={1}
                                         unitPrice="12,00"
@@ -313,7 +313,7 @@ const pedidos = () => {
                                     <CardConteudoProduto
                                         id = "7"
                                         name="Refrigerante Lata"
-                                        image="/img/produtos/refrilata.jpg"
+                                        image="/img/produtos/refrilata.png"
                                         description="Refrigerante Lata"
                                         quantity={3}
                                         unitPrice="5,00"
@@ -475,7 +475,7 @@ const pedidos = () => {
                                     <CardConteudoProduto
                                         id = "11"
                                         name="Suco de Laranja"
-                                        image="/img/produtos/suco.jpg"
+                                        image="/img/produtos/suco.png"
                                         description="Suco de Laranja"
                                         quantity={1}
                                         unitPrice="8,00"
