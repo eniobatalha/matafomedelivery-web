@@ -447,7 +447,7 @@ const RegisterPage = () => {
           </div>
 
           <div className="flex gap-4">
-            <div className="flex-2">
+            <div className="flex-1">
               <Label htmlFor="email" className="text-sm font-semibold">E-mail</Label>
               <Input
                 type="email"
@@ -457,7 +457,7 @@ const RegisterPage = () => {
                 {...register('email', { required: 'E-mail é obrigatório.' })}
               />
             </div>
-            <div className="flex-1">
+            <div className="flex-2">
               <Label htmlFor="senha" className="text-sm font-semibold">Senha</Label>
               <Input
                 type="password"
@@ -467,7 +467,7 @@ const RegisterPage = () => {
                 {...register('senha', { required: 'Senha é obrigatória.' })}
               />
             </div>
-            <div className="flex-1">
+            <div className="flex-2">
               <Label htmlFor="confirmar-senha" className="text-sm font-semibold">Confirmar Senha</Label>
               <Input
                 type="password"

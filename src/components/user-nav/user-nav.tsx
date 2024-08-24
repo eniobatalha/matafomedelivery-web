@@ -60,14 +60,14 @@ export function UserNav() {
     const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
     
     if (empresaData && empresaData.endereco) {
-      setRazaoSocial(empresaData.razao_social || '');
-      setNomeFantasia(empresaData.nome_fantasia || '');
-      setEmail(localStorage.getItem('username') || '');
+      setRazaoSocial(empresaData.razaoSocial || '');
+      setNomeFantasia(empresaData.nomeFantasia || '');
+      setEmail(empresaData.usuario.username || '');
       setTelefone(empresaData.telefone || '');
       setEndereco(`${empresaData.endereco.logradouro}, ${empresaData.endereco.numero}, ${empresaData.endereco.bairro}, ${empresaData.endereco.cidade}, ${empresaData.endereco.estado}, ${empresaData.endereco.cep}`);
       setCategoria(empresaData.categoria || '');
-      setHorarioAbertura(empresaData.horario_abertura || '');
-      setHorarioFechamento(empresaData.horario_fechamento || '');
+      setHorarioAbertura(empresaData.horarioAbertura || '');
+      setHorarioFechamento(empresaData.horarioFechamento || '');
     }
   }, [router]); // Executa apenas uma vez ao montar o componente
 

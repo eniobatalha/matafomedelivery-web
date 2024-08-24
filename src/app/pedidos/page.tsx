@@ -34,7 +34,7 @@ const pedidos = () => {
     return (
         <>
             <MenuCompleto />
-            
+
             <div>
                 <div>
                     <div className="flex justify-between p-8">
@@ -58,6 +58,8 @@ const pedidos = () => {
                                 </DialogHeader>
                                 <div className="grid gap-4 py-4 max-h-96 overflow-y-auto pr-2">
                                     <CardConteudoProduto
+                                        id="1"
+                                        name="Black Dog Cheddar Bacon"
                                         image="/img/produtos/prod1.jpg"
                                         description="Black Dog Cheddar Bacon"
                                         quantity={3}
@@ -65,6 +67,8 @@ const pedidos = () => {
                                         totalPrice="68,70"
                                         additions={['Pão brioche', 'Queijo gorgonzola', 'Maionese picante', 'Cheddar']} />
                                     <CardConteudoProduto
+                                        id="2"
+                                        name="Hot Dog Maximus Fomão 2.0"
                                         image="/img/produtos/prod2.jpg"
                                         description="Hot Dog Maximus Fomão 2.0"
                                         quantity={2}
@@ -72,6 +76,8 @@ const pedidos = () => {
                                         totalPrice="40,00"
                                         additions={['Batata palha', 'Molho especial']} />
                                     <CardConteudoProduto
+                                        id="3"
+                                        name="Coca Cola 2L"
                                         image="/img/produtos/prod3.jpg"
                                         description="Coca Cola 2L"
                                         quantity={1}
@@ -79,6 +85,8 @@ const pedidos = () => {
                                         totalPrice="10,00"
                                         additions={[]} />
                                     <CardConteudoProduto
+                                        id="4"
+                                        name="Cheeseburger"
                                         image="/img/produtos/prod10.jpg"
                                         description="Sandwich de Frango"
                                         quantity={2}
@@ -86,6 +94,8 @@ const pedidos = () => {
                                         totalPrice="30,00"
                                         additions={['Maionese', 'Alface', 'Tomate']} />
                                     <CardConteudoProduto
+                                        id="5"
+                                        name="Batata Frita"
                                         image="/img/produtos/prod11.jpg"
                                         description="Suco de Laranja"
                                         quantity={1}
@@ -163,6 +173,8 @@ const pedidos = () => {
                                 </CardHeader>
                                 <CardContent className="pb-2 mb-4 mt-4 flex-1">
                                     <CardConteudoProduto
+                                        id="1"
+                                        name="Black Dog Cheddar Bacon"
                                         image="/img/produtos/prod1.jpg"
                                         description="Black Dog Cheddar Bacon"
                                         quantity={3}
@@ -170,6 +182,8 @@ const pedidos = () => {
                                         totalPrice="68,70"
                                         additions={['Pão brioche', 'Queijo gorgonzola', 'Maionese picante', 'Cheddar']} />
                                     <CardConteudoProduto
+                                        id="2"
+                                        name="Hot Dog Maximus Fomão"
                                         image="/img/produtos/prod2.jpg"
                                         description="Hot Dog Maximus Fomão"
                                         quantity={2}
@@ -177,6 +191,8 @@ const pedidos = () => {
                                         totalPrice="40,00"
                                         additions={['Batata palha', 'Molho especial']} />
                                     <CardConteudoProduto
+                                        id="3"
+                                        name="Coca Cola 2L"
                                         image="/img/produtos/prod3.jpg"
                                         description="Coca Cola 2L"
                                         quantity={1}
@@ -226,6 +242,8 @@ const pedidos = () => {
                                 </CardHeader>
                                 <CardContent className="pb-2 mb-4 mt-4 flex-1">
                                     <CardConteudoProduto
+                                        id="4"
+                                        name="Cheeseburger"
                                         image="/img/produtos/prod4.jpg"
                                         description="Cheeseburger"
                                         quantity={2}
@@ -233,6 +251,8 @@ const pedidos = () => {
                                         totalPrice="36,00"
                                         additions={['Cebola caramelizada', 'Alface', 'Tomate']} />
                                     <CardConteudoProduto
+                                        id="5"
+                                        name="Batata Frita"
                                         image="/img/produtos/prod5.jpg"
                                         description="Batata Frita"
                                         quantity={1}
@@ -282,6 +302,8 @@ const pedidos = () => {
                                 </CardHeader>
                                 <CardContent className="pb-2 mb-4 mt-4 flex-1">
                                     <CardConteudoProduto
+                                        id="6"
+                                        name="Pizza Margherita"
                                         image="/img/produtos/prod6.jpg"
                                         description="Pizza Margherita"
                                         quantity={1}
@@ -289,6 +311,8 @@ const pedidos = () => {
                                         totalPrice="30,00"
                                         additions={['Manjericão', 'Mussarela']} />
                                     <CardConteudoProduto
+                                        id = "7"
+                                        name="Refrigerante Lata"
                                         image="/img/produtos/prod7.jpg"
                                         description="Refrigerante Lata"
                                         quantity={3}
@@ -338,6 +362,8 @@ const pedidos = () => {
                                 </CardHeader>
                                 <CardContent className="pb-2 mb-4 mt-4 flex-1">
                                     <CardConteudoProduto
+                                        id = "8"
+                                        name="Spaghetti Bolognese"
                                         image="/img/produtos/prod8.jpg"
                                         description="Spaghetti Bolognese"
                                         quantity={2}
@@ -387,6 +413,8 @@ const pedidos = () => {
                                 </CardHeader>
                                 <CardContent className="pb-2 mb-4 mt-4 flex-1">
                                     <CardConteudoProduto
+                                        id = "9"
+                                        name="Coxinha"
                                         image="/img/produtos/prod9.jpg"
                                         description="Coxinha"
                                         quantity={6}
@@ -436,6 +464,8 @@ const pedidos = () => {
                                 </CardHeader>
                                 <CardContent className="pb-2 mb-4 mt-4 flex-1">
                                     <CardConteudoProduto
+                                        id = "10"
+                                        name="Sandwich de Frango"
                                         image="/img/produtos/prod10.jpg"
                                         description="Sandwich de Frango"
                                         quantity={2}
@@ -443,6 +473,8 @@ const pedidos = () => {
                                         totalPrice="30,00"
                                         additions={['Maionese', 'Alface', 'Tomate']} />
                                     <CardConteudoProduto
+                                        id = "11"
+                                        name="Suco de Laranja"
                                         image="/img/produtos/prod11.jpg"
                                         description="Suco de Laranja"
                                         quantity={1}

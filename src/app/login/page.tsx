@@ -39,7 +39,7 @@ const LoginPage = () => {
         }
 
         try {
-            const response = await axios.post('https://matafome-api.ashyfield-34914be1.brazilsouth.azurecontainerapps.io/api/auth', {
+            const response = await axios.post('https://matafome-api.ashyfield-34914be1.brazilsouth.azurecontainerapps.io/api/login', {
                 username: email,
                 password: password,
             });
@@ -62,6 +62,7 @@ const LoginPage = () => {
             });
         }
     };
+
 
     return (
         <div className="flex h-screen">
