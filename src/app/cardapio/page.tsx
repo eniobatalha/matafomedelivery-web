@@ -7,11 +7,11 @@ import MenuCompleto from '@/components/menu-completo/menu-completo';
 import { FaPlus } from "react-icons/fa6";
 import { Footer } from '@/components/footer/footer';
 import { Produto } from '@/types/types';
-import DialogAddCategory from '@/components/dialog-add-categoria/dialog-add-categoria';  // Importe o novo componente de diálogo
+import DialogAddCategory from '@/components/dialog-add-categoria/dialog-add-categoria';
 
 interface Categoria {
-    id: string;
-    categoriaNome: string;
+    id: number;
+    nomePrateleira: string;
     produtos: Produto[];
 }
 
@@ -22,8 +22,11 @@ const CardapioPage: React.FC = () => {
     useEffect(() => {
         const fetchCategorias = async () => {
             try {
-                const response = await axios.get('http://localhost:3001/categoria');
-                setCategorias(response.data);
+                const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
+                const empresaId = empresaData.id;
+
+                const response = await axios.get(`https://matafome-api.ashyfield-34914be1.brazilsouth.azurecontainerapps.io/api/empresas/prateleiras/${empresaId}`);
+                setCategorias(response.data.prateleiras);
             } catch (error) {
                 console.error('Erro ao buscar categorias:', error);
             }
@@ -42,8 +45,10 @@ const CardapioPage: React.FC = () => {
 
     const handleAddCategory = async () => {
         try {
-            const response = await axios.get('http://localhost:3001/categoria');
-            setCategorias(response.data);
+            const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
+            const empresaId = empresaData.id;
+            const response = await axios.get(`https://matafome-api.ashyfield-34914be1.brazilsouth.azurecontainerapps.io/api/empresas/prateleiras/${empresaId}`);
+            setCategorias(response.data.prateleiras);
         } catch (error) {
             console.error('Erro ao atualizar categorias:', error);
         }
@@ -64,16 +69,21 @@ const CardapioPage: React.FC = () => {
                         Adicionar Categoria
                     </Button>
                 </div>
-                {categorias.map((categoria) => (
-                    <CategoriaCard
-                    key={categoria.id}
-                    categoriaNome={categoria.categoriaNome}
-                    produtos={categoria.produtos}
-                    onProductEdit={handleProductEdit}
-                    onProductDelete={handleProductDelete} onCategoryUpdated={function (): void {
-                      throw new Error('Function not implemented.');
-                    } } categoriaId={''}                    />
-                ))}
+                {categorias.length === 0 ? (
+                    <p>Nenhuma categoria encontrada.</p>
+                ) : (
+                    categorias.map((categoria) => (
+                        <CategoriaCard
+                            key={categoria.id}
+                            categoriaId={categoria.id.toString()}
+                            categoriaNome={categoria.nomePrateleira}
+                            produtos={categoria.produtos}
+                            onProductEdit={handleProductEdit}
+                            onProductDelete={handleProductDelete}
+                            onCategoryUpdated={handleAddCategory}
+                        />
+                    ))
+                )}
                 {isDialogOpen && (
                     <DialogAddCategory
                         onClose={() => setIsDialogOpen(false)}

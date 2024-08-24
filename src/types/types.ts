@@ -1,9 +1,9 @@
 // types.ts
 export interface Produto {
-    id: string;
-    image: string;
-    description: string;
-    unitPrice: string;
-    additions: any[];
-  }
-  
+  id: string;
+  nome: string;
+  descricao: string;
+  urlImagem: string;
+  preco: string;
+  additions: any[];
+}

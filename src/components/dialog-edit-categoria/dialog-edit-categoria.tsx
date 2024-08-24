@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button } from "@/components/ui/button"; // Importe componentes de UI conforme sua biblioteca
+import { Button } from "@/components/ui/button";
 import axios from 'axios';
 import { Input } from '../ui/input';
 
@@ -15,21 +15,22 @@ const DialogEditCategory: React.FC<DialogEditCategoryProps> = ({ categoriaId, ca
 
     const handleEditCategory = async () => {
         try {
-            // Verifique se o ID da categoria é válido
-            if (!categoriaId) {
-                console.error('ID da categoria inválido');
+            const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
+            const empresaId = empresaData.id;
+
+            if (!categoriaId || !empresaId) {
+                console.error('ID da categoria ou empresa inválido');
                 return;
             }
 
-            // Verifique a URL do endpoint
-            const url = `http://localhost:3001/categoria/${categoriaId}`;
+            const url = `https://matafome-api.ashyfield-34914be1.brazilsouth.azurecontainerapps.io/api/empresas/${empresaId}/prateleiras/${categoriaId}`;
 
-            // Realize a requisição PUT
             await axios.put(url, {
-                nome: categoriaNomeEdit,
+                id: Number(categoriaId),
+                nomePrateleira: categoriaNomeEdit,
+                produtos: [], // Supondo que os produtos sejam atualizados separadamente
             });
 
-            // Atualize a lista de categorias e feche o diálogo
             onCategoryUpdated();
             onClose();
         } catch (error) {

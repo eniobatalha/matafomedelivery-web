@@ -31,9 +31,10 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
     const [selectedProduct, setSelectedProduct] = useState<Produto | null>(null);
     const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
     const [newProduct, setNewProduct] = useState({
-        image: '',
-        description: '',
-        unitPrice: '',
+        urlImagem: '',
+        nome: '',
+        descricao: '',
+        preco: '',
         additions: [''],
     });
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -57,9 +58,10 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
     const handleCloseAddDialog = () => {
         setIsAddDialogOpen(false);
         setNewProduct({
-            image: '',
-            description: '',
-            unitPrice: '',
+            urlImagem: '',
+            nome: '',
+            descricao: '',
+            preco: '',
             additions: [''],
         });
     };
@@ -94,7 +96,7 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
             reader.onload = () => {
                 setNewProduct({
                     ...newProduct,
-                    image: reader.result as string,
+                    urlImagem: reader.result as string,
                 });
             };
             reader.readAsDataURL(file);
@@ -147,10 +149,11 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
                 {produtos.map((produto, index) => (
                     <div key={index} className="flex items-center justify-between mb-2 p-2 border-b border-gray-300">
                         <div className="flex items-center">
-                            <img src={produto.image} alt={produto.description} className="w-24 h-24 object-cover mr-4" />
+                            <img src={produto.urlImagem} alt={produto.descricao} className="w-24 h-24 object-cover mr-4" />
                             <div className="flex flex-col items-start">
-                                <p className="font-bold">{produto.description}</p>
-                                <p className="text-sm text-gray-600">R${produto.unitPrice}</p>
+                                <p className="font-bold">{produto.nome}</p>
+                                <p className="text-sm text-gray-600">{produto.descricao}</p>
+                                <p className="text-sm text-gray-600">R${produto.preco}</p>
                                 <Button onClick={() => handleOpenDetailDialog(produto)} variant="outline">Detalhes</Button>
                             </div>
                         </div>
@@ -197,14 +200,20 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
                             className="mb-4"
                         />
                         <Input
-                            value={newProduct.description}
-                            onChange={(e) => handleChange(e, 'description')}
+                            value={newProduct.nome}
+                            onChange={(e) => handleChange(e, 'nome')}
+                            placeholder="Nome do Produto"
+                            className="mb-4"
+                        />
+                        <Input
+                            value={newProduct.descricao}
+                            onChange={(e) => handleChange(e, 'descricao')}
                             placeholder="Descrição do Produto"
                             className="mb-4"
                         />
                         <Input
-                            value={newProduct.unitPrice}
-                            onChange={(e) => handleChange(e, 'unitPrice')}
+                            value={newProduct.preco}
+                            onChange={(e) => handleChange(e, 'preco')}
                             placeholder="Preço Unitário"
                             className="mb-4"
                         />
@@ -231,9 +240,10 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
                 <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg">
                         <h3 className="text-lg font-semibold mb-4">Detalhes do Produto</h3>
-                        <img src={selectedProduct.image} alt={selectedProduct.description} className="w-48 h-48 object-cover mb-4" />
-                        <p className="text-lg font-bold">{selectedProduct.description}</p>
-                        <p className="text-sm text-gray-600">Preço Unitário: R${selectedProduct.unitPrice}</p>
+                        <img src={selectedProduct.urlImagem} alt={selectedProduct.descricao} className="w-48 h-48 object-cover mb-4" />
+                        <p className="text-lg font-bold">{selectedProduct.nome}</p>
+                        <p className="text-sm text-gray-600">{selectedProduct.descricao}</p>
+                        <p className="text-sm text-gray-600">Preço Unitário: R${selectedProduct.preco}</p>
                         <Button onClick={handleCloseDetailDialog} variant="destructive" className="mt-4">Fechar</Button>
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button } from "@/components/ui/button"; // Importe componentes de UI conforme sua biblioteca
+import { Button } from "@/components/ui/button";
 import axios from 'axios';
 import { Input } from '../ui/input';
 
@@ -13,9 +13,11 @@ const DialogAddCategory: React.FC<DialogAddCategoryProps> = ({ onClose, onCatego
 
     const handleAddCategory = async () => {
         try {
-            await axios.post('http://localhost:3001/categoria', {
-                categoriaNome,
-                produtos: []  // Inicie com uma lista vazia de produtos
+            const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
+            const empresaId = empresaData.id;
+
+            await axios.post(`https://matafome-api.ashyfield-34914be1.brazilsouth.azurecontainerapps.io/api/empresas/${empresaId}/prateleiras`, {
+                nomePrateleira: categoriaNome,
             });
             onCategoryAdded();  // Atualize a lista de categorias
             onClose();  // Feche o diálogo

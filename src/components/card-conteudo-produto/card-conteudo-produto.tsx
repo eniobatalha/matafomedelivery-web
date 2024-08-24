@@ -1,26 +1,31 @@
 import React from 'react';
 
 interface ProductProps {
-    image: string;
-    description: string;
-    quantity: number;
+    id: string;
+    name: string;
     unitPrice: string;
+    description: string;
+    image: string;
+    quantity: number; 
     totalPrice: string;
     additions: string[];
 }
 
 const CardConteudoProduto: React.FC<ProductProps> = ({
-    image,
-    description,
-    quantity,
+    id,
+    name,
     unitPrice,
+    description,
+    image,
+    quantity,
     totalPrice,
     additions,
 }) => (
     <div className="flex gap-4 mb-4">
         <img src={image} alt={description} className="w-12 h-12 rounded" />
         <div className="flex-grow">
-            <div className="flex justify-between items-center">
+            <div id={id} className="flex justify-between items-center">
+                <div className="text-base font-semibold">{name}</div>
                 <div className="text-base font-semibold">{description}</div>
                 <div className="text-base font-semibold">{totalPrice}</div>
             </div>

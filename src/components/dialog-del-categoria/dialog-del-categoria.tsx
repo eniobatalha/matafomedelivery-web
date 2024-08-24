@@ -12,7 +12,15 @@ interface DialogDeleteCategoryProps {
 const DialogDeleteCategory: React.FC<DialogDeleteCategoryProps> = ({ categoriaId, categoriaNome, onClose, onCategoryDeleted }) => {
     const handleDeleteCategory = async () => {
         try {
-            await axios.delete(`http://localhost:3001/categoria/${categoriaId}`);
+            const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
+            const empresaId = empresaData.id;
+
+            if (!categoriaId || !empresaId) {
+                console.error('ID da categoria ou empresa inválido');
+                return;
+            }
+
+            await axios.delete(`https://matafome-api.ashyfield-34914be1.brazilsouth.azurecontainerapps.io/api/empresas/${empresaId}/prateleiras/${categoriaId}`);
             onCategoryDeleted();  // Atualize a lista de categorias
             onClose();  // Feche o diálogo
         } catch (error) {
