@@ -77,4 +77,7 @@
     background-color: #fb923c; /* Tailwind CSS orange-500 */
     color: #ffffff; /* white */
   }
+  .dialog-overlay {
+    z-index: 1000; /* Um valor alto para garantir que os diálogos fiquem no topo */
+  }
 }

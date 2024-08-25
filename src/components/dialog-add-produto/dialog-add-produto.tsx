@@ -93,7 +93,7 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({ onClose, onProductA
     };
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 dialog-overlay">
             <div className="bg-white p-6 rounded-lg shadow-lg flex w-2/3"> {/* Aumenta o tamanho do dialog para 2/3 da tela */}
                 <div className="w-1/2 pr-4"> {/* Metade esquerda para o formulário */}
                     <h3 className="text-lg font-semibold mb-4">{productToEdit ? "Editar Produto" : "Adicionar Produto"}</h3>

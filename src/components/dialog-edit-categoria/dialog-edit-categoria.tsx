@@ -39,7 +39,7 @@ const DialogEditCategory: React.FC<DialogEditCategoryProps> = ({ categoriaId, ca
     };
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 dialog-overlay">
             <div className="bg-white p-6 rounded-lg shadow-lg">
                 <h3 className="text-lg font-semibold mb-4">Editar Categoria</h3>
                 <Input
