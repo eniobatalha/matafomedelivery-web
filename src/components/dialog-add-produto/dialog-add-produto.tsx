@@ -46,6 +46,14 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({ onClose, onProductA
         const file = e.target.files ? e.target.files[0] : null;
         if (file) {
             setImageFile(file);
+            const reader = new FileReader();
+            reader.onload = () => {
+                setNewProduct({
+                    ...newProduct,
+                    urlImagem: reader.result as string,
+                });
+            };
+            reader.readAsDataURL(file);
         }
     };
 
@@ -86,42 +94,59 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({ onClose, onProductA
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg">
-                <h3 className="text-lg font-semibold mb-4">{productToEdit ? "Editar Produto" : "Adicionar Produto"}</h3>
-                <Label>Imagem</Label>
-                <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="mb-4"
-                />
-                <Label>Nome</Label>
-                <Input
-                    value={newProduct.nome}
-                    onChange={(e) => handleChange(e, 'nome')}
-                    placeholder="Ex: Pizza de Calabresa"
-                    className="mb-4"
-                />
-                <Label>Descrição</Label>
-                <Input
-                    value={newProduct.descricao}
-                    onChange={(e) => handleChange(e, 'descricao')}
-                    placeholder="Ex: Pizza de Calabresa Grande (8 pedaços)" 
-                    className="mb-4"
-                />
-                <Label>Preço Unitário</Label>
-                <Input
-                    type="number"
-                    value={newProduct.preco}
-                    onChange={(e) => handleChange(e, 'preco')}
-                    placeholder="Preço Unitário"
-                    className="mb-4"
-                />
-                <div className="flex gap-4 mt-4">
-                    <Button onClick={handleSave} variant="orange" disabled={isUploading}>
-                        {isUploading ? "Salvando..." : "Salvar"}
-                    </Button>
-                    <Button onClick={onClose} variant="destructive">Cancelar</Button>
+            <div className="bg-white p-6 rounded-lg shadow-lg flex w-2/3"> {/* Aumenta o tamanho do dialog para 2/3 da tela */}
+                <div className="w-1/2 pr-4"> {/* Metade esquerda para o formulário */}
+                    <h3 className="text-lg font-semibold mb-4">{productToEdit ? "Editar Produto" : "Adicionar Produto"}</h3>
+                    <Label>Imagem</Label>
+                    <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="mb-4"
+                    />
+                    <Label>Nome</Label>
+                    <Input
+                        value={newProduct.nome}
+                        onChange={(e) => handleChange(e, 'nome')}
+                        placeholder="Ex: Pizza de Calabresa"
+                        className="mb-4"
+                    />
+                    <Label>Descrição</Label>
+                    <Input
+                        value={newProduct.descricao}
+                        onChange={(e) => handleChange(e, 'descricao')}
+                        placeholder="Ex: Pizza de Calabresa Grande (8 pedaços)" 
+                        className="mb-4"
+                    />
+                    <Label>Preço Unitário</Label>
+                    <Input
+                        type="number"
+                        value={newProduct.preco}
+                        onChange={(e) => handleChange(e, 'preco')}
+                        placeholder="Preço Unitário"
+                        className="mb-4"
+                    />
+                    <div className="flex gap-4 mt-4">
+                        <Button onClick={handleSave} variant="orange" disabled={isUploading}>
+                            {isUploading ? "Salvando..." : "Salvar"}
+                        </Button>
+                        <Button onClick={onClose} variant="destructive">Cancelar</Button>
+                    </div>
+                </div>
+                <div className="w-1/2 pl-4 shadow-2xl bg-orange-50"> {/* Metade direita para a pré-visualização */}
+                    <h3 className="text-lg text-slate-400 font-semibold my-4 text-center">Preview do Produto</h3>
+                    <div className="flex flex-col items-center">
+                        {newProduct.urlImagem ? (
+                            <img src={newProduct.urlImagem} alt="Pré-visualização da imagem" className="w-48 h-48 object-cover mb-4" />
+                        ) : (
+                            <div className="w-48 h-48 bg-gray-200 mb-4 flex items-center justify-center text-gray-500">
+                                Sem imagem
+                            </div>
+                        )}
+                        <p className="text-xl font-bold">{newProduct.nome || "Nome do Produto"}</p>
+                        <p className="text-sm text-gray-600">{newProduct.descricao || "Descrição do Produto"}</p>
+                        <p className="text-2xl text-orange-500 mt-4">{newProduct.preco ? `R$ ${newProduct.preco}` : "Preço"}</p>
+                    </div>
                 </div>
             </div>
         </div>
