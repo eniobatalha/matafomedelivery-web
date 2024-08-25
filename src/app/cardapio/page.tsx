@@ -11,6 +11,7 @@ import DialogAddCategory from '@/components/dialog-add-categoria/dialog-add-cate
 import DialogAddProduct from '@/components/dialog-add-produto/dialog-add-produto';
 import { DndContext, MouseSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { useToast } from "@/components/ui/use-toast";
+import { Progress } from "@/components/ui/progress";
 
 interface Categoria {
     id: number;
@@ -21,8 +22,10 @@ interface Categoria {
 const CardapioPage: React.FC = () => {
     const [categorias, setCategorias] = useState<Categoria[]>([]);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // Estado para o diálogo de edição
-    const [newProduct, setNewProduct] = useState<Produto | null>(null); // Estado para o produto a ser editado
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [progress, setProgress] = useState(0);
+    const [newProduct, setNewProduct] = useState<Produto | null>(null);
     const { toast } = useToast();
 
     const mouseSensor = useSensor(MouseSensor, {
@@ -44,15 +47,30 @@ const CardapioPage: React.FC = () => {
                 setCategorias(response.data.prateleiras);
             } catch (error) {
                 console.error('Erro ao buscar categorias:', error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
+        const simulateProgress = () => {
+            setProgress((prevProgress) => {
+                if (prevProgress < 100) {
+                    return Math.min(prevProgress + 99.9, 100);
+                }
+                return prevProgress;
+            });
+        };
+
         fetchCategorias();
+
+        const interval = setInterval(simulateProgress, 1000);
+
+        return () => clearInterval(interval); // Limpa o intervalo quando o componente desmonta
     }, []);
 
     const handleProductEdit = (produto: Produto) => {
         setNewProduct(produto);
-        setIsEditDialogOpen(true); // Abre o diálogo de edição
+        setIsEditDialogOpen(true);
     };
 
     const handleProductDelete = async (produto: Produto, prateleiraId: number) => {
@@ -65,7 +83,7 @@ const CardapioPage: React.FC = () => {
                 title: "Produto excluído com sucesso!",
                 variant: "success",
             });
-            handleAddCategory(); // Atualiza as categorias
+            handleAddCategory();
         } catch (error) {
             console.error('Erro ao excluir produto:', error);
             toast({
@@ -96,11 +114,9 @@ const CardapioPage: React.FC = () => {
             const empresaId = empresaData.id;
 
             try {
-                // Obter dados do produto existente
                 const getProdutoResponse = await axios.get(`/empresas/${empresaId}/prateleiras/${produtoId}/produtos/${produtoId}`);
                 const produto = getProdutoResponse.data;
 
-                // Criar o produto na nova categoria
                 await axios.post(`/empresas/${empresaId}/prateleiras/${novaCategoriaId}/produtos`, {
                     nome: produto.nome,
                     preco: produto.preco,
@@ -108,14 +124,13 @@ const CardapioPage: React.FC = () => {
                     urlImagem: produto.urlImagem
                 });
 
-                // Deletar o produto da categoria original
                 await axios.delete(`/empresas/${empresaId}/prateleiras/${produtoId}/produtos/${produtoId}`);
 
                 toast({
                     title: "Produto movido com sucesso!",
                     variant: "success",
                 });
-                handleAddCategory(); // Atualiza as categorias
+                handleAddCategory();
             } catch (error) {
                 console.error('Erro ao mover produto:', error);
                 toast({
@@ -128,11 +143,11 @@ const CardapioPage: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col min-h-screen"> {/* Contêiner principal com flexbox */}
+        <div className="flex flex-col min-h-screen">
             <div className="flex-grow">
-                <DndContext sensors={sensors} onDragEnd={handleDragEnd}> {/* Permite que o conteúdo cresça */}
+                <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
                     <MenuCompleto />
-                    <div className="p-6 flex-grow"> {/* Permite que o conteúdo principal cresça */}
+                    <div className="p-6 flex-grow">
                         <div className="flex items-center justify-between my-4">
                             <h2 className="text-3xl font-bold tracking-tight">Categorias</h2>
                             <Button
@@ -144,7 +159,12 @@ const CardapioPage: React.FC = () => {
                                 Adicionar Categoria
                             </Button>
                         </div>
-                        {categorias.length === 0 ? (
+                        {isLoading && progress < 100 ? (
+                            <div>
+                                <p>Carregando suas categorias...</p>
+                                <Progress value={progress} className="w-full" />
+                            </div>
+                        ) : categorias.length === 0 ? (
                             <p>Nenhuma categoria encontrada.</p>
                         ) : (
                             categorias.map((categoria) => (
@@ -169,14 +189,14 @@ const CardapioPage: React.FC = () => {
                             <DialogAddProduct
                                 onClose={() => setIsEditDialogOpen(false)}
                                 onProductAdded={handleAddCategory}
-                                productToEdit={newProduct} // Passa o produto para edição
-                                categoriaId={categorias.find(c => c.produtos.some(p => p.id === newProduct.id))?.id || 0} // Encontra o categoriaId correspondente
+                                productToEdit={newProduct}
+                                categoriaId={categorias.find(c => c.produtos.some(p => p.id === newProduct.id))?.id || 0}
                             />
                         )}
                     </div>
                 </DndContext>
             </div>
-            <Footer /> {/* Footer permanece fixo na parte inferior */}
+            <Footer />
         </div>
     );
 };
