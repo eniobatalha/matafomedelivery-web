@@ -155,15 +155,16 @@ export default async function PaymentsPage() {
     const data = await getData()
 
     return (
-        <>
-            <div className="border-b">
-                <MenuCompleto/>
+        <div className="flex flex-col min-h-screen">
+            <div className="border-b flex-grow">
+                <MenuCompleto />
                 <div className="p-8">
                     <h2 className="text-3xl font-bold tracking-tight">Histórico de Pedidos</h2>
                     <DataTable columns={columns} data={data} />
                 </div>
-                <Footer />
             </div>
-        </>
+            <Footer />
+        </div>
     )
+
 }

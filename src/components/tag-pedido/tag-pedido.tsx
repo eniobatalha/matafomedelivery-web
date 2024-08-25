@@ -1,15 +1,13 @@
 import React from 'react';
+import { Badge } from '@/components/ui/badge';
 
-// Definindo as cores e textos para as variações de status do pedido
-const statusMap: { [key: number]: { text: string, color: string } } = {
-    1: { text: 'Novo', color: 'bg-gray-500' },
-    2: { text: 'Em Preparo', color: 'bg-yellow-500' },
-    3: { text: 'Saiu Para Entrega', color: 'bg-blue-500' },
-    4: { text: 'Entregue', color: 'bg-green-500' },
-    5: { text: 'Cancelado', color: 'bg-red-500' },
+const statusMap: { [key: number]: { text: string, variant: string } } = {
+    1: { text: 'Novo', variant: 'novo' },
+    2: { text: 'Em Preparo', variant: 'emPreparo' },
+    3: { text: 'Saiu Para Entrega', variant: 'saiuParaEntrega' },
+    4: { text: 'Entregue', variant: 'entregue' },
+    5: { text: 'Cancelado', variant: 'cancelado' },
 };
-
-const timeColor = 'bg-orange-500';
 
 interface TagProps {
     type: 'status' | 'time';
@@ -17,29 +15,27 @@ interface TagProps {
 }
 
 const Tag: React.FC<TagProps> = ({ type, value }) => {
-    const baseStyle = 'inline-block p-1 px-2 rounded-xl text-white text-xs font-bold';
-
-    let tagColor = '';
+    let variant = '';
     let tagText = '';
 
     if (type === 'status' && typeof value === 'number') {
         const status = statusMap[value];
         if (status) {
-            tagColor = status.color;
+            variant = status.variant;
             tagText = status.text;
         } else {
-            tagColor = 'bg-gray-500'; // Cor padrão se o valor do status não for encontrado
+            variant = 'novo'; // Variantes padrão para status desconhecido
             tagText = 'Desconhecido';
         }
     } else if (type === 'time' && typeof value === 'string') {
-        tagColor = timeColor;
+        variant = 'time';
         tagText = value;
     }
 
     return (
-        <span className={`${baseStyle} ${tagColor}`}>
+        <Badge variant={variant as "time" | "default" | "destructive" | "outline" | "secondary" | "novo" | "emPreparo" | "saiuParaEntrega" | "entregue" | "cancelado" | null | undefined}>
             {tagText}
-        </span>
+        </Badge>
     );
 };
 

@@ -35,7 +35,7 @@ export function MainNav({
         Cardápio
       </Link>
       <Link
-        href="/payments"
+        href="/historico"
         className="flex items-center text-sm text-white font-medium transition-colors hover:text-orange-700"
       >
         <MdHistory className="mr-2" />

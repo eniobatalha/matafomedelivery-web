@@ -25,7 +25,7 @@ export const config = {
         '/dashboard/:path*', 
         '/cardapio/:path*', 
         '/pedidos/:path*', 
-        '/payments/:path*',
+        '/historico/:path*',
         '/', // Para verificar a rota raiz
         '/login',
         '/register',

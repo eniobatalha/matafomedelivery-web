@@ -107,45 +107,50 @@ const CardapioPage: React.FC = () => {
     };
 
     return (
-        <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-            <MenuCompleto />
-            <div className="p-6">
-                <div className="flex items-center justify-between my-4">
-                    <h2 className="text-3xl font-bold tracking-tight">Categorias</h2>
-                    <Button
-                        variant="outlineOrange"
-                        className="flex items-center gap-2"
-                        onClick={() => setIsDialogOpen(true)}
-                    >
-                        <FaPlus className="h-5 w-5" />
-                        Adicionar Categoria
-                    </Button>
-                </div>
-                {categorias.length === 0 ? (
-                    <p>Nenhuma categoria encontrada.</p>
-                ) : (
-                    categorias.map((categoria) => (
-                        <CategoriaCard
-                            key={categoria.id}
-                            categoriaId={categoria.id.toString()}
-                            categoriaNome={categoria.nomePrateleira}
-                            produtos={categoria.produtos}
-                            onProductEdit={handleProductEdit}
-                            onProductDelete={handleProductDelete}
-                            onCategoryUpdated={handleAddCategory}
-                        />
-                    ))
-                )}
-                {isDialogOpen && (
-                    <DialogAddCategory
-                        onClose={() => setIsDialogOpen(false)}
-                        onCategoryAdded={handleAddCategory}
-                    />
-                )}
+        <div className="flex flex-col min-h-screen"> {/* Contêiner principal com flexbox */}
+            <div className="flex-grow">
+                <DndContext sensors={sensors} onDragEnd={handleDragEnd}> {/* Permite que o conteúdo cresça */}
+                    <MenuCompleto />
+                    <div className="p-6 flex-grow"> {/* Permite que o conteúdo principal cresça */}
+                        <div className="flex items-center justify-between my-4">
+                            <h2 className="text-3xl font-bold tracking-tight">Categorias</h2>
+                            <Button
+                                variant="outlineOrange"
+                                className="flex items-center gap-2"
+                                onClick={() => setIsDialogOpen(true)}
+                            >
+                                <FaPlus className="h-5 w-5" />
+                                Adicionar Categoria
+                            </Button>
+                        </div>
+                        {categorias.length === 0 ? (
+                            <p>Nenhuma categoria encontrada.</p>
+                        ) : (
+                            categorias.map((categoria) => (
+                                <CategoriaCard
+                                    key={categoria.id}
+                                    categoriaId={categoria.id.toString()}
+                                    categoriaNome={categoria.nomePrateleira}
+                                    produtos={categoria.produtos}
+                                    onProductEdit={handleProductEdit}
+                                    onProductDelete={handleProductDelete}
+                                    onCategoryUpdated={handleAddCategory}
+                                />
+                            ))
+                        )}
+                        {isDialogOpen && (
+                            <DialogAddCategory
+                                onClose={() => setIsDialogOpen(false)}
+                                onCategoryAdded={handleAddCategory}
+                            />
+                        )}
+                    </div>
+                </DndContext>
             </div>
-            <Footer />
-        </DndContext>
+            <Footer /> {/* Footer permanece fixo na parte inferior */}
+        </div>
     );
+
 };
 
 export default CardapioPage;
