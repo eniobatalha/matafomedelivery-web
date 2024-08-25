@@ -10,7 +10,8 @@ import { Input } from "@/components/ui/input";
 import DialogEditCategory from "@/components/dialog-edit-categoria/dialog-edit-categoria";
 import DialogDeleteCategory from "@/components/dialog-del-categoria/dialog-del-categoria";
 import { Produto } from '@/types/types';
-import { useDroppable, useDraggable } from "@dnd-kit/core";
+import { useDroppable } from "@dnd-kit/core";
+import DraggableProduto from "../draggable-produto/draggable-produto";
 
 interface CategoriaCardProps {
     categoriaId: string;
@@ -47,7 +48,7 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
     });
 
     const cardStyle = {
-        backgroundColor: isOver ? "#e5e7eb" : "white",
+        backgroundColor: isOver ? "#fecaca" : "white",
     };
 
     const handleOpenDetailDialog = (produto: Produto) => {
@@ -155,38 +156,14 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
                 </DropdownMenu>
             </CardHeader>
             <CardContent>
-                {produtos.map((produto, index) => {
-                    const { attributes, listeners, setNodeRef: setDraggableRef, transform, isDragging } = useDraggable({
-                        id: produto.id.toString(),
-                    });
-
-                    const draggableStyle = {
-                        transform: `translate3d(${transform?.x || 0}px, ${transform?.y || 0}px, 0)`,
-                        opacity: isDragging ? 0.5 : 1,
-                    };
-
-                    return (
-                        <div 
-                            key={index} 
-                            ref={setDraggableRef} 
-                            style={draggableStyle} 
-                            {...listeners} 
-                            {...attributes} 
-                            className="flex items-center justify-between mb-2 p-2 border-b border-gray-300"
-                        >
-                            <div className="flex items-center">
-                                <img src={produto.urlImagem} alt={produto.descricao} className="w-24 h-24 object-cover mr-4" />
-                                <div className="flex flex-col items-start">
-                                    <p className="font-bold">{produto.nome}</p>
-                                    <p className="text-sm text-gray-600">{produto.descricao}</p>
-                                    <p className="text-sm text-gray-600">R${produto.preco}</p>
-                                    <Button onClick={() => handleOpenDetailDialog(produto)} variant="outline">Detalhes</Button>
-                                </div>
-                            </div>
-                            <Button onClick={() => onProductDelete(produto)} variant="destructive">Excluir</Button>
-                        </div>
-                    );
-                })}
+                {produtos.map((produto) => (
+                    <DraggableProduto 
+                        key={produto.id} 
+                        produto={produto} 
+                        onProductDelete={onProductDelete} 
+                        onDetailClick={handleOpenDetailDialog} 
+                    />
+                ))}
             </CardContent>
             <CardFooter className="flex justify-between">
                 <Button onClick={handleOpenAddDialog} variant="orange">
