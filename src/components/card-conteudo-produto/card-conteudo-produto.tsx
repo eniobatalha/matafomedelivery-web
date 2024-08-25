@@ -26,9 +26,9 @@ const CardConteudoProduto: React.FC<ProductProps> = ({
         <div className="flex-grow">
             <div id={id} className="flex justify-between items-center">
                 <div className="text-base font-semibold">{name}</div>
-                <div className="text-base font-semibold">{description}</div>
                 <div className="text-base font-semibold">{totalPrice}</div>
             </div>
+            <div className="text-sm text-gray-400">{description}</div>
             <div className="text-sm text-gray-500">{`${quantity} x R$ ${unitPrice}`}</div>
             <div className="text-sm text-gray-500">
                 {additions.map((addition, index) => (

@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import DialogEditCategory from "@/components/dialog-edit-categoria/dialog-edit-categoria";
 import DialogDeleteCategory from "@/components/dialog-del-categoria/dialog-del-categoria";
 import { Produto } from '@/types/types';
+import { useDroppable, useDraggable } from "@dnd-kit/core";
 
 interface CategoriaCardProps {
     categoriaId: string;
@@ -40,6 +41,14 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+    const { isOver, setNodeRef } = useDroppable({
+        id: `categoria-${categoriaId}`,
+    });
+
+    const cardStyle = {
+        backgroundColor: isOver ? "#e5e7eb" : "white",
+    };
 
     const handleOpenDetailDialog = (produto: Produto) => {
         setSelectedProduct(produto);
@@ -120,8 +129,8 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
     };
 
     return (
-        <Card className="border border-gray-300 rounded-lg mb-4">
-            <CardHeader className="bg-orange-100 flex flex-row justify-between">
+        <Card ref={setNodeRef} style={cardStyle} className="border border-gray-100 rounded-lg mb-4">
+            <CardHeader className="bg-orange-200 flex flex-row justify-between">
                 <h2 className="text-xl font-bold">{categoriaNome}</h2>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -131,13 +140,13 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="end" forceMount>
                         <DropdownMenuItem
-                            onClick={() => handleOpenEditDialog()}
+                            onClick={handleOpenEditDialog}
                             className="hover:bg-orange-500 hover:text-white"
                         >
                             Editar Categoria
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            onClick={() => handleOpenDeleteDialog()}
+                            onClick={handleOpenDeleteDialog}
                             className="hover:bg-orange-500 hover:text-white"
                         >
                             Excluir Categoria
@@ -146,20 +155,38 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
                 </DropdownMenu>
             </CardHeader>
             <CardContent>
-                {produtos.map((produto, index) => (
-                    <div key={index} className="flex items-center justify-between mb-2 p-2 border-b border-gray-300">
-                        <div className="flex items-center">
-                            <img src={produto.urlImagem} alt={produto.descricao} className="w-24 h-24 object-cover mr-4" />
-                            <div className="flex flex-col items-start">
-                                <p className="font-bold">{produto.nome}</p>
-                                <p className="text-sm text-gray-600">{produto.descricao}</p>
-                                <p className="text-sm text-gray-600">R${produto.preco}</p>
-                                <Button onClick={() => handleOpenDetailDialog(produto)} variant="outline">Detalhes</Button>
+                {produtos.map((produto, index) => {
+                    const { attributes, listeners, setNodeRef: setDraggableRef, transform, isDragging } = useDraggable({
+                        id: produto.id.toString(),
+                    });
+
+                    const draggableStyle = {
+                        transform: `translate3d(${transform?.x || 0}px, ${transform?.y || 0}px, 0)`,
+                        opacity: isDragging ? 0.5 : 1,
+                    };
+
+                    return (
+                        <div 
+                            key={index} 
+                            ref={setDraggableRef} 
+                            style={draggableStyle} 
+                            {...listeners} 
+                            {...attributes} 
+                            className="flex items-center justify-between mb-2 p-2 border-b border-gray-300"
+                        >
+                            <div className="flex items-center">
+                                <img src={produto.urlImagem} alt={produto.descricao} className="w-24 h-24 object-cover mr-4" />
+                                <div className="flex flex-col items-start">
+                                    <p className="font-bold">{produto.nome}</p>
+                                    <p className="text-sm text-gray-600">{produto.descricao}</p>
+                                    <p className="text-sm text-gray-600">R${produto.preco}</p>
+                                    <Button onClick={() => handleOpenDetailDialog(produto)} variant="outline">Detalhes</Button>
+                                </div>
                             </div>
+                            <Button onClick={() => onProductDelete(produto)} variant="destructive">Excluir</Button>
                         </div>
-                        <Button onClick={() => onProductDelete(produto)} variant="destructive">Excluir</Button>
-                    </div>
-                ))}
+                    );
+                })}
             </CardContent>
             <CardFooter className="flex justify-between">
                 <Button onClick={handleOpenAddDialog} variant="orange">

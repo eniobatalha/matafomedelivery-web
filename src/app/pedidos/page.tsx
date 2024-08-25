@@ -78,7 +78,7 @@ const pedidos = () => {
                                     <CardConteudoProduto
                                         id="3"
                                         name="Coca Cola 2L"
-                                        image="/img/produtos/coca2l.jpg"
+                                        image="/img/produtos/coca2l.png"
                                         description="Coca Cola 2L"
                                         quantity={1}
                                         unitPrice="10,00"
@@ -96,8 +96,8 @@ const pedidos = () => {
                                     <CardConteudoProduto
                                         id="5"
                                         name="Batata Frita"
-                                        image="/img/produtos/suco.jpg"
-                                        description="Suco de Laranja"
+                                        image="/img/produtos/fritas.png"
+                                        description="Batata Frita"
                                         quantity={1}
                                         unitPrice="8,00"
                                         totalPrice="8,00"
@@ -193,7 +193,7 @@ const pedidos = () => {
                                     <CardConteudoProduto
                                         id="3"
                                         name="Coca Cola 2L"
-                                        image="/img/produtos/coca2l.jpg"
+                                        image="/img/produtos/coca2l.png"
                                         description="Coca Cola 2L"
                                         quantity={1}
                                         unitPrice="10,00"
