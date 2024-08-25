@@ -37,7 +37,7 @@ const CardapioPage: React.FC = () => {
                 const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
                 const empresaId = empresaData.id;
 
-                const response = await axios.get(`https://matafome-api.ashyfield-34914be1.brazilsouth.azurecontainerapps.io/api/empresas/prateleiras/${empresaId}`);
+                const response = await axios.get(`https://matafome-api.ashyfield-34914be1.brazilsouth.azurecontainerapps.io/api/empresas/${empresaId}/prateleiras`);
                 setCategorias(response.data.prateleiras);
             } catch (error) {
                 console.error('Erro ao buscar categorias:', error);
@@ -59,7 +59,7 @@ const CardapioPage: React.FC = () => {
         try {
             const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
             const empresaId = empresaData.id;
-            const response = await axios.get(`https://matafome-api.ashyfield-34914be1.brazilsouth.azurecontainerapps.io/api/empresas/prateleiras/${empresaId}`);
+            const response = await axios.get(`https://matafome-api.ashyfield-34914be1.brazilsouth.azurecontainerapps.io/api/empresas/${empresaId}/prateleiras`);
             setCategorias(response.data.prateleiras);
         } catch (error) {
             console.error('Erro ao atualizar categorias:', error);
