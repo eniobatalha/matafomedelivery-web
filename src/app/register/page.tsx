@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import IMask from 'imask';
-import axios from 'axios';
+import axios from '@/app/axiosConfig';
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from 'next/navigation';
 import { FaSearch } from 'react-icons/fa';
@@ -153,7 +153,7 @@ const RegisterPage = () => {
     const formatCNPJ = (cnpj: string) => cnpj.replace(/\D/g, '');
 
     try {
-      const url_api_empresa = 'https://matafome-api.ashyfield-34914be1.brazilsouth.azurecontainerapps.io/api/empresas';
+      const url_api_empresa = '/empresas';
 
       const payload = {
         email: data.email,

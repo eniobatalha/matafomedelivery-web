@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '@/app/axiosConfig';
 import CategoriaCard from '@/components/categoria-card/categoria-card';
 import { Button } from '@/components/ui/button';
 import MenuCompleto from '@/components/menu-completo/menu-completo';
@@ -37,7 +37,7 @@ const CardapioPage: React.FC = () => {
                 const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
                 const empresaId = empresaData.id;
 
-                const response = await axios.get(`https://matafome-api.ashyfield-34914be1.brazilsouth.azurecontainerapps.io/api/empresas/${empresaId}/prateleiras`);
+                const response = await axios.get(`/empresas/${empresaId}/prateleiras`);
                 setCategorias(response.data.prateleiras);
             } catch (error) {
                 console.error('Erro ao buscar categorias:', error);
@@ -59,7 +59,7 @@ const CardapioPage: React.FC = () => {
         try {
             const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
             const empresaId = empresaData.id;
-            const response = await axios.get(`https://matafome-api.ashyfield-34914be1.brazilsouth.azurecontainerapps.io/api/empresas/${empresaId}/prateleiras`);
+            const response = await axios.get(`/empresas/${empresaId}/prateleiras`);
             setCategorias(response.data.prateleiras);
         } catch (error) {
             console.error('Erro ao atualizar categorias:', error);
@@ -76,11 +76,11 @@ const CardapioPage: React.FC = () => {
 
             try {
                 // Obter dados do produto existente
-                const getProdutoResponse = await axios.get(`https://matafome-api.ashyfield-34914be1.brazilsouth.azurecontainerapps.io/api/empresas/${empresaId}/prateleiras/${produtoId}/produtos/${produtoId}`);
+                const getProdutoResponse = await axios.get(`/empresas/${empresaId}/prateleiras/${produtoId}/produtos/${produtoId}`);
                 const produto = getProdutoResponse.data;
 
                 // Criar o produto na nova categoria
-                await axios.post(`https://matafome-api.ashyfield-34914be1.brazilsouth.azurecontainerapps.io/api/empresas/${empresaId}/prateleiras/${novaCategoriaId}/produtos`, {
+                await axios.post(`/empresas/${empresaId}/prateleiras/${novaCategoriaId}/produtos`, {
                     nome: produto.nome,
                     preco: produto.preco,
                     descricao: produto.descricao,
@@ -88,7 +88,7 @@ const CardapioPage: React.FC = () => {
                 });
 
                 // Deletar o produto da categoria original
-                await axios.delete(`https://matafome-api.ashyfield-34914be1.brazilsouth.azurecontainerapps.io/api/empresas/${empresaId}/prateleiras/${produtoId}/produtos/${produtoId}`);
+                await axios.delete(`/empresas/${empresaId}/prateleiras/${produtoId}/produtos/${produtoId}`);
 
                 toast({
                     title: "Produto movido com sucesso!",

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import axios from 'axios';
+import axios from '@/app/axiosConfig';
 import { Input } from '../ui/input';
 
 interface DialogEditCategoryProps {
@@ -23,7 +23,7 @@ const DialogEditCategory: React.FC<DialogEditCategoryProps> = ({ categoriaId, ca
                 return;
             }
 
-            const url = `https://matafome-api.ashyfield-34914be1.brazilsouth.azurecontainerapps.io/api/empresas/${empresaId}/prateleiras/${categoriaId}`;
+            const url = `/empresas/${empresaId}/prateleiras/${categoriaId}`;
 
             await axios.put(url, {
                 id: Number(categoriaId),

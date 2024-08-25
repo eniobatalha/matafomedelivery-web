@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from "@/components/ui/button";
-import axios from 'axios';
+import axios from '@/app/axiosConfig';
 import { useToast } from "@/components/ui/use-toast";
 import Cookies from 'js-cookie';
 
@@ -39,7 +39,7 @@ const LoginPage = () => {
         }
 
         try {
-            const response = await axios.post('https://matafome-api.ashyfield-34914be1.brazilsouth.azurecontainerapps.io/api/login', {
+            const response = await axios.post('/login', {
                 username: email,
                 password: password,
             });

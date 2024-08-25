@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import axios from 'axios';
+import axios from '@/app/axiosConfig';
 
 interface DialogDeleteCategoryProps {
     categoriaId: string;
@@ -20,7 +20,7 @@ const DialogDeleteCategory: React.FC<DialogDeleteCategoryProps> = ({ categoriaId
                 return;
             }
 
-            await axios.delete(`https://matafome-api.ashyfield-34914be1.brazilsouth.azurecontainerapps.io/api/empresas/${empresaId}/prateleiras/${categoriaId}`);
+            await axios.delete(`/empresas/${empresaId}/prateleiras/${categoriaId}`);
             onCategoryDeleted();  // Atualize a lista de categorias
             onClose();  // Feche o diálogo
         } catch (error) {
