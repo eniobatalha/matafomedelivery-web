@@ -95,7 +95,7 @@ const PedidosPage = () => {
                                 <TabsContent value={filtroStatus}>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                                         {pedidosFiltrados.map((pedido) => (
-                                            <Card key={pedido.id} className="flex flex-col">
+                                            <Card key={pedido.id} className="flex flex-col shadow-lg">
                                                 <CardHeader className="border-b border-gray-300 bg-orange-100 pb-2 mb-2">
                                                     <div className="flex justify-between items-center">
                                                         <div className="flex gap-4">

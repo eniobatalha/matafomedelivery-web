@@ -1,0 +1,131 @@
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { storage } from "@/lib/firebaseConfig";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { Produto } from '@/types/types';
+import axios from '@/app/axiosConfig';
+import { Label } from "../ui/label";
+
+interface DialogAddProductProps {
+    onClose: () => void;
+    onProductAdded: () => void; // Função para ser chamada após o produto ser adicionado/atualizado
+    productToEdit?: Produto; // Produto a ser editado
+    categoriaId: number; // ID da categoria onde o produto será adicionado
+}
+
+const DialogAddProduct: React.FC<DialogAddProductProps> = ({ onClose, onProductAdded, productToEdit, categoriaId }) => {
+    const [newProduct, setNewProduct] = useState<Omit<Produto, 'id'>>({
+        urlImagem: '',
+        nome: '',
+        descricao: '',
+        preco: 0,
+    });
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
+
+    useEffect(() => {
+        if (productToEdit) {
+            setNewProduct({
+                urlImagem: productToEdit.urlImagem,
+                nome: productToEdit.nome,
+                descricao: productToEdit.descricao,
+                preco: productToEdit.preco,
+            });
+        }
+    }, [productToEdit]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof Produto) => {
+        setNewProduct({
+            ...newProduct,
+            [field]: e.target.value,
+        });
+    };
+
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files ? e.target.files[0] : null;
+        if (file) {
+            setImageFile(file);
+        }
+    };
+
+    const handleSave = async () => {
+        try {
+            setIsUploading(true);
+            let imageUrl = newProduct.urlImagem;
+
+            if (imageFile) {
+                const storageRef = ref(storage, `produtos/${imageFile.name}`);
+                await uploadBytes(storageRef, imageFile);
+                imageUrl = await getDownloadURL(storageRef);
+            }
+
+            const produto: Omit<Produto, 'id'> = {
+                urlImagem: imageUrl,
+                nome: newProduct.nome,
+                descricao: newProduct.descricao,
+                preco: newProduct.preco,
+            };
+
+            if (productToEdit) {
+                // Atualiza o produto existente
+                await axios.put(`/empresas/{empresaId}/prateleiras/${categoriaId}/produtos/${productToEdit.id}`, produto);
+            } else {
+                // Cria um novo produto
+                await axios.post(`/empresas/{empresaId}/prateleiras/${categoriaId}/produtos`, produto);
+            }
+
+            onProductAdded(); // Atualiza a lista de categorias/produtos
+            setIsUploading(false);
+            onClose(); // Fecha o diálogo
+        } catch (error) {
+            console.error('Erro ao salvar o produto:', error);
+            setIsUploading(false);
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+                <h3 className="text-lg font-semibold mb-4">{productToEdit ? "Editar Produto" : "Adicionar Produto"}</h3>
+                <Label>Imagem</Label>
+                <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="mb-4"
+                />
+                <Label>Nome</Label>
+                <Input
+                    value={newProduct.nome}
+                    onChange={(e) => handleChange(e, 'nome')}
+                    placeholder="Ex: Pizza de Calabresa"
+                    className="mb-4"
+                />
+                <Label>Descrição</Label>
+                <Input
+                    value={newProduct.descricao}
+                    onChange={(e) => handleChange(e, 'descricao')}
+                    placeholder="Ex: Pizza de Calabresa Grande (8 pedaços)" 
+                    className="mb-4"
+                />
+                <Label>Preço Unitário</Label>
+                <Input
+                    type="number"
+                    value={newProduct.preco}
+                    onChange={(e) => handleChange(e, 'preco')}
+                    placeholder="Preço Unitário"
+                    className="mb-4"
+                />
+                <div className="flex gap-4 mt-4">
+                    <Button onClick={handleSave} variant="orange" disabled={isUploading}>
+                        {isUploading ? "Salvando..." : "Salvar"}
+                    </Button>
+                    <Button onClick={onClose} variant="destructive">Cancelar</Button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default DialogAddProduct;

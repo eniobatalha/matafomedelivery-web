@@ -8,6 +8,7 @@ import { FaPlus } from "react-icons/fa6";
 import { Footer } from '@/components/footer/footer';
 import { Produto } from '@/types/types';
 import DialogAddCategory from '@/components/dialog-add-categoria/dialog-add-categoria';
+import DialogAddProduct from '@/components/dialog-add-produto/dialog-add-produto';
 import { DndContext, MouseSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -20,6 +21,8 @@ interface Categoria {
 const CardapioPage: React.FC = () => {
     const [categorias, setCategorias] = useState<Categoria[]>([]);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // Estado para o diálogo de edição
+    const [newProduct, setNewProduct] = useState<Produto | null>(null); // Estado para o produto a ser editado
     const { toast } = useToast();
 
     const mouseSensor = useSensor(MouseSensor, {
@@ -48,11 +51,29 @@ const CardapioPage: React.FC = () => {
     }, []);
 
     const handleProductEdit = (produto: Produto) => {
-        console.log('Editar produto:', produto);
+        setNewProduct(produto);
+        setIsEditDialogOpen(true); // Abre o diálogo de edição
     };
 
-    const handleProductDelete = (produto: Produto) => {
-        console.log('Deletar produto:', produto);
+    const handleProductDelete = async (produto: Produto, prateleiraId: number) => {
+        try {
+            const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
+            const empresaId = empresaData.id;
+
+            await axios.delete(`/empresas/${empresaId}/prateleiras/${prateleiraId}/produtos/${produto.id}`);
+            toast({
+                title: "Produto excluído com sucesso!",
+                variant: "success",
+            });
+            handleAddCategory(); // Atualiza as categorias
+        } catch (error) {
+            console.error('Erro ao excluir produto:', error);
+            toast({
+                title: "Erro ao excluir produto",
+                description: "Ocorreu um erro ao tentar excluir o produto.",
+                variant: "destructive",
+            });
+        }
     };
 
     const handleAddCategory = async () => {
@@ -133,7 +154,7 @@ const CardapioPage: React.FC = () => {
                                     categoriaNome={categoria.nomePrateleira}
                                     produtos={categoria.produtos}
                                     onProductEdit={handleProductEdit}
-                                    onProductDelete={handleProductDelete}
+                                    onProductDelete={(produto) => handleProductDelete(produto, categoria.id)}
                                     onCategoryUpdated={handleAddCategory}
                                 />
                             ))
@@ -144,13 +165,20 @@ const CardapioPage: React.FC = () => {
                                 onCategoryAdded={handleAddCategory}
                             />
                         )}
+                        {isEditDialogOpen && newProduct && (
+                            <DialogAddProduct
+                                onClose={() => setIsEditDialogOpen(false)}
+                                onProductAdded={handleAddCategory}
+                                productToEdit={newProduct} // Passa o produto para edição
+                                categoriaId={categorias.find(c => c.produtos.some(p => p.id === newProduct.id))?.id || 0} // Encontra o categoriaId correspondente
+                            />
+                        )}
                     </div>
                 </DndContext>
             </div>
             <Footer /> {/* Footer permanece fixo na parte inferior */}
         </div>
     );
-
 };
 
 export default CardapioPage;

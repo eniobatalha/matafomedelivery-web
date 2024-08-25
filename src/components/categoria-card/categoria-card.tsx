@@ -6,12 +6,12 @@ import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
 import {
     DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import DialogEditCategory from "@/components/dialog-edit-categoria/dialog-edit-categoria";
 import DialogDeleteCategory from "@/components/dialog-del-categoria/dialog-del-categoria";
 import { Produto } from '@/types/types';
 import { useDroppable } from "@dnd-kit/core";
-import DraggableProduto from "../draggable-produto/draggable-produto";
+import DraggableProduto from "@/components/draggable-produto/draggable-produto";
+import DialogAddProduct from "@/components/dialog-add-produto/dialog-add-produto";
 
 interface CategoriaCardProps {
     categoriaId: string;
@@ -32,15 +32,9 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
 }) => {
     const [selectedProduct, setSelectedProduct] = useState<Produto | null>(null);
     const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
-    const [newProduct, setNewProduct] = useState({
-        urlImagem: '',
-        nome: '',
-        descricao: '',
-        preco: '',
-        additions: [''],
-    });
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // Para editar o produto
+    const [isEditCategoryDialogOpen, setIsEditCategoryDialogOpen] = useState(false); // Para editar a categoria
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
     const { isOver, setNodeRef } = useDroppable({
@@ -62,26 +56,29 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
     };
 
     const handleOpenAddDialog = () => {
+        setSelectedProduct(null);
         setIsAddDialogOpen(true);
     };
 
     const handleCloseAddDialog = () => {
         setIsAddDialogOpen(false);
-        setNewProduct({
-            urlImagem: '',
-            nome: '',
-            descricao: '',
-            preco: '',
-            additions: [''],
-        });
     };
 
-    const handleOpenEditDialog = () => {
+    const handleOpenEditDialog = (produto: Produto) => {
+        setSelectedProduct(produto);
         setIsEditDialogOpen(true);
     };
 
     const handleCloseEditDialog = () => {
         setIsEditDialogOpen(false);
+    };
+
+    const handleOpenEditCategoryDialog = () => {
+        setIsEditCategoryDialogOpen(true);
+    };
+
+    const handleCloseEditCategoryDialog = () => {
+        setIsEditCategoryDialogOpen(false);
     };
 
     const handleOpenDeleteDialog = () => {
@@ -92,45 +89,8 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
         setIsDeleteDialogOpen(false);
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
-        setNewProduct({
-            ...newProduct,
-            [field]: e.target.value,
-        });
-    };
-
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files ? e.target.files[0] : null;
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                setNewProduct({
-                    ...newProduct,
-                    urlImagem: reader.result as string,
-                });
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleAddAddition = () => {
-        setNewProduct({
-            ...newProduct,
-            additions: [...newProduct.additions, ''],
-        });
-    };
-
-    const handleChangeAddition = (index: number, value: string) => {
-        const updatedAdditions = [...newProduct.additions];
-        updatedAdditions[index] = value;
-        setNewProduct({
-            ...newProduct,
-            additions: updatedAdditions,
-        });
-    };
-
     return (
-        <Card ref={setNodeRef} style={cardStyle} className="border border-gray-100 rounded-lg mb-4">
+        <Card ref={setNodeRef} style={cardStyle} className="border border-gray-100 rounded-lg mb-4 shadow-lg">
             <CardHeader className="bg-orange-200 flex flex-row justify-between">
                 <h2 className="text-xl font-bold">{categoriaNome}</h2>
                 <DropdownMenu>
@@ -141,7 +101,7 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="end" forceMount>
                         <DropdownMenuItem
-                            onClick={handleOpenEditDialog}
+                            onClick={handleOpenEditCategoryDialog} // Agora abre o diálogo de edição de categoria
                             className="hover:bg-orange-500 hover:text-white"
                         >
                             Editar Categoria
@@ -160,8 +120,9 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
                     <DraggableProduto 
                         key={produto.id} 
                         produto={produto} 
-                        onProductDelete={onProductDelete} 
-                        onDetailClick={handleOpenDetailDialog} 
+                        onProductDelete={() => onProductDelete(produto)} 
+                        onDetailClick={() => handleOpenDetailDialog(produto)} 
+                        onEditClick={() => handleOpenEditDialog(produto)} // Adiciona a opção de editar
                     />
                 ))}
             </CardContent>
@@ -172,12 +133,31 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
                 </Button>
             </CardFooter>
 
+            {/* Dialog de Adição de Produto */}
+            {isAddDialogOpen && (
+                <DialogAddProduct
+                    onClose={handleCloseAddDialog}
+                    onProductAdded={onCategoryUpdated}
+                    categoriaId={parseInt(categoriaId, 10)}
+                />
+            )}
+
+            {/* Dialog de Edição de Produto */}
+            {isEditDialogOpen && selectedProduct && (
+                <DialogAddProduct
+                    onClose={handleCloseEditDialog}
+                    onProductAdded={onCategoryUpdated}
+                    productToEdit={selectedProduct}
+                    categoriaId={parseInt(categoriaId, 10)}
+                />
+            )}
+
             {/* Dialog de Edição de Categoria */}
-            {isEditDialogOpen && (
+            {isEditCategoryDialogOpen && (
                 <DialogEditCategory
                     categoriaId={categoriaId}
                     categoriaNome={categoriaNome}
-                    onClose={handleCloseEditDialog}
+                    onClose={handleCloseEditCategoryDialog}
                     onCategoryUpdated={onCategoryUpdated}
                 />
             )}
@@ -192,53 +172,6 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
                 />
             )}
 
-            {/* Dialog de Adição de Produto */}
-            {isAddDialogOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg">
-                        <h3 className="text-lg font-semibold mb-4">Adicionar Produto</h3>
-                        <Input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageUpload}
-                            className="mb-4"
-                        />
-                        <Input
-                            value={newProduct.nome}
-                            onChange={(e) => handleChange(e, 'nome')}
-                            placeholder="Nome do Produto"
-                            className="mb-4"
-                        />
-                        <Input
-                            value={newProduct.descricao}
-                            onChange={(e) => handleChange(e, 'descricao')}
-                            placeholder="Descrição do Produto"
-                            className="mb-4"
-                        />
-                        <Input
-                            value={newProduct.preco}
-                            onChange={(e) => handleChange(e, 'preco')}
-                            placeholder="Preço Unitário"
-                            className="mb-4"
-                        />
-                        {newProduct.additions.map((addition, index) => (
-                            <Input
-                                key={index}
-                                value={addition}
-                                onChange={(e) => handleChangeAddition(index, e.target.value)}
-                                placeholder={`Adição ${index + 1}`}
-                                className="mb-2"
-                            />
-                        ))}
-                        <Button onClick={handleAddAddition} variant="outline">Adicionar Adição</Button>
-                        <div className="flex gap-4 mt-4">
-                            <Button onClick={handleCloseAddDialog} variant="orange">Salvar</Button>
-                            <Button onClick={handleCloseAddDialog} variant="destructive">Cancelar</Button>
-                        </div>
-                    </div>
-                </div>
-            )}
-            
             {/* Dialog de Detalhes do Produto */}
             {isDetailDialogOpen && selectedProduct && (
                 <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
