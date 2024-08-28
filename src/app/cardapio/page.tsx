@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from '@/app/axiosConfig';
 import CategoriaCard from '@/components/categoria-card/categoria-card';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,7 @@ const CardapioPage: React.FC = () => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [isMoving, setIsMoving] = useState(false); // Estado para indicar se o produto está sendo movido
     const [progress, setProgress] = useState(0);
     const [newProduct, setNewProduct] = useState<Produto | null>(null);
     const { toast } = useToast();
@@ -108,6 +109,14 @@ const CardapioPage: React.FC = () => {
     const handleDragEnd = async (event: any) => {
         const { active, over } = event;
         if (active.id !== over.id) {
+            setIsMoving(true); // Inicia o estado de movimento
+            toast({
+                title: "Movendo produto...",
+                description: "Por favor, aguarde.",
+                variant: "loading",
+                duration: 5000, // Mantém o toast visível por 5 segundos
+            });
+
             const produtoId = active.id;
             const novaCategoriaId = over.id.replace("categoria-", "");
             const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
@@ -138,13 +147,20 @@ const CardapioPage: React.FC = () => {
                     description: "Ocorreu um erro ao tentar mover o produto.",
                     variant: "destructive",
                 });
+            } finally {
+                setIsMoving(false); // Termina o estado de movimento
             }
         }
     };
 
     return (
-        <div className="flex flex-col min-h-screen">
-            <div className="flex-grow">
+        <div className="flex flex-col min-h-screen relative">
+            {isMoving && (
+                <div className="absolute inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                    <p className="text-white text-lg">Movendo produto...</p>
+                </div>
+            )}
+            <div className={`flex-grow ${isMoving ? 'pointer-events-none' : ''}`}>
                 <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
                     <MenuCompleto />
                     <div className="p-6 flex-grow">

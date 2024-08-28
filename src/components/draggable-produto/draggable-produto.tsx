@@ -17,6 +17,7 @@ const DraggableProduto: React.FC<DraggableProdutoProps> = ({ produto, onProductD
     });
 
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const draggableStyle = {
         transform: `translate3d(${transform?.x || 0}px, ${transform?.y || 0}px, 0)`,
@@ -27,9 +28,14 @@ const DraggableProduto: React.FC<DraggableProdutoProps> = ({ produto, onProductD
         setIsConfirmDialogOpen(true); // Abre o diálogo de confirmação
     };
 
-    const handleConfirmDelete = () => {
-        setIsConfirmDialogOpen(false);
-        onProductDelete(produto); // Executa a exclusão após a confirmação
+    const handleConfirmDelete = async () => {
+        setIsDeleting(true); // Inicia o estado de exclusão
+        try {
+            await onProductDelete(produto); // Executa a exclusão
+        } finally {
+            setIsDeleting(false); // Finaliza o estado de exclusão
+            setIsConfirmDialogOpen(false); // Fecha o diálogo de confirmação
+        }
     };
 
     const handleCancelDelete = () => {
@@ -55,7 +61,13 @@ const DraggableProduto: React.FC<DraggableProdutoProps> = ({ produto, onProductD
             </div>
             <div className='flex gap-4'>
                 <Button onClick={() => onEditClick(produto)} variant="outlineOrange">Editar</Button>
-                <Button onClick={handleDeleteClick} variant="destructive">Excluir</Button>
+                <Button 
+                    onClick={handleDeleteClick} 
+                    variant="destructive"
+                    disabled={isDeleting} // Desabilita o botão durante a exclusão
+                >
+                    {isDeleting ? "Excluindo..." : "Excluir"} {/* Altera o texto durante a exclusão */}
+                </Button>
             </div>
 
             {isConfirmDialogOpen && (

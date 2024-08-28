@@ -12,12 +12,12 @@ const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+    const [isLoggingIn, setIsLoggingIn] = useState(false); // Estado para controlar o estado de carregamento
 
     const { toast } = useToast();
     const router = useRouter();
 
     useEffect(() => {
-        // Verifica se o token já está presente, se sim, redireciona para o dashboard
         const token = Cookies.get('token');
         if (token) {
             router.push('/dashboard');
@@ -28,6 +28,7 @@ const LoginPage = () => {
         event.preventDefault();
 
         setErrors({});
+        setIsLoggingIn(true); // Inicia o estado de carregamento
 
         const newErrors: { email?: string; password?: string } = {};
         if (!email) newErrors.email = 'O email é obrigatório.';
@@ -35,6 +36,7 @@ const LoginPage = () => {
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
+            setIsLoggingIn(false); // Para o carregamento se houver erros
             return;
         }
 
@@ -46,13 +48,9 @@ const LoginPage = () => {
 
             const { token, EmpresaData } = response.data;
 
-            // Armazena o token no cookie (expira em 1 dia)
             Cookies.set('token', token, { expires: 1 });
-
-            // Armazena os dados da empresa no localStorage
             localStorage.setItem('empresaData', JSON.stringify(EmpresaData));
 
-            // Redireciona para o dashboard
             router.push('/dashboard');
         } catch (error) {
             toast({
@@ -60,9 +58,10 @@ const LoginPage = () => {
                 description: "E-mail ou senha inválidos. Por favor, tente novamente.",
                 variant: "destructive",
             });
+        } finally {
+            setIsLoggingIn(false); // Termina o estado de carregamento
         }
     };
-
 
     return (
         <div className="flex h-screen">
@@ -82,6 +81,7 @@ const LoginPage = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full"
+                            disabled={isLoggingIn} // Desabilita o campo durante o carregamento
                         />
                         {errors.email && <p className="text-orange-500 text-sm">{errors.email}</p>}
                     </div>
@@ -93,6 +93,7 @@ const LoginPage = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className="w-full"
+                            disabled={isLoggingIn} // Desabilita o campo durante o carregamento
                         />
                         {errors.password && <p className="text-orange-500 text-sm">{errors.password}</p>}
                     </div>
@@ -101,12 +102,26 @@ const LoginPage = () => {
                             variant="orangeLink"
                             type="button"
                             onClick={() => router.push('/forgot-password')}
+                            disabled={isLoggingIn} // Desabilita o botão durante o carregamento
                         >
                             Esqueci a Senha
                         </Button>
                     </div>
-                    <Button variant="orange" type="submit" className="w-full">Acessar</Button>
-                    <Button variant="orangeLink" className="w-full -mt-5" type="button" onClick={() => router.push('/register')}>
+                    <Button
+                        variant="orange"
+                        type="submit"
+                        className="w-full"
+                        disabled={isLoggingIn} // Desabilita o botão durante o carregamento
+                    >
+                        {isLoggingIn ? "Acessando..." : "Acessar"}
+                    </Button>
+                    <Button
+                        variant="orangeLink"
+                        className="w-full -mt-5"
+                        type="button"
+                        onClick={() => router.push('/register')}
+                        disabled={isLoggingIn} // Desabilita o botão durante o carregamento
+                    >
                         Não tenho uma conta. Criar agora!
                     </Button>
                 </form>

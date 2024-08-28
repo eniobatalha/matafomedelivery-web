@@ -28,8 +28,8 @@ const DialogGerenciarConta: React.FC<DialogGerenciarContaProps> = ({
   const [localNomeFantasia, setLocalNomeFantasia] = useState(nomeFantasia);
   const [localEmail, setLocalEmail] = useState(email);
   const [localTelefone, setLocalTelefone] = useState(telefone);
+  const [isSaving, setIsSaving] = useState(false); // Estado para controle do salvamento
 
-  // Carregar dados da empresa quando o diálogo for aberto
   useEffect(() => {
     if (isOpen) {
       const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
@@ -42,7 +42,6 @@ const DialogGerenciarConta: React.FC<DialogGerenciarContaProps> = ({
     }
   }, [isOpen]);
 
-  // Função para formatar o telefone no formato (99) 99999-9999
   const formatPhone = (value: string) => {
     const cleanedValue = value.replace(/\D/g, '');
     if (cleanedValue.length > 10) {
@@ -62,6 +61,7 @@ const DialogGerenciarConta: React.FC<DialogGerenciarContaProps> = ({
 
   const handleSave = async () => {
     try {
+      setIsSaving(true); // Inicia o estado de salvamento
       const empresaId = JSON.parse(localStorage.getItem('empresaData') || '{}').id;
 
       const payload: {
@@ -92,6 +92,8 @@ const DialogGerenciarConta: React.FC<DialogGerenciarContaProps> = ({
       onClose();
     } catch (error) {
       console.error('Erro ao atualizar a conta:', error);
+    } finally {
+      setIsSaving(false); // Finaliza o estado de salvamento
     }
   };
 
@@ -113,6 +115,7 @@ const DialogGerenciarConta: React.FC<DialogGerenciarContaProps> = ({
               value={localRazaoSocial}
               onChange={(e) => setLocalRazaoSocial(e.target.value)}
               placeholder="Razão Social"
+              disabled={isSaving}
             />
           </div>
           <div>
@@ -123,6 +126,7 @@ const DialogGerenciarConta: React.FC<DialogGerenciarContaProps> = ({
               value={localNomeFantasia}
               onChange={(e) => setLocalNomeFantasia(e.target.value)}
               placeholder="Nome Fantasia"
+              disabled={isSaving}
             />
           </div>
           <div>
@@ -133,13 +137,16 @@ const DialogGerenciarConta: React.FC<DialogGerenciarContaProps> = ({
               value={localTelefone}
               onChange={handlePhoneChange}
               placeholder="Ex: (99) 98765-4321"
-              maxLength={15} // Limita o tamanho do telefone formatado
+              maxLength={15}
+              disabled={isSaving}
             />
           </div>
         </form>
         <DialogFooter>
-          <Button variant="secondary" onClick={onClose}>Cancelar</Button>
-          <Button variant="orange" onClick={handleSave}>Salvar</Button>
+          <Button variant="secondary" onClick={onClose} disabled={isSaving}>Cancelar</Button>
+          <Button variant="orange" onClick={handleSave} disabled={isSaving}>
+            {isSaving ? "Salvando..." : "Salvar"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

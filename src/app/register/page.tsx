@@ -12,13 +12,12 @@ import { FaSearch } from 'react-icons/fa';
 import cx from 'classnames';
 import Cookies from 'js-cookie';
 
-
 type FormValues = {
   razaoSocial: string;
   email: string;
   cnpj: string;
   telefone: string;
-  nomeFantasia: string; // Agora obrigatório
+  nomeFantasia: string;
   senha: string;
   confirmarSenha: string;
   cep: string;
@@ -83,6 +82,8 @@ const RegisterPage = () => {
   const { toast } = useToast();
   const router = useRouter();
 
+  const [isRegistering, setIsRegistering] = useState(false); // Novo estado para controlar o botão
+
   const cnpjRef = useRef<HTMLInputElement>(null);
   const telefoneRef = useRef<HTMLInputElement>(null);
   const cepRef = useRef<HTMLInputElement>(null);
@@ -117,6 +118,7 @@ const RegisterPage = () => {
         setValue('cep', cepRef.current?.value || '');
       });
     }
+
     const token = Cookies.get('token');
     if (token) {
       router.push('/dashboard');
@@ -153,13 +155,15 @@ const RegisterPage = () => {
     const formatCNPJ = (cnpj: string) => cnpj.replace(/\D/g, '');
 
     try {
+      setIsRegistering(true); // Ativa o estado de registrando
+
       const url_api_empresa = '/empresas';
 
       const payload = {
         email: data.email,
         password: data.senha,
         razao_social: data.razaoSocial,
-        nome_fantasia: data.nomeFantasia, // Agora obrigatório
+        nome_fantasia: data.nomeFantasia,
         cnpj: formatCNPJ(data.cnpj),
         taxa_frete: 5,
         telefone: data.telefone,
@@ -171,11 +175,11 @@ const RegisterPage = () => {
         estado: data.estado,
         complemento: data.complemento || "",
         categoria: data.categoria,
-        horario_abertura: data.horarioAbertura + ":00", // Ajuste para enviar como string
-        horario_fechamento: data.horarioFechamento + ":00", // Ajuste para enviar como string
+        horario_abertura: data.horarioAbertura + ":00",
+        horario_fechamento: data.horarioFechamento + ":00",
         img_capa: "teste.png",
         img_perfil: "teste.png",
-        tempo_entrega: "00:30:00" // Exemplo fixo, ajustar conforme necessário
+        tempo_entrega: "00:30:00"
       };
 
       const response = await axios.post(url_api_empresa, payload);
@@ -198,13 +202,15 @@ const RegisterPage = () => {
         description: "Houve um problema ao tentar registrar a empresa.",
         variant: "destructive",
       });
+    } finally {
+      setIsRegistering(false); // Desativa o estado de registrando
     }
   };
 
   const handleValidation = async () => {
-    const isValid = await trigger(); // Trigger validation manually
+    const isValid = await trigger();
     if (isValid) {
-      handleSubmit(onSubmit)(); // Submit the form if validation passes
+      handleSubmit(onSubmit)();
     } else {
       const invalidFields = Object.keys(errors);
       const invalidFieldNames = invalidFields.map((field) => {
@@ -239,7 +245,7 @@ const RegisterPage = () => {
             return 'Hora de Fechamento';
           case 'categoria':
             return 'Categoria';
-          case 'nomeFantasia': // Adicionando a validação de Nome Fantasia
+          case 'nomeFantasia':
             return 'Nome Fantasia';
           default:
             return field;
@@ -281,6 +287,7 @@ const RegisterPage = () => {
                 placeholder="Razão Social"
                 className={cx("w-full", { "bg-orange-100": errors.razaoSocial })}
                 {...register('razaoSocial', { required: 'Razão Social é obrigatória.' })}
+                disabled={isRegistering}
               />
             </div>
           </div>
@@ -294,6 +301,7 @@ const RegisterPage = () => {
                 className={cx("w-full", { "bg-orange-100": errors.cnpj })}
                 {...register('cnpj', { required: 'CNPJ é obrigatório.' })}
                 ref={cnpjRef}
+                disabled={isRegistering}
               />
             </div>
             <div className="flex-1">
@@ -303,6 +311,7 @@ const RegisterPage = () => {
                 placeholder="Nome Fantasia"
                 className={cx("w-full", { "bg-orange-100": errors.nomeFantasia })}
                 {...register('nomeFantasia', { required: 'Nome Fantasia é obrigatório.' })}
+                disabled={isRegistering}
               />
             </div>
           </div>
@@ -316,6 +325,7 @@ const RegisterPage = () => {
                 className={cx("w-full", { "bg-orange-100": errors.telefone })}
                 {...register('telefone', { required: 'Telefone é obrigatório.' })}
                 ref={telefoneRef}
+                disabled={isRegistering}
               />
             </div>
             <div className="flex-1">
@@ -327,12 +337,14 @@ const RegisterPage = () => {
                   className={cx("w-full", { "bg-orange-100": errors.cep })}
                   {...register('cep', { required: 'CEP é obrigatório.' })}
                   ref={cepRef}
+                  disabled={isRegistering}
                 />
                 <Button
                   type="button"
                   onClick={searchCep}
                   variant="orange"
                   className="ml-2"
+                  disabled={isRegistering}
                 >
                   <FaSearch />
                 </Button>
@@ -348,6 +360,7 @@ const RegisterPage = () => {
                 placeholder="Logradouro"
                 className={cx("w-full", { "bg-orange-100": errors.logradouro })}
                 {...register('logradouro', { required: 'Logradouro é obrigatório.' })}
+                disabled={isRegistering}
               />
             </div>
             <div className="flex-1">
@@ -357,6 +370,7 @@ const RegisterPage = () => {
                 placeholder="Número"
                 className={cx("w-full", { "bg-orange-100": errors.numero })}
                 {...register('numero', { required: 'Número é obrigatório.' })}
+                disabled={isRegistering}
               />
             </div>
           </div>
@@ -369,6 +383,7 @@ const RegisterPage = () => {
                 placeholder="Complemento"
                 className={cx("w-full", { "bg-orange-100": errors.complemento })}
                 {...register('complemento')}
+                disabled={isRegistering}
               />
             </div>
             <div className="flex-1">
@@ -378,6 +393,7 @@ const RegisterPage = () => {
                 placeholder="Bairro"
                 className={cx("w-full", { "bg-orange-100": errors.bairro })}
                 {...register('bairro', { required: 'Bairro é obrigatório.' })}
+                disabled={isRegistering}
               />
             </div>
           </div>
@@ -390,6 +406,7 @@ const RegisterPage = () => {
                 placeholder="Cidade"
                 className={cx("w-full", { "bg-orange-100": errors.cidade })}
                 {...register('cidade', { required: 'Cidade é obrigatória.' })}
+                disabled={isRegistering}
               />
             </div>
             <div className="flex-1">
@@ -417,6 +434,7 @@ const RegisterPage = () => {
                 type="time"
                 className={cx({ "bg-orange-100": errors.horarioAbertura })}
                 {...register('horarioAbertura', { required: 'Hora de Abertura é obrigatória.' })}
+                disabled={isRegistering}
               />
             </div>
             <div className="flex-2">
@@ -426,6 +444,7 @@ const RegisterPage = () => {
                 type="time"
                 className={cx({ "bg-orange-100": errors.horarioFechamento })}
                 {...register('horarioFechamento', { required: 'Hora de Fechamento é obrigatória.' })}
+                disabled={isRegistering}
               />
             </div>
             <div className="flex-1">
@@ -455,6 +474,7 @@ const RegisterPage = () => {
                 placeholder="E-mail"
                 className={cx("w-full", { "bg-orange-100": errors.email })}
                 {...register('email', { required: 'E-mail é obrigatório.' })}
+                disabled={isRegistering}
               />
             </div>
             <div className="flex-2">
@@ -465,6 +485,7 @@ const RegisterPage = () => {
                 placeholder="Min. 8 caract."
                 className={cx("w-full", { "bg-orange-100": errors.senha })}
                 {...register('senha', { required: 'Senha é obrigatória.' })}
+                disabled={isRegistering}
               />
             </div>
             <div className="flex-2">
@@ -475,6 +496,7 @@ const RegisterPage = () => {
                 placeholder="Confirmar Senha"
                 className={cx("w-full", { "bg-orange-100": errors.confirmarSenha })}
                 {...register('confirmarSenha', { required: 'Confirmação de Senha não preenchido ou As senhas não estão iguais.', validate: validatePasswords })}
+                disabled={isRegistering}
               />
             </div>
           </div>
@@ -484,10 +506,13 @@ const RegisterPage = () => {
               type="button"
               onClick={() => router.push('/login')}
               variant="orangeLink"
+              disabled={isRegistering}
             >
               Voltar para o Login
             </Button>
-            <Button type="button" variant="orange" className='w-full' onClick={handleValidation}>Registrar</Button>
+            <Button type="button" variant="orange" className='w-full' onClick={handleValidation} disabled={isRegistering}>
+              {isRegistering ? "Registrando..." : "Registrar"}
+            </Button>
           </div>
         </form>
       </div>

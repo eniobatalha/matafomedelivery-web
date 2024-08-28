@@ -82,6 +82,7 @@ const DialogGerenciarEmpresa: React.FC<DialogGerenciarEmpresaProps> = ({
     const [localCategoria, setLocalCategoria] = useState(categoria);
     const [localHorarioAbertura, setLocalHorarioAbertura] = useState(horarioAbertura);
     const [localHorarioFechamento, setLocalHorarioFechamento] = useState(horarioFechamento);
+    const [isSaving, setIsSaving] = useState(false); // Estado para controle do salvamento
 
     useEffect(() => {
         if (isOpen) {
@@ -114,7 +115,7 @@ const DialogGerenciarEmpresa: React.FC<DialogGerenciarEmpresaProps> = ({
     };
 
     const searchCep = async (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault(); // Evita o fechamento do diálogo
+        e.preventDefault();
         if (cep) {
             try {
                 const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
@@ -136,6 +137,7 @@ const DialogGerenciarEmpresa: React.FC<DialogGerenciarEmpresaProps> = ({
 
     const handleSave = async () => {
         try {
+            setIsSaving(true); // Inicia o estado de salvamento
             const empresaId = JSON.parse(localStorage.getItem('empresaData') || '{}').id;
 
             const payloadEmpresa = {
@@ -165,6 +167,8 @@ const DialogGerenciarEmpresa: React.FC<DialogGerenciarEmpresaProps> = ({
             onClose();
         } catch (error) {
             console.error('Erro ao atualizar o estabelecimento:', error);
+        } finally {
+            setIsSaving(false); // Finaliza o estado de salvamento
         }
     };
 
@@ -188,8 +192,9 @@ const DialogGerenciarEmpresa: React.FC<DialogGerenciarEmpresaProps> = ({
                                 onChange={handleCepChange}
                                 placeholder="CEP"
                                 maxLength={9}
+                                disabled={isSaving}
                             />
-                            <Button variant="orange" onClick={searchCep}>
+                            <Button variant="orange" onClick={searchCep} disabled={isSaving}>
                                 <FaSearch />
                             </Button>
                         </div>
@@ -203,6 +208,7 @@ const DialogGerenciarEmpresa: React.FC<DialogGerenciarEmpresaProps> = ({
                                 value={logradouro}
                                 onChange={(e) => setLogradouro(e.target.value)}
                                 placeholder="Logradouro"
+                                disabled={isSaving}
                             />
                         </div>
                         <div className="w-1/3">
@@ -213,6 +219,7 @@ const DialogGerenciarEmpresa: React.FC<DialogGerenciarEmpresaProps> = ({
                                 value={numero}
                                 onChange={(e) => setNumero(e.target.value)}
                                 placeholder="Número"
+                                disabled={isSaving}
                             />
                         </div>
                     </div>
@@ -225,6 +232,7 @@ const DialogGerenciarEmpresa: React.FC<DialogGerenciarEmpresaProps> = ({
                                 value={complemento}
                                 onChange={(e) => setComplemento(e.target.value)}
                                 placeholder="Complemento"
+                                disabled={isSaving}
                             />
                         </div>
                         <div className="flex-1">
@@ -235,6 +243,7 @@ const DialogGerenciarEmpresa: React.FC<DialogGerenciarEmpresaProps> = ({
                                 value={bairro}
                                 onChange={(e) => setBairro(e.target.value)}
                                 placeholder="Bairro"
+                                disabled={isSaving}
                             />
                         </div>
                     </div>
@@ -247,11 +256,12 @@ const DialogGerenciarEmpresa: React.FC<DialogGerenciarEmpresaProps> = ({
                                 value={cidade}
                                 onChange={(e) => setCidade(e.target.value)}
                                 placeholder="Cidade"
+                                disabled={isSaving}
                             />
                         </div>
                         <div className="flex-1">
                             <Label htmlFor="estado">Estado</Label>
-                            <Select value={estado} onValueChange={setEstado} >
+                            <Select value={estado} onValueChange={setEstado} disabled={isSaving}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Selecione o estado" />
                                 </SelectTrigger>
@@ -267,7 +277,7 @@ const DialogGerenciarEmpresa: React.FC<DialogGerenciarEmpresaProps> = ({
                     </div>
                     <div>
                         <Label htmlFor="categoria">Categoria</Label>
-                        <Select value={localCategoria} onValueChange={setLocalCategoria}>
+                        <Select value={localCategoria} onValueChange={setLocalCategoria} disabled={isSaving}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Categoria do Estabelecimento" />
                             </SelectTrigger>
@@ -288,6 +298,7 @@ const DialogGerenciarEmpresa: React.FC<DialogGerenciarEmpresaProps> = ({
                                 type="time"
                                 value={localHorarioAbertura}
                                 onChange={(e) => setLocalHorarioAbertura(e.target.value)}
+                                disabled={isSaving}
                             />
                         </div>
                         <div>
@@ -297,13 +308,16 @@ const DialogGerenciarEmpresa: React.FC<DialogGerenciarEmpresaProps> = ({
                                 type="time"
                                 value={localHorarioFechamento}
                                 onChange={(e) => setLocalHorarioFechamento(e.target.value)}
+                                disabled={isSaving}
                             />
                         </div>
                     </div>
                 </form>
                 <DialogFooter>
-                    <Button variant="secondary" onClick={onClose}>Cancelar</Button>
-                    <Button variant="orange" onClick={handleSave}>Salvar</Button>
+                    <Button variant="secondary" onClick={onClose} disabled={isSaving}>Cancelar</Button>
+                    <Button variant="orange" onClick={handleSave} disabled={isSaving}>
+                        {isSaving ? "Salvando..." : "Salvar"}
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

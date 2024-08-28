@@ -12,14 +12,17 @@ interface DialogEditCategoryProps {
 
 const DialogEditCategory: React.FC<DialogEditCategoryProps> = ({ categoriaId, categoriaNome, onClose, onCategoryUpdated }) => {
     const [categoriaNomeEdit, setCategoriaNomeEdit] = useState(categoriaNome);
+    const [isSaving, setIsSaving] = useState(false); // Estado para controlar o salvamento
 
     const handleEditCategory = async () => {
         try {
+            setIsSaving(true); // Inicia o estado de salvamento
             const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
             const empresaId = empresaData.id;
 
             if (!categoriaId || !empresaId) {
                 console.error('ID da categoria ou empresa inválido');
+                setIsSaving(false);
                 return;
             }
 
@@ -35,6 +38,8 @@ const DialogEditCategory: React.FC<DialogEditCategoryProps> = ({ categoriaId, ca
             onClose();
         } catch (error) {
             console.error('Erro ao editar categoria:', error);
+        } finally {
+            setIsSaving(false); // Finaliza o estado de salvamento
         }
     };
 
@@ -47,10 +52,15 @@ const DialogEditCategory: React.FC<DialogEditCategoryProps> = ({ categoriaId, ca
                     onChange={(e) => setCategoriaNomeEdit(e.target.value)}
                     placeholder="Nome da Categoria"
                     className="mb-4"
+                    disabled={isSaving} // Desabilita o input enquanto está salvando
                 />
                 <div className="flex gap-4">
-                    <Button onClick={handleEditCategory} variant="orange">Salvar</Button>
-                    <Button onClick={onClose} variant="destructive">Cancelar</Button>
+                    <Button onClick={handleEditCategory} variant="orange" disabled={isSaving}>
+                        {isSaving ? "Salvando..." : "Salvar"}
+                    </Button>
+                    <Button onClick={onClose} variant="destructive" disabled={isSaving}>
+                        Cancelar
+                    </Button>
                 </div>
             </div>
         </div>
