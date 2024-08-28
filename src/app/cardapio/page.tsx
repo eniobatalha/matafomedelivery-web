@@ -83,6 +83,8 @@ const CardapioPage: React.FC = () => {
             toast({
                 title: "Produto excluído com sucesso!",
                 variant: "success",
+                duration: 3000,
+
             });
             handleAddCategory();
         } catch (error) {
@@ -91,6 +93,7 @@ const CardapioPage: React.FC = () => {
                 title: "Erro ao excluir produto",
                 description: "Ocorreu um erro ao tentar excluir o produto.",
                 variant: "destructive",
+                duration: 3000,
             });
         }
     };
@@ -108,50 +111,63 @@ const CardapioPage: React.FC = () => {
 
     const handleDragEnd = async (event: any) => {
         const { active, over } = event;
-        if (active.id !== over.id) {
-            setIsMoving(true); // Inicia o estado de movimento
-            toast({
-                title: "Movendo produto...",
-                description: "Por favor, aguarde.",
-                variant: "loading",
-                duration: 5000, // Mantém o toast visível por 5 segundos
+        const produtoId = active.id;
+        const novaCategoriaId = over.id.replace("categoria-", "");
+
+        // Encontre a categoria original do produto
+        const categoriaOrigem = categorias.find(categoria =>
+            categoria.produtos.some(produto => produto.id.toString() === produtoId)
+        );
+
+        if (categoriaOrigem && categoriaOrigem.id.toString() === novaCategoriaId) {
+            // Se a categoria de origem é a mesma que a categoria de destino, não faça nada
+            return;
+        }
+
+        // Se a categoria for diferente, prossiga com a movimentação
+        setIsMoving(true); // Inicia o estado de movimento
+        toast({
+            title: "Movendo produto...",
+            description: "Por favor, aguarde.",
+            variant: "loading",
+            duration: 5000, // Mantém o toast visível por 5 segundos
+        });
+
+        const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
+        const empresaId = empresaData.id;
+
+        try {
+            const getProdutoResponse = await axios.get(`/empresas/${empresaId}/prateleiras/${produtoId}/produtos/${produtoId}`);
+            const produto = getProdutoResponse.data;
+
+            await axios.post(`/empresas/${empresaId}/prateleiras/${novaCategoriaId}/produtos`, {
+                nome: produto.nome,
+                preco: produto.preco,
+                descricao: produto.descricao,
+                urlImagem: produto.urlImagem
             });
 
-            const produtoId = active.id;
-            const novaCategoriaId = over.id.replace("categoria-", "");
-            const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
-            const empresaId = empresaData.id;
+            await axios.delete(`/empresas/${empresaId}/prateleiras/${produtoId}/produtos/${produtoId}`);
 
-            try {
-                const getProdutoResponse = await axios.get(`/empresas/${empresaId}/prateleiras/${produtoId}/produtos/${produtoId}`);
-                const produto = getProdutoResponse.data;
-
-                await axios.post(`/empresas/${empresaId}/prateleiras/${novaCategoriaId}/produtos`, {
-                    nome: produto.nome,
-                    preco: produto.preco,
-                    descricao: produto.descricao,
-                    urlImagem: produto.urlImagem
-                });
-
-                await axios.delete(`/empresas/${empresaId}/prateleiras/${produtoId}/produtos/${produtoId}`);
-
-                toast({
-                    title: "Produto movido com sucesso!",
-                    variant: "success",
-                });
-                handleAddCategory();
-            } catch (error) {
-                console.error('Erro ao mover produto:', error);
-                toast({
-                    title: "Erro ao mover produto",
-                    description: "Ocorreu um erro ao tentar mover o produto.",
-                    variant: "destructive",
-                });
-            } finally {
-                setIsMoving(false); // Termina o estado de movimento
-            }
+            toast({
+                title: "Produto movido com sucesso!",
+                variant: "success",
+                duration: 3000,
+            });
+            handleAddCategory();
+        } catch (error) {
+            console.error('Erro ao mover produto:', error);
+            toast({
+                title: "Erro ao mover produto",
+                description: "Ocorreu um erro ao tentar mover o produto.",
+                variant: "destructive",
+                duration: 3000,
+            });
+        } finally {
+            setIsMoving(false); // Termina o estado de movimento
         }
     };
+
 
     return (
         <div className="flex flex-col min-h-screen relative">

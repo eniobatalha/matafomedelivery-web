@@ -57,6 +57,7 @@ const LoginPage = () => {
                 title: "Erro ao entrar",
                 description: "E-mail ou senha inválidos. Por favor, tente novamente.",
                 variant: "destructive",
+                duration: 3000,
             });
         } finally {
             setIsLoggingIn(false); // Termina o estado de carregamento

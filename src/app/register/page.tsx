@@ -146,6 +146,7 @@ const RegisterPage = () => {
           title: "Erro ao buscar CEP",
           description: "Não foi possível buscar o CEP.",
           variant: "destructive",
+          duration: 3000,
         });
       }
     }
@@ -188,6 +189,7 @@ const RegisterPage = () => {
         title: "Registro bem-sucedido!",
         description: "A empresa foi registrada com sucesso.",
         variant: "success",
+        duration: 3000,
       });
 
       setTimeout(() => {
@@ -201,6 +203,7 @@ const RegisterPage = () => {
         title: "Erro ao registrar",
         description: "Houve um problema ao tentar registrar a empresa.",
         variant: "destructive",
+        duration: 3000,
       });
     } finally {
       setIsRegistering(false); // Desativa o estado de registrando
@@ -257,12 +260,14 @@ const RegisterPage = () => {
           title: "Erro de Validação",
           description: `O campo ${invalidFieldNames[0]} não foi preenchido.`,
           variant: "destructive",
+          duration: 5000,
         });
       } else {
         toast({
           title: "Erro de Validação",
           description: `Existem ${invalidFields.length} campos obrigatórios não preenchidos: ${invalidFieldNames.join(', ')}.`,
           variant: "destructive",
+          duration: 5000,
         });
       }
     }

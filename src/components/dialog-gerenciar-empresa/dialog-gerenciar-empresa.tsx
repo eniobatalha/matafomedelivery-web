@@ -130,6 +130,7 @@ const DialogGerenciarEmpresa: React.FC<DialogGerenciarEmpresaProps> = ({
                     title: "Erro ao buscar CEP",
                     description: "Não foi possível buscar o CEP.",
                     variant: "destructive",
+                    duration: 3000,
                 });
             }
         }
