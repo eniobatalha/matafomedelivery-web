@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { GiHamburgerMenu } from "react-icons/gi";
@@ -8,7 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import {
     Dialog,
     DialogContent,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
     Card,
     CardContent,
@@ -19,15 +19,18 @@ import {
     TabsContent,
     TabsList,
     TabsTrigger,
-} from "@/components/ui/tabs"
+} from "@/components/ui/tabs";
 import Tag from '@/components/tag-pedido/tag-pedido';
 import CardConteudoProduto from '@/components/card-conteudo-produto/card-conteudo-produto';
 import MenuCompleto from '@/components/menu-completo/menu-completo';
 import { Footer } from '@/components/footer/footer';
-import { pedidosMock } from '@/mocks/mockPedidos';
 import NovoPedidoDialog from '@/components/novo-pedido-dialog/novo-pedido.dialog';
+import axiosInstance from '@/app/axiosConfig';
 
-function formatToWhatsAppLink(phoneNumber: string) {
+function formatToWhatsAppLink(phoneNumber: string | undefined | null) {
+    if (!phoneNumber) {
+        return "#"; // Retorna um link vazio ou qualquer valor padrão que você achar adequado
+    }
     const cleanedNumber = phoneNumber.replace(/\D/g, '');
     const formattedNumber = `55${cleanedNumber}`;
     return `https://wa.me/${formattedNumber}`;
@@ -40,22 +43,81 @@ function formatToGoogleMapsLink(endereco: any) {
     return `https://www.google.com/maps/dir/${startingPoint}/${encodeURIComponent(destination)}`;
 }
 
+// Mapeamento de status da API para o formato usado no frontend
+function mapStatus(status: string): number {
+    switch (status) {
+        case "PENDENTE":
+            return 1;
+        case "PROCESSANDO":
+            return 2;
+        case "EM_TRANSITO":
+            return 3;
+        case "ENTREGUE":
+            return 4;
+        case "CANCELADO":
+            return 5;
+        default:
+            return 0; // Desconhecido
+    }
+}
+
+function formatDateTime(dateTimeString: string): string {
+    const isoFormatRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3,}$/;
+
+    if (isoFormatRegex.test(dateTimeString)) {
+        const date = new Date(dateTimeString);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Mês é indexado a partir de 0
+        const year = date.getFullYear().toString().slice(2);
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+
+        return `${day}/${month}/${year} ${hours}:${minutes}`;
+    }
+
+    return dateTimeString;
+}
+
+
 const PedidosPage = () => {
     const [filtroStatus, setFiltroStatus] = useState<string>("todos");
     const [pedidoDialogOpen, setPedidoDialogOpen] = useState<boolean>(false);
     const [pedidoAleatorio, setPedidoAleatorio] = useState<any>(null);
+    const [pedidos, setPedidos] = useState<any[]>([]);
+
+    useEffect(() => {
+        async function fetchPedidos() {
+            try {
+                const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
+                const empresaId = empresaData?.id;
+
+                if (empresaId) {
+                    const response = await axiosInstance.get(`/empresas/${empresaId}/pedidos`);
+                    setPedidos(response.data);
+                } else {
+                    console.error("Empresa ID não encontrado no localStorage");
+                }
+            } catch (error) {
+                console.error("Erro ao buscar os pedidos:", error);
+            }
+        }
+
+        fetchPedidos();
+    }, []);
 
     const pedidosFiltrados = filtroStatus === "todos"
-        ? pedidosMock
-        : pedidosMock.filter(pedido => {
-            if (filtroStatus === "empreparo") return pedido.status === 2;
-            if (filtroStatus === "ementrega") return pedido.status === 3;
-            if (filtroStatus === "entregues") return pedido.status === 4;
-            if (filtroStatus === "cancelados") return pedido.status === 5;
+        ? pedidos
+        : pedidos.filter(pedido => {
+            const statusMapped = mapStatus(pedido.status);
+            if (filtroStatus === "novo") return statusMapped === 1;
+            if (filtroStatus === "empreparo") return statusMapped === 2;
+            if (filtroStatus === "ementrega") return statusMapped === 3;
+            if (filtroStatus === "entregues") return statusMapped === 4;
+            if (filtroStatus === "cancelados") return statusMapped === 5;
         });
 
     const handleNovoPedido = () => {
-        const pedido = pedidosMock[Math.floor(Math.random() * pedidosMock.length)];
+        const pedido = pedidos[Math.floor(Math.random() * pedidos.length)];
         setPedidoAleatorio(pedido);
         setPedidoDialogOpen(true);
         const audio = new Audio('/sounds/alert.mp3');
@@ -87,6 +149,7 @@ const PedidosPage = () => {
                             <Tabs defaultValue="todos" className="space-y-4" onValueChange={(value) => setFiltroStatus(value)}>
                                 <TabsList className='w-auto'>
                                     <TabsTrigger value="todos">Todos</TabsTrigger>
+                                    <TabsTrigger value="novo">Novos</TabsTrigger>
                                     <TabsTrigger value="empreparo">Em Preparo</TabsTrigger>
                                     <TabsTrigger value="ementrega">Em Entrega</TabsTrigger>
                                     <TabsTrigger value="entregues">Entregues</TabsTrigger>
@@ -100,8 +163,8 @@ const PedidosPage = () => {
                                                     <div className="flex justify-between items-center">
                                                         <div className="flex gap-4">
                                                             <h2 className="text-xl font-bold tracking-tight">#{pedido.id}</h2>
-                                                            <Tag type="time" value={pedido.dataHora} />
-                                                            <Tag type="status" value={pedido.status} />
+                                                            <Tag type="time" value={formatDateTime(pedido.dataHoraPedido)} />
+                                                            <Tag type="status" value={mapStatus(pedido.status)} />
                                                         </div>
                                                         <DropdownMenu>
                                                             <DropdownMenuTrigger asChild>
@@ -123,53 +186,62 @@ const PedidosPage = () => {
                                                         </DropdownMenu>
                                                     </div>
                                                     <h3 className='text-sm text-muted-foreground'>
-                                                        <strong>Cliente:</strong> {pedido.cliente} — 
+                                                        <strong>Cliente:</strong> {pedido.cliente?.nome} —
                                                         <strong>Telefone: </strong>
-                                                        <Link href={formatToWhatsAppLink(pedido.telefone)} passHref legacyBehavior>
+                                                        <Link href={formatToWhatsAppLink(pedido.cliente?.foneCelular)} passHref legacyBehavior>
                                                             <a
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
                                                                 className="text-orange-500 underline hover:text-orange-600"
                                                             >
-                                                                {pedido.telefone}
+                                                                {pedido.cliente?.foneCelular}
                                                             </a>
                                                         </Link>
                                                     </h3>
-                                                    <h3 className='text-xs text-muted-foreground'>
-                                                        <strong>Endereço: </strong>
-                                                        <Link href={formatToGoogleMapsLink(pedido.enderecoPedido[0])} passHref legacyBehavior>
-                                                            <a
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className="text-orange-500 underline hover:text-orange-600"
-                                                            >
-                                                                {pedido.enderecoPedido[0].logradouro} {pedido.enderecoPedido[0].numero}, {pedido.enderecoPedido[0].bairro}, {pedido.enderecoPedido[0].cidade}
-                                                            </a>
-                                                        </Link>
-                                                    </h3>
-                                                    <h3 className='text-xs text-muted-foreground'>
-                                                        <strong> Complemento:</strong> {pedido.enderecoPedido[0].complemento}
-                                                    </h3>
+
+                                                    {pedido.enderecoEntrega && (
+                                                        <>
+                                                            <h3 className='text-xs text-muted-foreground'>
+                                                                <strong>Endereço: </strong>
+                                                                <Link href={formatToGoogleMapsLink(pedido.enderecoEntrega)} passHref legacyBehavior>
+                                                                    <a
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="text-orange-500 underline hover:text-orange-600"
+                                                                    >
+                                                                        {pedido.enderecoEntrega.logradouro} {pedido.enderecoEntrega.numero}, {pedido.enderecoEntrega.bairro}, {pedido.enderecoEntrega.cidade}
+                                                                    </a>
+                                                                </Link>
+                                                            </h3>
+                                                            <h3 className='text-xs text-muted-foreground'>
+                                                                <strong>Complemento:</strong> {pedido.enderecoEntrega.complemento}
+                                                            </h3>
+                                                        </>
+                                                    )}
                                                 </CardHeader>
                                                 <CardContent className="pb-2 mb-4 mt-4 flex-1">
-                                                    {pedido.produtos.map((produto) => (
-                                                        <CardConteudoProduto
-                                                            key={produto.id}
-                                                            id={produto.id}
-                                                            name={produto.name}
-                                                            image={produto.image}
-                                                            description={produto.description}
-                                                            quantity={produto.quantity}
-                                                            unitPrice={produto.unitPrice}
-                                                            totalPrice={produto.totalPrice}
-                                                            additions={produto.additions}
-                                                        />
-                                                    ))}
+                                                    {Array.isArray(pedido.itensPedido) && pedido.itensPedido.length > 0 ? (
+                                                        pedido.itensPedido.map((item: any) => (
+                                                            <CardConteudoProduto
+                                                                key={item.id}
+                                                                id={item.produto.id}
+                                                                name={item.produto.nome}
+                                                                image={item.produto.urlImagem}
+                                                                description={item.produto.descricao}
+                                                                quantity={item.quantidade}
+                                                                unitPrice={item.produto.preco}
+                                                                totalPrice={item.produto.preco * item.quantidade}
+                                                                additions={item.produto.adicionais || []} // Garantindo que additions é um array
+                                                            />
+                                                        ))
+                                                    ) : (
+                                                        <p>Nenhum produto encontrado</p>
+                                                    )}
                                                 </CardContent>
                                                 <div className="h-20 border-t border-gray-300 pt-6">
                                                     <div className="flex justify-between px-6 mb-4">
                                                         <div className="text-xl text-orange-500 font-extrabold">Total</div>
-                                                        <div className="text-2xl text-orange-500 font-extrabold tracking-tight">R$ {pedido.total}</div>
+                                                        <div className="text-2xl text-orange-500 font-extrabold tracking-tight">R$ {pedido.valorTotal}</div>
                                                     </div>
                                                 </div>
                                             </Card>
@@ -184,6 +256,9 @@ const PedidosPage = () => {
             </div>
         </>
     );
+
+
+
 };
 
 export default PedidosPage;

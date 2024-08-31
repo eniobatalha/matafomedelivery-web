@@ -1,42 +1,46 @@
 import React from 'react';
 
-interface ProductProps {
-    id: string;
+interface CardConteudoProdutoProps {
+    id: number;
     name: string;
-    unitPrice: string;
-    description: string;
     image: string;
-    quantity: number; 
-    totalPrice: string;
-    additions: string[];
+    description: string;
+    quantity: number;
+    unitPrice: number;
+    totalPrice: number;
+    additions: { id: number; nome: string; valor: number }[];
 }
 
-const CardConteudoProduto: React.FC<ProductProps> = ({
+const CardConteudoProduto: React.FC<CardConteudoProdutoProps> = ({
     id,
     name,
-    unitPrice,
-    description,
     image,
+    description,
     quantity,
+    unitPrice,
     totalPrice,
     additions,
-}) => (
-    <div className="flex gap-4 mb-4">
-        <img src={image} alt={description} className="w-12 h-12 rounded" />
-        <div className="flex-grow">
-            <div id={id} className="flex justify-between items-center">
-                <div className="text-base font-semibold">{name}</div>
-                <div className="text-base font-semibold">{totalPrice}</div>
-            </div>
-            <div className="text-sm text-gray-400">{description}</div>
-            <div className="text-sm text-gray-500">{`${quantity} x R$ ${unitPrice}`}</div>
-            <div className="text-sm text-gray-500">
-                {additions.map((addition, index) => (
-                    <div key={index}>- {addition}</div>
-                ))}
+}) => {
+    return (
+        <div className="flex">
+            <img src={image} alt={name} className="w-20 h-20 object-cover" />
+            <div className="ml-4">
+                <h4 className="text-lg font-bold">{name}</h4>
+                <p className="text-sm text-gray-500">{description}</p>
+                <div className="text-sm text-gray-500">{`${quantity} x R$ ${unitPrice.toFixed(2)}`}</div>
+                <div className="text-sm text-gray-500">
+                    {Array.isArray(additions) && additions.length > 0 ? (
+                        additions.map((addition) => (
+                            <div key={addition.id}>- {addition.nome} (R$ {addition.valor.toFixed(2)})</div>
+                        ))
+                    ) : (
+                        <p>Sem adicionais</p>
+                    )}
+                </div>
+                <div className="text-lg font-bold text-orange-500 mt-2">Total: R$ {totalPrice.toFixed(2)}</div>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 export default CardConteudoProduto;
