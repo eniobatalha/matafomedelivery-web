@@ -4,8 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Tag from "@/components/tag-pedido/tag-pedido";
-import { useState } from "react";
-import DialogDetalhesPedido from "@/components/dialog-detalhes-pedido/dialog-detalhes-pedido";
+import ActionCell from "./action-cell";
 
 // Função para mapear o status da API para o formato usado no frontend
 function mapStatus(status: string): number {
@@ -143,22 +142,6 @@ export const columns: ColumnDef<any>[] = [
     {
         id: "actions",
         header: "Ações",
-        cell: ({ row }) => {
-            const [dialogOpen, setDialogOpen] = useState(false);
-            return (
-                <>
-                    <Button variant="orangeLink" onClick={() => setDialogOpen(true)}>
-                        Ver Detalhes
-                    </Button>
-                    {dialogOpen && (
-                        <DialogDetalhesPedido
-                            isOpen={dialogOpen}
-                            onClose={() => setDialogOpen(false)}
-                            pedido={row.original}
-                        />
-                    )}
-                </>
-            );
-        },
+        cell: ({ row }) => <ActionCell pedido={row.original} />,
     },
 ];
