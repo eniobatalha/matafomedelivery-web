@@ -1,7 +1,10 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+
+import React, { useState, useEffect } from "react";
+import MenuCompleto from "@/components/menu-completo/menu-completo";
+import { Footer } from "@/components/footer/footer";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { MdDeliveryDining } from "react-icons/md";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -20,16 +23,24 @@ import {
     TabsList,
     TabsTrigger,
 } from "@/components/ui/tabs";
+import { useToast } from "@/components/ui/use-toast";
 import Tag from '@/components/tag-pedido/tag-pedido';
 import CardConteudoProduto from '@/components/card-conteudo-produto/card-conteudo-produto';
-import MenuCompleto from '@/components/menu-completo/menu-completo';
-import { Footer } from '@/components/footer/footer';
 import NovoPedidoDialog from '@/components/novo-pedido-dialog/novo-pedido.dialog';
 import axiosInstance from '@/app/axiosConfig';
+import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
 
 function formatToWhatsAppLink(phoneNumber: string | undefined | null) {
     if (!phoneNumber) {
-        return "#"; // Retorna um link vazio ou qualquer valor padrão que você achar adequado
+        return "#";
     }
     const cleanedNumber = phoneNumber.replace(/\D/g, '');
     const formattedNumber = `55${cleanedNumber}`;
@@ -43,7 +54,6 @@ function formatToGoogleMapsLink(endereco: any) {
     return `https://www.google.com/maps/dir/${startingPoint}/${encodeURIComponent(destination)}`;
 }
 
-// Mapeamento de status da API para o formato usado no frontend
 function mapStatus(status: string): number {
     switch (status) {
         case "PENDENTE":
@@ -67,7 +77,7 @@ function formatDateTime(dateTimeString: string): string {
     if (isoFormatRegex.test(dateTimeString)) {
         const date = new Date(dateTimeString);
         const day = date.getDate().toString().padStart(2, '0');
-        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Mês é indexado a partir de 0
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
         const year = date.getFullYear().toString().slice(2);
         const hours = date.getHours().toString().padStart(2, '0');
         const minutes = date.getMinutes().toString().padStart(2, '0');
@@ -78,12 +88,16 @@ function formatDateTime(dateTimeString: string): string {
     return dateTimeString;
 }
 
-
 const PedidosPage = () => {
     const [filtroStatus, setFiltroStatus] = useState<string>("todos");
     const [pedidoDialogOpen, setPedidoDialogOpen] = useState<boolean>(false);
     const [pedidoAleatorio, setPedidoAleatorio] = useState<any>(null);
     const [pedidos, setPedidos] = useState<any[]>([]);
+    const { toast } = useToast();
+
+    // Defina as variáveis de controle de paginação
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 12;
 
     useEffect(() => {
         async function fetchPedidos() {
@@ -105,6 +119,44 @@ const PedidosPage = () => {
         fetchPedidos();
     }, []);
 
+    const atualizarStatusPedido = async (idPedido: number, novoStatus: string, novoStatusPagamento?: string) => {
+        try {
+            const endpoint = `/pedidos/${idPedido}/status`;
+            console.log(`Requisição PATCH para ${endpoint} com status: ${novoStatus}`);
+
+            const response = await axiosInstance.patch(endpoint, novoStatus, {
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            console.log('Resposta da API:', response.data);
+
+            setPedidos((pedidos) =>
+                pedidos.map((pedido) =>
+                    pedido.id === idPedido
+                        ? {
+                            ...pedido,
+                            status: novoStatus,
+                            statusPagamento: novoStatusPagamento || pedido.statusPagamento,
+                        }
+                        : pedido
+                )
+            );
+
+            toast({
+                title: `Status do pedido ${idPedido} atualizado para ${novoStatus}`,
+                variant: 'success',
+                duration: 3000,
+            });
+        } catch (error) {
+            console.error('Erro ao atualizar status do pedido:', error);
+            toast({
+                title: `Erro ao atualizar status do pedido ${idPedido}`,
+                variant: 'destructive',
+                duration: 3000,
+            });
+        }
+    };
+
     const pedidosFiltrados = filtroStatus === "todos"
         ? pedidos
         : pedidos.filter(pedido => {
@@ -123,6 +175,17 @@ const PedidosPage = () => {
         const audio = new Audio('/sounds/alert.mp3');
         audio.play();
     };
+
+    // Função para alterar a página
+    const handlePageChange = (pageNumber: number) => {
+        if (pageNumber < 1 || pageNumber > Math.ceil(pedidosFiltrados.length / itemsPerPage)) return;
+        setCurrentPage(pageNumber);
+    };
+
+    // Função para calcular os itens a serem exibidos na página atual
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = pedidosFiltrados.slice(indexOfFirstItem, indexOfLastItem);
 
     return (
         <>
@@ -157,13 +220,13 @@ const PedidosPage = () => {
                                 </TabsList>
                                 <TabsContent value={filtroStatus}>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                        {pedidosFiltrados.map((pedido) => (
+                                        {currentItems.map((pedido) => (
                                             <Card key={pedido.id} className="flex flex-col shadow-lg">
                                                 <CardHeader className="border-b border-gray-300 bg-orange-100 pb-2 mb-2">
                                                     <div className="flex justify-between items-center">
                                                         <div className="flex gap-4">
                                                             <h2 className="text-xl font-bold tracking-tight">#{pedido.id}</h2>
-                                                            <Tag type="time" value={'🕧 '+formatDateTime(pedido.dataHoraPedido)} />
+                                                            <Tag type="time" value={'🕧 ' + formatDateTime(pedido.dataHoraPedido)} />
                                                             <Tag type="status" value={mapStatus(pedido.status)} />
                                                             <Tag type="statusPagamento" value={pedido.statusPagamento} />
                                                         </div>
@@ -174,15 +237,60 @@ const PedidosPage = () => {
                                                                 </Button>
                                                             </DropdownMenuTrigger>
                                                             <DropdownMenuContent className="w-56" align="end" forceMount>
-                                                                <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
-                                                                    Iniciar preparo
-                                                                </DropdownMenuItem>
-                                                                <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
-                                                                    Enviar pedido
-                                                                </DropdownMenuItem>
-                                                                <DropdownMenuItem className="hover:bg-orange-500 hover:text-white">
-                                                                    Cancelar pedido
-                                                                </DropdownMenuItem>
+                                                                {mapStatus(pedido.status) === 1 && (
+                                                                    <>
+                                                                        <DropdownMenuItem
+                                                                            className="focus:bg-orange-600 focus:text-white"
+                                                                            onClick={() => atualizarStatusPedido(pedido.id, 'PROCESSANDO')}
+                                                                        >
+                                                                            Iniciar preparo
+                                                                        </DropdownMenuItem>
+                                                                        <DropdownMenuItem
+                                                                            className="focus:bg-red-600 focus:text-white"
+                                                                            onClick={() => atualizarStatusPedido(pedido.id, 'CANCELADO', 'cancelado')}
+                                                                        >
+                                                                            Cancelar
+                                                                        </DropdownMenuItem>
+                                                                    </>
+                                                                )}
+                                                                {mapStatus(pedido.status) === 2 && (
+                                                                    <>
+                                                                        <DropdownMenuItem
+                                                                            onClick={() => atualizarStatusPedido(pedido.id, 'EM_TRANSITO')}
+                                                                        >
+                                                                            Enviar pedido
+                                                                        </DropdownMenuItem>
+                                                                        <DropdownMenuItem
+                                                                            className="focus:bg-red-600 focus:text-white"
+                                                                            onClick={() => atualizarStatusPedido(pedido.id, 'CANCELADO', 'cancelado')}
+                                                                        >
+                                                                            Cancelar
+                                                                        </DropdownMenuItem>
+                                                                    </>
+                                                                )}
+                                                                {mapStatus(pedido.status) === 3 && (
+                                                                    <>
+                                                                        <DropdownMenuItem
+                                                                            onClick={() => atualizarStatusPedido(pedido.id, 'ENTREGUE')}
+                                                                        >
+                                                                            Confirmar entrega
+                                                                        </DropdownMenuItem>
+                                                                        <DropdownMenuItem
+                                                                            className="focus:bg-red-600 focus:text-white"
+                                                                            onClick={() => atualizarStatusPedido(pedido.id, 'CANCELADO', 'cancelado')}
+                                                                        >
+                                                                            Cancelar
+                                                                        </DropdownMenuItem>
+                                                                    </>
+                                                                )}
+                                                                {pedido.statusPagamento === 'pendente' && (
+                                                                    <DropdownMenuItem
+                                                                        className="focus:bg-green-600 focus:text-white"
+                                                                        onClick={() => atualizarStatusPedido(pedido.id, pedido.status, 'pago')}
+                                                                    >
+                                                                        Confirmar pagamento
+                                                                    </DropdownMenuItem>
+                                                                )}
                                                             </DropdownMenuContent>
                                                         </DropdownMenu>
                                                     </div>
@@ -251,15 +359,45 @@ const PedidosPage = () => {
                                 </TabsContent>
                             </Tabs>
                         </div>
+                        {/* Componente de Paginação */}
+                        <Pagination>
+                            <PaginationContent>
+                                <PaginationItem>
+                                    {currentPage > 1 ? (
+                                        <PaginationPrevious onClick={() => handlePageChange(currentPage - 1)} />
+                                    ) : (
+                                        <span className="pagination-link-disabled">Anterior</span> // Crie uma classe CSS para desabilitar visualmente o link
+                                    )}
+                                </PaginationItem>
+                                {[...Array(Math.ceil(pedidosFiltrados.length / itemsPerPage)).keys()].map((_, index) => (
+                                    <PaginationItem key={index}>
+                                        <PaginationLink
+                                            onClick={() => handlePageChange(index + 1)}
+                                            isActive={currentPage === index + 1}
+                                        >
+                                            {index + 1}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                ))}
+                                <PaginationItem>
+                                    {currentPage < Math.ceil(pedidosFiltrados.length / itemsPerPage) ? (
+                                        <PaginationNext onClick={() => handlePageChange(currentPage + 1)} />
+                                    ) : (
+                                        <a><span className="pagination-link-disabled">Próximo</span></a>
+                                    )}
+                                </PaginationItem>
+                            </PaginationContent>
+
+                        </Pagination>
                     </div>
                 </div>
                 <Footer />
             </div>
         </>
     );
-
-
-
 };
 
 export default PedidosPage;
+
+
+

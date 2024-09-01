@@ -80,4 +80,10 @@
   .dialog-overlay {
     z-index: 1000; /* Um valor alto para garantir que os diálogos fiquem no topo */
   }
+  .pagination-link-disabled {
+    pointer-events: none;
+    color: #ddd;
+    cursor: not-allowed;
+  }
+
 }
