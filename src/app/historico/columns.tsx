@@ -1,141 +1,164 @@
-"use client"
+"use client";
 
-import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal, ArrowUpDown } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Tag from "@/components/tag-pedido/tag-pedido";
+import { useState } from "react";
+import DialogDetalhesPedido from "@/components/dialog-detalhes-pedido/dialog-detalhes-pedido";
 
-// Define o tipo Payment com as colunas da tabela.
-export type Payment = {
-  pedido: number
-  cliente: string
-  status: "Pendente" | "Em produção" | "Enviado" | "Cancelado"
-  bairro: string
-  total: number
+// Função para mapear o status da API para o formato usado no frontend
+function mapStatus(status: string): number {
+    switch (status) {
+        case "PENDENTE":
+            return 1;
+        case "PROCESSANDO":
+            return 2;
+        case "EM_TRANSITO":
+            return 3;
+        case "ENTREGUE":
+            return 4;
+        case "CANCELADO":
+            return 5;
+        default:
+            return 0; // Desconhecido
+    }
 }
 
-// Definição das colunas para a tabela, incluindo a coluna de ações com o menu dropdown e a funcionalidade de ordenação.
-export const columns: ColumnDef<Payment>[] = [
-  {
-    accessorKey: "pedido",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center justify-center space-x-2 w-full"
-      >
-        <span>Nº</span>
-        <ArrowUpDown className="h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => (
-      <div className="text-center">{row.getValue("pedido")}</div>
-    ),
-  },
-  {
-    accessorKey: "cliente",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center justify-center space-x-2 w-full"
-      >
-        <span>Cliente</span>
-        <ArrowUpDown className="h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => (
-      <div className="text-center">{row.getValue("cliente")}</div>
-    ),
-  },
-  {
-    accessorKey: "status",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center justify-center space-x-2 w-full"
-      >
-        <span>Status</span>
-        <ArrowUpDown className="h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => (
-      <div className="text-center">{row.getValue("status")}</div>
-    ),
-  },
-  {
-    accessorKey: "bairro",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center justify-center space-x-2 w-full"
-      >
-        <span>Bairro</span>
-        <ArrowUpDown className="h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => (
-      <div className="text-center">{row.getValue("bairro")}</div>
-    ),
-  },
-  {
-    accessorKey: "total",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="flex items-center justify-center space-x-2 w-full"
-      >
-        <span>R$ Total</span>
-        <ArrowUpDown className="h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const total = parseFloat(row.getValue("total"))
-      const formatted = new Intl.NumberFormat("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      }).format(total)
+// Função para formatar a data, se necessário
+function formatDateTime(dateTimeString: string): string {
+    const isFormatted = /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}$/.test(dateTimeString);
 
-      return <div className="text-center font-medium">{formatted}</div>
-    },
-  },
-  {
-    id: "actions",
-    header: "Ações",
-    cell: ({ row }) => {
-      const payment = row.original
+    if (isFormatted) {
+        return dateTimeString;
+    }
 
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Abrir menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Ações</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.pedido.toString())}
+    try {
+        const date = new Date(dateTimeString);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+
+        return `${day}/${month}/${year} ${hours}:${minutes}`;
+    } catch (error) {
+        console.error("Erro ao formatar a data:", error);
+        return dateTimeString;
+    }
+}
+
+export const columns: ColumnDef<any>[] = [
+    {
+        accessorKey: "id",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             >
-              Copiar ID do Pedido
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Ver Cliente</DropdownMenuItem>
-            <DropdownMenuItem>Ver Detalhes do Pedido</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
+                ID
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
+        cell: (info) => info.getValue(),
     },
-  },
-]
+    {
+        accessorKey: "dataHoraPedido",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+                Data do Pedido
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
+        cell: ({ cell }) => formatDateTime(cell.getValue() as string),
+    },
+    {
+        accessorKey: "cliente.nome",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+                Cliente
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
+        cell: (info) => info.getValue(),
+    },
+    {
+        accessorKey: "status",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+                Status do Pedido
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
+        cell: (info) => <Tag type="status" value={mapStatus(info.getValue() as string)} />,
+    },
+    {
+        accessorKey: "enderecoEntrega.bairro",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+                Bairro
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
+        cell: (info) => info.getValue(),
+    },
+    {
+        accessorKey: "statusPagamento",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+                Status Pagamento
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
+        cell: (info) => <Tag type="statusPagamento" value={info.getValue() as string | number} />,
+    },
+    {
+        accessorKey: "valorTotal",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+                Total (R$)
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
+        cell: (info) => `R$ ${(info.getValue() as number).toFixed(2)}`,
+    },
+    {
+        id: "actions",
+        header: "Ações",
+        cell: ({ row }) => {
+            const [dialogOpen, setDialogOpen] = useState(false);
+            return (
+                <>
+                    <Button variant="orangeLink" onClick={() => setDialogOpen(true)}>
+                        Ver Detalhes
+                    </Button>
+                    {dialogOpen && (
+                        <DialogDetalhesPedido
+                            isOpen={dialogOpen}
+                            onClose={() => setDialogOpen(false)}
+                            pedido={row.original}
+                        />
+                    )}
+                </>
+            );
+        },
+    },
+];

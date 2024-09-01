@@ -19,6 +19,24 @@ interface NovoPedidoDialogProps {
     pedido?: Pedido | null;
 }
 
+// Formatar a data e hora para o formato brasileiro
+function formatDateTime(dateTimeString: string): string {
+    const isoFormatRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3,}$/;
+
+    if (isoFormatRegex.test(dateTimeString)) {
+        const date = new Date(dateTimeString);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Mês é indexado a partir de 0
+        const year = date.getFullYear().toString().slice(2);
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+
+        return `${day}/${month}/${year} ${hours}:${minutes}`;
+    }
+
+    return dateTimeString;
+}
+
 function formatToWhatsAppLink(phoneNumber: string) {
     const cleanedNumber = phoneNumber.replace(/\D/g, '');
     const formattedNumber = `55${cleanedNumber}`;
@@ -43,8 +61,8 @@ const NovoPedidoDialog: React.FC<NovoPedidoDialogProps> = ({ isOpen, onClose, pe
                     <div className="flex justify-between items-center">
                         <div className="flex gap-4 mb-2">
                             <DialogTitle className="text-base font-bold tracking-tight">Novo Pedido</DialogTitle>
-                            <Tag type="time" value={pedido.dataHoraPedido} />
-                            <Tag type="status" value={pedido.status} />
+                            <Tag type="time" value={formatDateTime(pedido.dataHoraPedido)} />
+                            <Tag type="status" value="Novo" />
                         </div>
                     </div>
                     <DialogDescription className='text-sm text-muted-foreground'>
@@ -87,7 +105,7 @@ const NovoPedidoDialog: React.FC<NovoPedidoDialogProps> = ({ isOpen, onClose, pe
                             quantity={item.quantidade}
                             unitPrice={Number(item.produto.preco)}
                             totalPrice={Number(item.produto.preco) * item.quantidade}
-                            additions={item.produto.adicionais?.map((addition) => addition.nome) || []}
+                            additions={item.produto.adicionais || []}
                         />
                     ))}
                 </div>

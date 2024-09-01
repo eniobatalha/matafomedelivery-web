@@ -1,170 +1,159 @@
-import React from "react"
-import { Payment, columns } from "./columns"
-import { DataTable } from "./data-table"
-import MenuCompleto from "@/components/menu-completo/menu-completo"
-import { Footer } from "@/components/footer/footer"
+"use client";
 
-async function getData(): Promise<Payment[]> {
-    // Fetch data from your API here.
-    return [
-        {
-            pedido: 1,
-            cliente: "Enio Batalha",
-            status: "Pendente",
-            bairro: "Bulhões",
-            total: 45.50
-        },
-        {
-            pedido: 2,
-            cliente: "Clauscyberion",
-            status: "Em produção",
-            bairro: "Sucupira",
-            total: 78.20
-        },
-        {
-            pedido: 3,
-            cliente: "Jonathas Gabriel",
-            status: "Enviado",
-            bairro: "Ibura",
-            total: 62.75
-        },
-        {
-            pedido: 4,
-            cliente: "Giovani",
-            status: "Cancelado",
-            bairro: "Cajueiro Seco",
-            total: 54.90
-        },
-        {
-            pedido: 5,
-            cliente: "Carlos",
-            status: "Pendente",
-            bairro: "Socorro",
-            total: 81.60
-        },
-        {
-            pedido: 6,
-            cliente: "Matheus",
-            status: "Em produção",
-            bairro: "Curado",
-            total: 33.40
-        },
-        {
-            pedido: 7,
-            cliente: "João Vitor",
-            status: "Enviado",
-            bairro: "Lote 56",
-            total: 89.15
-        },
-        {
-            pedido: 8,
-            cliente: "Ernani",
-            status: "Cancelado",
-            bairro: "Vila Rica",
-            total: 72.80
-        },
-        {
-            pedido: 9,
-            cliente: "Enio Batalha",
-            status: "Em produção",
-            bairro: "Sucupira",
-            total: 66.50
-        },
-        {
-            pedido: 10,
-            cliente: "Clauscyberion",
-            status: "Pendente",
-            bairro: "Ibura",
-            total: 39.90
-        },
-        {
-            pedido: 11,
-            cliente: "Jonathas Gabriel",
-            status: "Enviado",
-            bairro: "Cajueiro Seco",
-            total: 53.25
-        },
-        {
-            pedido: 12,
-            cliente: "Giovani",
-            status: "Cancelado",
-            bairro: "Socorro",
-            total: 88.10
-        },
-        {
-            pedido: 13,
-            cliente: "Carlos",
-            status: "Em produção",
-            bairro: "Curado",
-            total: 72.55
-        },
-        {
-            pedido: 14,
-            cliente: "Matheus",
-            status: "Enviado",
-            bairro: "Lote 56",
-            total: 48.90
-        },
-        {
-            pedido: 15,
-            cliente: "João Vitor",
-            status: "Cancelado",
-            bairro: "Vila Rica",
-            total: 57.30
-        },
-        {
-            pedido: 16,
-            cliente: "Ernani",
-            status: "Pendente",
-            bairro: "Bulhões",
-            total: 83.45
-        },
-        {
-            pedido: 17,
-            cliente: "Enio Batalha",
-            status: "Em produção",
-            bairro: "Cajueiro Seco",
-            total: 90.00
-        },
-        {
-            pedido: 18,
-            cliente: "Clauscyberion",
-            status: "Enviado",
-            bairro: "Socorro",
-            total: 38.75
-        },
-        {
-            pedido: 19,
-            cliente: "Jonathas Gabriel",
-            status: "Cancelado",
-            bairro: "Curado",
-            total: 71.40
-        },
-        {
-            pedido: 20,
-            cliente: "Giovani",
-            status: "Pendente",
-            bairro: "Lote 56",
-            total: 67.20
-        }
-    ]
+import React, { useState, useEffect } from "react";
+import MenuCompleto from "@/components/menu-completo/menu-completo";
+import { Footer } from "@/components/footer/footer";
+import { DataTable } from "./data-table";
+import { columns } from "./columns";
+import { Input } from "@/components/ui/input";
+import axiosInstance from '@/app/axiosConfig';
+import { isWithinInterval, startOfDay, endOfDay } from "date-fns";
+import { DateRange } from "react-day-picker";
+import { DatePickerHistorico } from "@/components/datepicker-historico/datepicker-historico";
+import { Button } from "@/components/ui/button";
 
+interface Pedido {
+    id: number;
+    cliente: { nome: string };
+    status: string;
+    enderecoEntrega: { bairro: string };
+    statusPagamento: string;
+    valorTotal: number;
+    dataHoraPedido: string;
 }
 
-export default async function PaymentsPage() {
-    const data = await getData()
+const HistoricoPedidosPage: React.FC = () => {
+    const [pedidos, setPedidos] = useState<Pedido[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [filters, setFilters] = useState({
+        id: "",
+        dateRange: undefined as DateRange | undefined,
+        cliente: "",
+        bairro: "",
+        valorMin: "",
+        valorMax: "",
+    });
+
+    const handleClearFilters = () => {
+        setFilters({
+            id: "",
+            dateRange: undefined,
+            cliente: "",
+            bairro: "",
+            valorMin: "",
+            valorMax: "",
+        });
+    };
+    
+
+    useEffect(() => {
+        async function fetchPedidos() {
+            try {
+                const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
+                const empresaId = empresaData?.id;
+
+                if (!empresaId) {
+                    console.error("Empresa ID não encontrado no localStorage");
+                    setLoading(false);
+                    return;
+                }
+
+                const response = await axiosInstance.get(`/empresas/${empresaId}/pedidos`);
+                setPedidos(response.data);
+            } catch (error) {
+                console.error("Erro ao buscar os pedidos:", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchPedidos();
+    }, []);
+
+    const handleDateSelect = (range: DateRange | undefined) => {
+        setFilters({ ...filters, dateRange: range });
+    };
+
+    const filteredPedidos = pedidos.filter((pedido) => {
+        const pedidoDate = new Date(pedido.dataHoraPedido);
+
+        const matchesId = filters.id ? pedido.id.toString().startsWith(filters.id) : true;
+
+        const matchesDateRange = filters.dateRange
+            ? isWithinInterval(pedidoDate, {
+                start: filters.dateRange.from ? startOfDay(filters.dateRange.from) : new Date(0),
+                end: filters.dateRange.to ? endOfDay(filters.dateRange.to) : new Date(),
+            })
+            : true;
+
+        const matchesCliente = pedido.cliente.nome.toLowerCase().includes(filters.cliente.toLowerCase());
+        const matchesBairro = pedido.enderecoEntrega.bairro.toLowerCase().includes(filters.bairro.toLowerCase());
+
+        const matchesValorTotal = filters.valorMin || filters.valorMax
+            ? pedido.valorTotal >= (parseFloat(filters.valorMin) || 0) &&
+              pedido.valorTotal <= (parseFloat(filters.valorMax) || Infinity)
+            : true;
+
+        return matchesId && matchesDateRange && matchesCliente && matchesBairro && matchesValorTotal;
+    });
 
     return (
         <div className="flex flex-col min-h-screen">
-            <div className="border-b flex-grow">
-                <MenuCompleto />
-                <div className="p-8">
+            <MenuCompleto />
+            <div className="flex-1 p-8">
+                <div className="flex justify-between mb-4">
                     <h2 className="text-3xl font-bold tracking-tight">Histórico de Pedidos</h2>
-                    <DataTable columns={columns} data={data} />
+                    <Button variant="outlineOrange" onClick={handleClearFilters}>Limpar Filtros</Button>
                 </div>
+                <div className="mb-4 flex gap-4">
+                    <Input
+                        type="text"
+                        placeholder="Filtrar por ID"
+                        value={filters.id}
+                        onChange={(e) => setFilters({ ...filters, id: e.target.value })}
+                        className="w-1/6"
+                    />
+                    <DatePickerHistorico onDateSelect={handleDateSelect} />
+                    <Input
+                        type="text"
+                        placeholder="Filtrar por cliente"
+                        value={filters.cliente}
+                        onChange={(e) => setFilters({ ...filters, cliente: e.target.value })}
+                        className="w-1/4"
+                    />
+                    <Input
+                        type="text"
+                        placeholder="Filtrar por bairro"
+                        value={filters.bairro}
+                        onChange={(e) => setFilters({ ...filters, bairro: e.target.value })}
+                        className="w-1/4"
+                    />
+                    <div className="flex gap-2 w-1/4">
+                        <Input
+                            type="text"
+                            placeholder="Valor Mínimo"
+                            value={filters.valorMin}
+                            onChange={(e) => setFilters({ ...filters, valorMin: e.target.value })}
+                            className="w-1/2"
+                        />
+                        <Input
+                            type="text"
+                            placeholder="Valor Máximo"
+                            value={filters.valorMax}
+                            onChange={(e) => setFilters({ ...filters, valorMax: e.target.value })}
+                            className="w-1/2"
+                        />
+                    </div>
+                </div>
+                {loading ? (
+                    <p>Carregando...</p>
+                ) : (
+                    <DataTable columns={columns} data={filteredPedidos} />
+                )}
             </div>
             <Footer />
         </div>
-    )
+    );
+};
 
-}
+export default HistoricoPedidosPage;

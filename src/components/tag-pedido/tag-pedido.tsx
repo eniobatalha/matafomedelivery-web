@@ -2,15 +2,21 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 
 const statusMap: { [key: number]: { text: string, variant: string } } = {
-    1: { text: 'Novo', variant: 'novo' },
-    2: { text: 'Em Preparo', variant: 'emPreparo' },
-    3: { text: 'Saiu Para Entrega', variant: 'saiuParaEntrega' },
-    4: { text: 'Entregue', variant: 'entregue' },
-    5: { text: 'Cancelado', variant: 'cancelado' },
+    1: { text: '🆕 Novo', variant: 'novo' },
+    2: { text: '👨🏾‍🍳 Em Preparo', variant: 'emPreparo' },
+    3: { text: '🛩️ Saiu Para Entrega', variant: 'saiuParaEntrega' },
+    4: { text: '✅ Entregue', variant: 'entregue' },
+    5: { text: '😢 Cancelado', variant: 'cancelado' },
+};
+
+const statusPagamentoMap: { [key: string]: { text: string, variant: string } } = {
+    'pago': { text: '🤑 Pago', variant: 'pago' },
+    'pendente': { text: '👀 Pendente', variant: 'pendente' },
+    'cancelado': { text: '🤬 Cancelado', variant: 'cancelado' },
 };
 
 interface TagProps {
-    type: 'status' | 'time';
+    type: 'status' | 'time' | 'statusPagamento';
     value: string | number;
 }
 
@@ -24,16 +30,25 @@ const Tag: React.FC<TagProps> = ({ type, value }) => {
             variant = status.variant;
             tagText = status.text;
         } else {
-            variant = 'novo'; // Variantes padrão para status desconhecido
+            variant = 'novo'; // Variante padrão para status desconhecido
             tagText = 'Desconhecido';
         }
     } else if (type === 'time' && typeof value === 'string') {
         variant = 'time';
         tagText = value;
+    } else if (type === 'statusPagamento' && typeof value === 'string') {
+        const statusPagamento = statusPagamentoMap[value.toLowerCase()];
+        if (statusPagamento) {
+            variant = statusPagamento.variant;
+            tagText = statusPagamento.text;
+        } else {
+            variant = 'pendente'; // Variante padrão para status de pagamento desconhecido
+            tagText = 'Desconhecido';
+        }
     }
 
     return (
-        <Badge variant={variant as "time" | "default" | "destructive" | "outline" | "secondary" | "novo" | "emPreparo" | "saiuParaEntrega" | "entregue" | "cancelado" | null | undefined}>
+        <Badge variant={variant as "time" | "default" | "destructive" | "outline" | "secondary" | "novo" | "emPreparo" | "saiuParaEntrega" | "entregue" | "cancelado" | "pago" | "pendente" | null | undefined}>
             {tagText}
         </Badge>
     );

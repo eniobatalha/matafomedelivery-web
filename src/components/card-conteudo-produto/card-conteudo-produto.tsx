@@ -22,7 +22,7 @@ const CardConteudoProduto: React.FC<CardConteudoProdutoProps> = ({
     additions,
 }) => {
     return (
-        <div className="flex">
+        <div className="flex mb-4">
             <img src={image} alt={name} className="w-20 h-20 object-cover" />
             <div className="ml-4">
                 <h4 className="text-lg font-bold">{name}</h4>

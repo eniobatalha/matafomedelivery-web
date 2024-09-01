@@ -163,8 +163,9 @@ const PedidosPage = () => {
                                                     <div className="flex justify-between items-center">
                                                         <div className="flex gap-4">
                                                             <h2 className="text-xl font-bold tracking-tight">#{pedido.id}</h2>
-                                                            <Tag type="time" value={formatDateTime(pedido.dataHoraPedido)} />
+                                                            <Tag type="time" value={'🕧 '+formatDateTime(pedido.dataHoraPedido)} />
                                                             <Tag type="status" value={mapStatus(pedido.status)} />
+                                                            <Tag type="statusPagamento" value={pedido.statusPagamento} />
                                                         </div>
                                                         <DropdownMenu>
                                                             <DropdownMenuTrigger asChild>

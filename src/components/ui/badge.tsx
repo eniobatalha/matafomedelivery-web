@@ -20,6 +20,8 @@ const badgeVariants = cva(
         entregue: "bg-green-500 text-white hover:bg-green-600",
         cancelado: "bg-red-500 text-white hover:bg-red-600",
         time: "bg-orange-500 text-white hover:bg-orange-600",
+        pago: "bg-green-700 text-white hover:bg-green-800",
+        pendente: "bg-yellow-600 text-white hover:bg-yellow-700",
       },
     },
     defaultVariants: {
