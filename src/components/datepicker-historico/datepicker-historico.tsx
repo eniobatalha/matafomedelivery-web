@@ -14,14 +14,17 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
+interface DatePickerHistoricoProps extends React.HTMLAttributes<HTMLDivElement> {
+  onDateSelect: (range: DateRange | undefined) => void;
+  initialRange?: DateRange | undefined;
+}
+
 export function DatePickerHistorico({
   className,
   onDateSelect,
-}: React.HTMLAttributes<HTMLDivElement> & { onDateSelect: (range: DateRange | undefined) => void }) {
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: addDays(new Date(), -2),
-    to: new Date(),
-  });
+  initialRange,
+}: DatePickerHistoricoProps) {
+  const [date, setDate] = React.useState<DateRange | undefined>(initialRange);
 
   const handleDateChange = (selectedDate: DateRange | undefined) => {
     setDate(selectedDate);
@@ -59,7 +62,8 @@ export function DatePickerHistorico({
           <Calendar
             initialFocus
             mode="range"
-            defaultMonth={date?.from}
+            // defaultMonth={date?.from || new Date()} // Mês atual se nenhuma data for selecionada
+            defaultMonth={new Date()} // Mês atual apenas
             selected={date}
             onSelect={handleDateChange}
             numberOfMonths={1}

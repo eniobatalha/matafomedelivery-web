@@ -146,7 +146,7 @@ const HistoricoPedidosPage: React.FC = () => {
                     </div>
                 </div>
                 {loading ? (
-                    <p>Carregando...</p>
+                    <p>Carregando histórico de pedidos...</p>
                 ) : (
                     <DataTable columns={columns} data={filteredPedidos} />
                 )}

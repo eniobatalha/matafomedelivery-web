@@ -194,7 +194,7 @@ const CardapioPage: React.FC = () => {
                         {isLoading && progress < 100 ? (
                             <div>
                                 <p>Carregando suas categorias...</p>
-                                <Progress value={progress} className="w-full" />
+                                {/* <Progress value={progress} className="w-full" /> */}
                             </div>
                         ) : categorias.length === 0 ? (
                             <p>Nenhuma categoria encontrada.</p>
