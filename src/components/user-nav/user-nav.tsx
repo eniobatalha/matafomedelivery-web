@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -19,10 +19,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import DialogGerenciarConta from '../dialog-gerenciar-conta/dialog-gerenciar-conta';
-import DialogGerenciarEmpresa from '../dialog-gerenciar-empresa/dialog-gerenciar-empresa';
+
 import DialogMudarSenha from '../dialog-mudar-senha/dialog-mudar-senha';
-import DialogConfirmarLogout from '../dialog-confirmar-logout/dialog-confirmar-logout'; // Novo componente
+import DialogConfirmarLogout from '../dialog-confirmar-logout/dialog-confirmar-logout';
+import DialogGerenciarDadosEmpresa from '../dialog-gerenciar-dados-empresa/dialog-gerenciar-dados-empresa';
+import DialogGerenciarEndereco from '../dialog-gerenciar-endereco-empresa/dialog-gerenciar-endereco-empresa';
 
 export function UserNav() {
   const [isDialogOpen, setIsDialogOpen] = useState<string | null>(null);
@@ -76,6 +77,9 @@ export function UserNav() {
 
   const handleUpdateField = (field: string, value: string) => {
     switch (field) {
+      case 'razaoSocial':
+        setRazaoSocial(value);
+        break;
       case 'nomeFantasia':
         setNomeFantasia(value);
         break;
@@ -131,20 +135,20 @@ export function UserNav() {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem
-              onClick={() => handleOpenDialog('Gerenciar Conta')}
-              className="hover:bg-orange-500 hover:text-white"
+              onClick={() => handleOpenDialog('Gerenciar Informações da Empresa')}
+              className="focus:bg-orange-500 focus:text-white"
             >
-              Gerenciar Conta
+              Gerenciar Informações
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => handleOpenDialog('Gerenciar Estabelecimento')}
-              className="hover:bg-orange-500 hover:text-white"
+              onClick={() => handleOpenDialog('Gerenciar Endereço da Empresa')}
+              className="focus:bg-orange-500 focus:text-white"
             >
-              Gerenciar Estabelecimento
+              Gerenciar Endereço
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => handleOpenDialog('Alterar Senha')}
-              className="hover:bg-orange-500 hover:text-white"
+              className="focus:bg-orange-500 focus:text-white"
             >
               Alterar Senha
             </DropdownMenuItem>
@@ -152,30 +156,30 @@ export function UserNav() {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => setIsLogoutDialogOpen(true)}
-            className="hover:bg-orange-500 hover:text-white"
+            className="focus:bg-orange-500 focus:text-white"
           >
             Logout
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <DialogGerenciarConta
-        isOpen={isDialogOpen === 'Gerenciar Conta'}
+      <DialogGerenciarDadosEmpresa
+        isOpen={isDialogOpen === 'Gerenciar Informações da Empresa'}
         onClose={handleCloseDialog}
         razaoSocial={razaoSocial}
         nomeFantasia={nomeFantasia}
-        email={email}
         telefone={telefone}
-        onUpdate={handleUpdateField}
-      />
-
-      <DialogGerenciarEmpresa
-        isOpen={isDialogOpen === 'Gerenciar Estabelecimento'}
-        onClose={handleCloseDialog}
-        endereco={endereco}
         categoria={categoria}
         horarioAbertura={horarioAbertura}
         horarioFechamento={horarioFechamento}
+        onUpdate={handleUpdateField}
+      />
+
+
+      <DialogGerenciarEndereco
+        isOpen={isDialogOpen === 'Gerenciar Endereço da Empresa'}
+        onClose={handleCloseDialog}
+        endereco={endereco}
         onUpdate={handleUpdateField}
       />
 

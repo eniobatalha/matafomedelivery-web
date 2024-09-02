@@ -58,3 +58,27 @@ export function mapStatus(status: string): number {
 export function mapStatusPagamento(statusPagamento: string): string {
     return statusPagamento.toLowerCase();
 }
+
+/**
+ * Converte um horário no formato AM/PM para o formato 24 horas (HH:mm:ss).
+ * 
+ * @param time - O horário no formato AM/PM (ex: "02:30 PM").
+ * @returns O horário no formato 24 horas (ex: "14:30:00").
+ */
+export const convertTo24HourFormat = (time: string): string => {
+    const [hoursAndMinutes, period] = time.split(' ');
+    let [hours, minutes] = hoursAndMinutes.split(':').map(Number);
+  
+    if (period === 'PM' && hours < 12) {
+      hours += 12;
+    } else if (period === 'AM' && hours === 12) {
+      hours = 0;
+    }
+  
+    // Adiciona zero à esquerda se necessário
+    const formattedHours = hours.toString().padStart(2, '0');
+    const formattedMinutes = minutes.toString().padStart(2, '0');
+  
+    return `${formattedHours}:${formattedMinutes}:00`;
+  };
+  

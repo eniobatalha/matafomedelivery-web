@@ -8,21 +8,6 @@ import { FaSearch } from 'react-icons/fa';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/components/ui/use-toast';
 
-const categorias = [
-    { value: 'hamburgueria', label: 'Hamburgueria' },
-    { value: 'sorveteria', label: 'Sorveteria' },
-    { value: 'acaiteria', label: 'Açaíteria' },
-    { value: 'lanchonete', label: 'Lanchonete' },
-    { value: 'pizzaria', label: 'Pizzaria' },
-    { value: 'comedoria', label: 'Comedoria' },
-    { value: 'churrascaria', label: 'Churrascaria' },
-    { value: 'cafeteria', label: 'Cafeteria' },
-    { value: 'padaria', label: 'Padaria' },
-    { value: 'sushibar', label: 'Sushi Bar' },
-    { value: 'restaurante', label: 'Restaurante' },
-    { value: 'outro', label: 'Outro' },
-];
-
 const estados = [
     { value: 'AC', label: 'Acre' },
     { value: 'AL', label: 'Alagoas' },
@@ -53,23 +38,16 @@ const estados = [
     { value: 'TO', label: 'Tocantins' },
 ];
 
-interface DialogGerenciarEmpresaProps {
+interface DialogGerenciarEnderecoProps {
     isOpen: boolean;
     onClose: () => void;
     endereco: string;
-    categoria: string;
-    horarioAbertura: string;
-    horarioFechamento: string;
     onUpdate: (field: string, value: string) => void;
 }
 
-const DialogGerenciarEmpresa: React.FC<DialogGerenciarEmpresaProps> = ({
+const DialogGerenciarEndereco: React.FC<DialogGerenciarEnderecoProps> = ({
     isOpen,
     onClose,
-    endereco,
-    categoria,
-    horarioAbertura,
-    horarioFechamento,
     onUpdate,
 }) => {
     const [cep, setCep] = useState('');
@@ -79,9 +57,6 @@ const DialogGerenciarEmpresa: React.FC<DialogGerenciarEmpresaProps> = ({
     const [bairro, setBairro] = useState('');
     const [cidade, setCidade] = useState('');
     const [estado, setEstado] = useState('');
-    const [localCategoria, setLocalCategoria] = useState(categoria);
-    const [localHorarioAbertura, setLocalHorarioAbertura] = useState(horarioAbertura);
-    const [localHorarioFechamento, setLocalHorarioFechamento] = useState(horarioFechamento);
     const [isSaving, setIsSaving] = useState(false); // Estado para controle do salvamento
 
     useEffect(() => {
@@ -95,9 +70,6 @@ const DialogGerenciarEmpresa: React.FC<DialogGerenciarEmpresaProps> = ({
                 setBairro(empresaData.endereco.bairro || '');
                 setCidade(empresaData.endereco.cidade || '');
                 setEstado(empresaData.endereco.estado || '');
-                setLocalCategoria(empresaData.categoria || '');
-                setLocalHorarioAbertura(empresaData.horarioAbertura || '');
-                setLocalHorarioFechamento(empresaData.horarioFechamento || '');
             }
         }
     }, [isOpen]);
@@ -140,15 +112,7 @@ const DialogGerenciarEmpresa: React.FC<DialogGerenciarEmpresaProps> = ({
         try {
             setIsSaving(true); // Inicia o estado de salvamento
             const empresaId = JSON.parse(localStorage.getItem('empresaData') || '{}').id;
-
-            const payloadEmpresa = {
-                categoria: localCategoria,
-                horarioAbertura: localHorarioAbertura,
-                horarioFechamento: localHorarioFechamento,
-            };
-
-            await axios.patch(`/api/empresas/${empresaId}`, payloadEmpresa);
-
+    
             const enderecoPayload = {
                 cep,
                 logradouro,
@@ -158,28 +122,46 @@ const DialogGerenciarEmpresa: React.FC<DialogGerenciarEmpresaProps> = ({
                 cidade,
                 estado,
             };
-
-            await axios.patch(`/api/empresas/${empresaId}/endereco`, enderecoPayload);
-
+    
+            await axios.patch(`/empresas/${empresaId}/endereco`, enderecoPayload);
+    
+            // Atualiza o localStorage com o novo endereço
+            const updatedEmpresaData = {
+                ...JSON.parse(localStorage.getItem('empresaData') || '{}'),
+                endereco: enderecoPayload,
+            };
+            localStorage.setItem('empresaData', JSON.stringify(updatedEmpresaData));
+    
             onUpdate('endereco', `${logradouro}, ${numero}, ${bairro}, ${cidade}, ${estado}, ${cep}`);
-            onUpdate('categoria', localCategoria);
-            onUpdate('horarioAbertura', localHorarioAbertura);
-            onUpdate('horarioFechamento', localHorarioFechamento);
             onClose();
+    
+            // Feedback de sucesso
+            toast({
+                title: "Endereço atualizado com sucesso!",
+                variant: "success",
+                duration: 3000,
+            });
         } catch (error) {
-            console.error('Erro ao atualizar o estabelecimento:', error);
+            console.error('Erro ao atualizar o endereço:', error);
+            toast({
+                title: "Erro ao atualizar o endereço",
+                description: "Ocorreu um erro ao tentar atualizar o endereço.",
+                variant: "destructive",
+                duration: 3000,
+            });
         } finally {
             setIsSaving(false); // Finaliza o estado de salvamento
         }
     };
+    
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Gerenciar Estabelecimento</DialogTitle>
+                    <DialogTitle>Gerenciar Endereço</DialogTitle>
                     <DialogDescription>
-                        Atualize as informações do seu estabelecimento.
+                        Atualize as informações do endereço do seu estabelecimento.
                     </DialogDescription>
                 </DialogHeader>
                 <form className="space-y-4">
@@ -276,43 +258,6 @@ const DialogGerenciarEmpresa: React.FC<DialogGerenciarEmpresaProps> = ({
                             </Select>
                         </div>
                     </div>
-                    <div>
-                        <Label htmlFor="categoria">Categoria</Label>
-                        <Select value={localCategoria} onValueChange={setLocalCategoria} disabled={isSaving}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Categoria do Estabelecimento" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {categorias.map((categoria) => (
-                                    <SelectItem key={categoria.value} value={categoria.value}>
-                                        {categoria.label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="flex space-x-4">
-                        <div>
-                            <Label htmlFor="horarioAbertura">Horário de Abertura</Label>
-                            <Input
-                                id="horarioAbertura"
-                                type="time"
-                                value={localHorarioAbertura}
-                                onChange={(e) => setLocalHorarioAbertura(e.target.value)}
-                                disabled={isSaving}
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="horarioFechamento">Horário de Fechamento</Label>
-                            <Input
-                                id="horarioFechamento"
-                                type="time"
-                                value={localHorarioFechamento}
-                                onChange={(e) => setLocalHorarioFechamento(e.target.value)}
-                                disabled={isSaving}
-                            />
-                        </div>
-                    </div>
                 </form>
                 <DialogFooter>
                     <Button variant="secondary" onClick={onClose} disabled={isSaving}>Cancelar</Button>
@@ -325,4 +270,4 @@ const DialogGerenciarEmpresa: React.FC<DialogGerenciarEmpresaProps> = ({
     );
 };
 
-export default DialogGerenciarEmpresa;
+export default DialogGerenciarEndereco;
