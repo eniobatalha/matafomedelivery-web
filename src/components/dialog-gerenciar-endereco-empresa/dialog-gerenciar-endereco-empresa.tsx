@@ -57,7 +57,7 @@ const DialogGerenciarEndereco: React.FC<DialogGerenciarEnderecoProps> = ({
     const [bairro, setBairro] = useState('');
     const [cidade, setCidade] = useState('');
     const [estado, setEstado] = useState('');
-    const [isSaving, setIsSaving] = useState(false); // Estado para controle do salvamento
+    const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
@@ -97,6 +97,11 @@ const DialogGerenciarEndereco: React.FC<DialogGerenciarEnderecoProps> = ({
                 setBairro(bairro || '');
                 setCidade(localidade || '');
                 setEstado(uf || '');
+
+                // Limpar campos que não são preenchidos automaticamente
+                setNumero('');
+                setComplemento('');
+
             } catch (error) {
                 toast({
                     title: "Erro ao buscar CEP",
@@ -110,9 +115,9 @@ const DialogGerenciarEndereco: React.FC<DialogGerenciarEnderecoProps> = ({
 
     const handleSave = async () => {
         try {
-            setIsSaving(true); // Inicia o estado de salvamento
+            setIsSaving(true);
             const empresaId = JSON.parse(localStorage.getItem('empresaData') || '{}').id;
-    
+
             const enderecoPayload = {
                 cep,
                 logradouro,
@@ -122,20 +127,19 @@ const DialogGerenciarEndereco: React.FC<DialogGerenciarEnderecoProps> = ({
                 cidade,
                 estado,
             };
-    
+
             await axios.patch(`/empresas/${empresaId}/endereco`, enderecoPayload);
-    
+
             // Atualiza o localStorage com o novo endereço
             const updatedEmpresaData = {
                 ...JSON.parse(localStorage.getItem('empresaData') || '{}'),
                 endereco: enderecoPayload,
             };
             localStorage.setItem('empresaData', JSON.stringify(updatedEmpresaData));
-    
+
             onUpdate('endereco', `${logradouro}, ${numero}, ${bairro}, ${cidade}, ${estado}, ${cep}`);
             onClose();
-    
-            // Feedback de sucesso
+
             toast({
                 title: "Endereço atualizado com sucesso!",
                 variant: "success",
@@ -150,10 +154,9 @@ const DialogGerenciarEndereco: React.FC<DialogGerenciarEnderecoProps> = ({
                 duration: 3000,
             });
         } finally {
-            setIsSaving(false); // Finaliza o estado de salvamento
+            setIsSaving(false);
         }
     };
-    
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
@@ -260,7 +263,9 @@ const DialogGerenciarEndereco: React.FC<DialogGerenciarEnderecoProps> = ({
                     </div>
                 </form>
                 <DialogFooter>
-                    <Button variant="secondary" onClick={onClose} disabled={isSaving}>Cancelar</Button>
+                    <Button variant="secondary" onClick={onClose} disabled={isSaving}>
+                        Cancelar
+                    </Button>
                     <Button variant="orange" onClick={handleSave} disabled={isSaving}>
                         {isSaving ? "Salvando..." : "Salvar"}
                     </Button>
@@ -271,3 +276,4 @@ const DialogGerenciarEndereco: React.FC<DialogGerenciarEnderecoProps> = ({
 };
 
 export default DialogGerenciarEndereco;
+

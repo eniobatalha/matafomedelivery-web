@@ -22,8 +22,11 @@ import { isWithinInterval, startOfDay, endOfDay } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { DatePickerHistorico } from "@/components/datepicker-historico/datepicker-historico";
 
+import SockJS from "sockjs-client";
+import { Client, Stomp } from "@stomp/stompjs";
+
 const PedidosPage = () => {
-    const [filtroStatus, setFiltroStatus] = useState<string>("todos");
+    const [filtroStatus, setFiltroStatus] = useState<string>("novo");
     const [pedidoDialogOpen, setPedidoDialogOpen] = useState<boolean>(false);
     const [pedidoAleatorio, setPedidoAleatorio] = useState<any>(null);
     const [pedidos, setPedidos] = useState<any[]>([]);
@@ -57,6 +60,54 @@ const PedidosPage = () => {
 
         fetchPedidos();
     }, []);
+
+    useEffect(() => {
+        const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
+        const empresaId = empresaData?.id;
+
+        if (!empresaId) {
+            console.error("Empresa ID não encontrado no localStorage");
+            return;
+        }
+
+        // Conectando ao WebSocket
+        const socket = new SockJS("https://matafome-api.whiteglacier-7456d729.brazilsouth.azurecontainerapps.io/ws");
+        const stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, () => {
+            console.log("Conectado ao WebSocket");
+
+            stompClient.subscribe(`/topic/pedidoEmpresa/${empresaId}`, (message) => {
+                const novoPedido = JSON.parse(message.body);
+                console.log("Novo pedido recebido:", novoPedido);
+
+                // Adiciona o novo pedido à lista
+                setPedidos((prevPedidos) => [novoPedido, ...prevPedidos]);
+
+                // Dispara o alarme e abre o dialog
+                setPedidoAleatorio(novoPedido);
+                setPedidoDialogOpen(true);
+                const audio = new Audio('/sounds/alert.mp3');
+                audio.play();
+
+                toast({
+                    title: `Novo pedido recebido!`,
+                    description: `Pedido #${novoPedido.id} recebido.`,
+                    variant: 'success',
+                    duration: 3000,
+                });
+            });
+        });
+
+        return () => {
+            if (stompClient) {
+                stompClient.disconnect(() => {
+                    console.log("Desconectado do WebSocket");
+                });
+            }
+        };
+    }, []);
+
     const atualizarStatusPedido = async (idPedido: number, novoStatus: string, novoStatusPagamento?: string) => {
         try {
             const endpoint = `/pedidos/${idPedido}/status`;
@@ -121,6 +172,7 @@ const PedidosPage = () => {
             ))
         );
     });
+
     const handleNovoPedido = () => {
         const pedido = pedidos[Math.floor(Math.random() * pedidos.length)];
         setPedidoAleatorio(pedido);
@@ -163,7 +215,7 @@ const PedidosPage = () => {
                     </Dialog>
                     <div className="px-8 mb-8">
                         <div className="mb-4">
-                            <Tabs defaultValue="todos" className="space-y-4" onValueChange={(value) => setFiltroStatus(value)}>
+                            <Tabs value={filtroStatus} className="space-y-4" onValueChange={(value) => setFiltroStatus(value)}>
                                 <div className="flex justify-between">
                                     <TabsList className='w-auto'>
                                         <TabsTrigger value="todos">Todos</TabsTrigger>
@@ -185,7 +237,7 @@ const PedidosPage = () => {
                                                 <p>Carregando seus pedidos...</p>
                                             </div>
                                         ) : currentItems.length === 0 ? (
-                                            <p>Nenhuma categoria encontrada.</p>
+                                            <p>Nenhum pedido encontrado.</p>
                                         ) : (
                                             currentItems.map((pedido) => (
                                                 <Card key={pedido.id} className="flex flex-col shadow-lg">
@@ -223,6 +275,7 @@ const PedidosPage = () => {
                                                                     {mapStatus(pedido.status) === 2 && (
                                                                         <>
                                                                             <DropdownMenuItem
+                                                                                className="focus:bg-orange-600 focus:text-white"
                                                                                 onClick={() => atualizarStatusPedido(pedido.id, 'EM_TRANSITO')}
                                                                             >
                                                                                 Enviar pedido
@@ -238,6 +291,7 @@ const PedidosPage = () => {
                                                                     {mapStatus(pedido.status) === 3 && (
                                                                         <>
                                                                             <DropdownMenuItem
+                                                                                className="focus:bg-orange-600 focus:text-white"
                                                                                 onClick={() => atualizarStatusPedido(pedido.id, 'ENTREGUE')}
                                                                             >
                                                                                 Confirmar entrega
@@ -343,6 +397,3 @@ const PedidosPage = () => {
 };
 
 export default PedidosPage;
-
-
-

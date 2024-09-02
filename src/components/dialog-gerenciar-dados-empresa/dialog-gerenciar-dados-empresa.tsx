@@ -8,9 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/components/ui/use-toast';
 import { convertTo24HourFormat } from '@/lib/formatters';
 
-// ... restante do código
-
-
 const categorias = [
   { value: 'hamburgueria', label: 'Hamburgueria' },
   { value: 'sorveteria', label: 'Sorveteria' },
@@ -58,21 +55,6 @@ const DialogGerenciarDadosEmpresa: React.FC<DialogGerenciarDadosEmpresaProps> = 
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
 
-  const showPayload = () => {
-    const payload = {
-      razaoSocial: localRazaoSocial,
-      nomeFantasia: localNomeFantasia,
-      telefone: localTelefone,
-      categoria: localCategoria,
-      horarioAbertura: convertTo24HourFormat(localHorarioAbertura),
-      horarioFechamento: convertTo24HourFormat(localHorarioFechamento),
-    };
-
-    console.log("Payload:", payload);
-    alert(JSON.stringify(payload, null, 2));
-  };
-
-
   useEffect(() => {
     if (isOpen) {
       const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
@@ -118,16 +100,27 @@ const DialogGerenciarDadosEmpresa: React.FC<DialogGerenciarDadosEmpresaProps> = 
         horarioFechamento: convertTo24HourFormat(localHorarioFechamento),
       };
 
-      console.log("Payload:", payload); // Debugging: Verifique o payload que está sendo enviado
+      console.log("Payload:", payload);
 
-      await axios.patch(`/empresas/${empresaId}`, payload);
+      const response = await axios.patch(`/empresas/${empresaId}`, payload);
 
-      onUpdate('razaoSocial', localRazaoSocial);
-      onUpdate('nomeFantasia', localNomeFantasia);
-      onUpdate('telefone', localTelefone);
-      onUpdate('categoria', localCategoria);
-      onUpdate('horarioAbertura', localHorarioAbertura);
-      onUpdate('horarioFechamento', localHorarioFechamento);
+      // Atualize o estado local e o localStorage com os novos dados
+      const updatedEmpresaData = { ...response.data }; // Usando a resposta da API
+      setLocalRazaoSocial(updatedEmpresaData.razaoSocial);
+      setLocalNomeFantasia(updatedEmpresaData.nomeFantasia);
+      setLocalTelefone(updatedEmpresaData.telefone);
+      setLocalCategoria(updatedEmpresaData.categoria);
+      setLocalHorarioAbertura(updatedEmpresaData.horarioAbertura);
+      setLocalHorarioFechamento(updatedEmpresaData.horarioFechamento);
+
+      localStorage.setItem('empresaData', JSON.stringify(updatedEmpresaData));
+
+      onUpdate('razaoSocial', updatedEmpresaData.razaoSocial);
+      onUpdate('nomeFantasia', updatedEmpresaData.nomeFantasia);
+      onUpdate('telefone', updatedEmpresaData.telefone);
+      onUpdate('categoria', updatedEmpresaData.categoria);
+      onUpdate('horarioAbertura', updatedEmpresaData.horarioAbertura);
+      onUpdate('horarioFechamento', updatedEmpresaData.horarioFechamento);
 
       toast({
         title: "Sucesso",
@@ -149,7 +142,6 @@ const DialogGerenciarDadosEmpresa: React.FC<DialogGerenciarDadosEmpresaProps> = 
       setIsSaving(false);
     }
   };
-
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -244,15 +236,13 @@ const DialogGerenciarDadosEmpresa: React.FC<DialogGerenciarDadosEmpresaProps> = 
           <Button variant="orange" onClick={handleSave} disabled={isSaving}>
             {isSaving ? "Salvando..." : "Salvar"}
           </Button>
-          <Button variant="outline" onClick={showPayload}>
+          {/* <Button variant="outline" onClick={showPayload}>
             Ver Payload
-          </Button>
+          </Button> */}
         </DialogFooter>
-
       </DialogContent>
     </Dialog>
   );
 };
 
 export default DialogGerenciarDadosEmpresa;
-

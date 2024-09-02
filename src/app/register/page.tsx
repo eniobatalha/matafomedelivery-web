@@ -63,18 +63,18 @@ const states = [
 ];
 
 const categorias = [
-  { value: 'hamburgueria', label: 'Hamburgueria' },
-  { value: 'sorveteria', label: 'Sorveteria' },
   { value: 'acaiteria', label: 'Açaíteria' },
-  { value: 'lanchonete', label: 'Lanchonete' },
-  { value: 'pizzaria', label: 'Pizzaria' },
-  { value: 'comedoria', label: 'Comedoria' },
-  { value: 'churrascaria', label: 'Churrascaria' },
   { value: 'cafeteria', label: 'Cafeteria' },
-  { value: 'padaria', label: 'Padaria' },
-  { value: 'sushibar', label: 'Sushi Bar' },
-  { value: 'restaurante', label: 'Restaurante' },
+  { value: 'churrascaria', label: 'Churrascaria' },
+  { value: 'comedoria', label: 'Comedoria' },
+  { value: 'hamburgueria', label: 'Hamburgueria' },
+  { value: 'lanchonete', label: 'Lanchonete' },
   { value: 'outro', label: 'Outro' },
+  { value: 'padaria', label: 'Padaria' },
+  { value: 'pizzaria', label: 'Pizzaria' },
+  { value: 'restaurante', label: 'Restaurante' },
+  { value: 'sorveteria', label: 'Sorveteria' },
+  { value: 'sushibar', label: 'Sushi Bar' },
 ];
 
 const RegisterPage = () => {
