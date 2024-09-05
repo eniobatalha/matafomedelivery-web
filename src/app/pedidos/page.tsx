@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import MenuCompleto from "@/components/menu-completo/menu-completo";
 import { Footer } from "@/components/footer/footer";
 import { Button } from "@/components/ui/button";
@@ -21,9 +21,10 @@ import { formatDateTime, formatToWhatsAppLink, formatToGoogleMapsLink, mapStatus
 import { isWithinInterval, startOfDay, endOfDay } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { DatePickerHistorico } from "@/components/datepicker-historico/datepicker-historico";
-
 import SockJS from "sockjs-client";
-import { Client, Stomp } from "@stomp/stompjs";
+import { Stomp } from "@stomp/stompjs";
+import { Switch } from "@/components/ui/switch";
+
 
 const PedidosPage = () => {
     const [filtroStatus, setFiltroStatus] = useState<string>("novo");
@@ -38,6 +39,16 @@ const PedidosPage = () => {
         to: endOfDay(new Date()), // Hoje
     });
     const [isLoading, setIsLoading] = useState(true);
+    const [alertaSonoroHabilitado, setAlertaSonoroHabilitado] = useState(false);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    // Fila de pedidos e pedido atual
+    const [filaPedidos, setFilaPedidos] = useState<any[]>([]); // Fila de pedidos recebidos
+    const [pedidoAtual, setPedidoAtual] = useState<any | null>(null); // Pedido atual exibido no dialog
+
+    useEffect(() => {
+        audioRef.current = new Audio('/sounds/alert.mp3');
+    }, []);
 
     useEffect(() => {
         async function fetchPedidos() {
@@ -81,14 +92,13 @@ const PedidosPage = () => {
                 const novoPedido = JSON.parse(message.body);
                 console.log("Novo pedido recebido:", novoPedido);
 
-                // Adiciona o novo pedido à lista
-                setPedidos((prevPedidos) => [novoPedido, ...prevPedidos]);
+                // Adiciona o novo pedido à fila
+                setFilaPedidos((prevFila) => [...prevFila, novoPedido]);
 
-                // Dispara o alarme e abre o dialog
-                setPedidoAleatorio(novoPedido);
-                setPedidoDialogOpen(true);
-                const audio = new Audio('/sounds/alert.mp3');
-                audio.play();
+                // Dispara o alarme
+                if (alertaSonoroHabilitado && audioRef.current) {
+                    audioRef.current.play().catch((error: any) => console.log('Erro ao tocar o áudio:', error));
+                }
 
                 toast({
                     title: `Novo pedido recebido!`,
@@ -106,7 +116,26 @@ const PedidosPage = () => {
                 });
             }
         };
-    }, []);
+    }, [alertaSonoroHabilitado]);
+
+    // Verifica se há pedidos na fila e exibe um de cada vez
+    useEffect(() => {
+        if (!pedidoDialogOpen && filaPedidos.length > 0) {
+            const proximoPedido = filaPedidos[0]; // Pega o primeiro pedido da fila
+            setPedidoAtual(proximoPedido);
+            setPedidoDialogOpen(true); // Abre o dialog
+        }
+    }, [pedidoDialogOpen, filaPedidos]);
+
+    const handleCloseDialog = () => {
+        // Adiciona o pedido atual à lista de pedidos já carregados
+        if (pedidoAtual) {
+            setPedidos((prevPedidos) => [...prevPedidos, pedidoAtual]);
+        }
+
+        setPedidoDialogOpen(false);
+        setFilaPedidos((prevFila) => prevFila.slice(1)); // Remove o primeiro pedido da fila
+    };
 
     const atualizarStatusPedido = async (idPedido: number, novoStatus: string, novoStatusPagamento?: string) => {
         try {
@@ -177,8 +206,9 @@ const PedidosPage = () => {
         const pedido = pedidos[Math.floor(Math.random() * pedidos.length)];
         setPedidoAleatorio(pedido);
         setPedidoDialogOpen(true);
-        const audio = new Audio('/sounds/alert.mp3');
-        audio.play();
+        if (audioRef.current) {
+            audioRef.current.play().catch(error => console.log('Erro ao tocar o áudio:', error));
+        }
     };
 
     const handlePageChange = (pageNumber: number) => {
@@ -198,19 +228,20 @@ const PedidosPage = () => {
                 <div className="flex-1">
                     <div className="flex justify-between p-8">
                         <h2 className="text-3xl font-bold tracking-tight">Acompanhamento de Pedidos</h2>
-                        <div className="flex gap-4">
-
-                            <Button onClick={handleNovoPedido} variant="outlineOrange" type="button" className='gap-2'>
-                                <MdDeliveryDining className="h-5 w-5" />
-                                Simular Novo Pedido
-                            </Button>
-                        </div>
+                        <label className="flex items-center space-x-2">
+                            <Switch
+                                checked={alertaSonoroHabilitado}
+                                onCheckedChange={(checked) => setAlertaSonoroHabilitado(checked)}
+                            />
+                            <span>Habilitar alerta sonoro</span>
+                        </label>
                     </div>
-                    <Dialog open={pedidoDialogOpen} onOpenChange={() => setPedidoDialogOpen(false)}>
+
+                    <Dialog open={pedidoDialogOpen} onOpenChange={handleCloseDialog}>
                         <NovoPedidoDialog
                             isOpen={pedidoDialogOpen}
-                            onClose={() => setPedidoDialogOpen(false)}
-                            pedido={pedidoAleatorio}
+                            onClose={handleCloseDialog}
+                            pedido={pedidoAtual}
                         />
                     </Dialog>
                     <div className="px-8 mb-8">
@@ -397,3 +428,4 @@ const PedidosPage = () => {
 };
 
 export default PedidosPage;
+
