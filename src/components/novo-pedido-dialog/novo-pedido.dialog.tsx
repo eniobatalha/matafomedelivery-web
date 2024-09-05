@@ -12,47 +12,31 @@ import CardConteudoProduto from '@/components/card-conteudo-produto/card-conteud
 import { Button } from '@/components/ui/button';
 import { Pedido } from '@/types/types';
 import Link from 'next/link';
+import { formatDateTime, formatToGoogleMapsLink, formatToWhatsAppLink, mapStatus, mapStatusPagamento } from "@/lib/formatters";
 
 interface NovoPedidoDialogProps {
     isOpen: boolean;
     onClose: () => void;
     pedido?: Pedido | null;
+    atualizarStatusPedido: (idPedido: number, novoStatus: string, isPagamento?: boolean) => void;
 }
 
-// Formatar a data e hora para o formato brasileiro
-function formatDateTime(dateTimeString: string): string {
-    const isoFormatRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3,}$/;
-
-    if (isoFormatRegex.test(dateTimeString)) {
-        const date = new Date(dateTimeString);
-        const day = date.getDate().toString().padStart(2, '0');
-        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Mês é indexado a partir de 0
-        const year = date.getFullYear().toString().slice(2);
-        const hours = date.getHours().toString().padStart(2, '0');
-        const minutes = date.getMinutes().toString().padStart(2, '0');
-
-        return `${day}/${month}/${year} ${hours}:${minutes}`;
-    }
-
-    return dateTimeString;
-}
-
-function formatToWhatsAppLink(phoneNumber: string) {
-    const cleanedNumber = phoneNumber.replace(/\D/g, '');
-    const formattedNumber = `55${cleanedNumber}`;
-    return `https://wa.me/${formattedNumber}`;
-}
-
-function formatToGoogleMapsLink(endereco: Pedido['enderecoEntrega']) {
-    const baseUrl = "https://www.google.com/maps/dir/?api=1&destination=";
-    const fullAddress = `${endereco.logradouro} ${endereco.numero}, ${endereco.bairro}, ${endereco.cidade}, ${endereco.estado}`;
-    return `${baseUrl}${encodeURIComponent(fullAddress)}&origin=-8.11330612798356,-35.030793`;
-}
-
-const NovoPedidoDialog: React.FC<NovoPedidoDialogProps> = ({ isOpen, onClose, pedido }) => {
+const NovoPedidoDialog: React.FC<NovoPedidoDialogProps> = ({ isOpen, onClose, pedido, atualizarStatusPedido }) => {
     if (!pedido) {
         return null;
     }
+
+    // Função para aceitar o pedido e mudar o status para "Em Preparo"
+    const handleAceitarPedido = () => {
+        atualizarStatusPedido(pedido.id, 'PROCESSANDO');
+        onClose();
+    };
+
+    // Função para cancelar o pedido e mudar o status para "Cancelado"
+    const handleCancelarPedido = () => {
+        atualizarStatusPedido(pedido.id, 'CANCELADO');
+        onClose();
+    };
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
@@ -62,11 +46,12 @@ const NovoPedidoDialog: React.FC<NovoPedidoDialogProps> = ({ isOpen, onClose, pe
                         <div className="flex gap-4 mb-2">
                             <DialogTitle className="text-base font-bold tracking-tight">Novo Pedido</DialogTitle>
                             <Tag type="time" value={formatDateTime(pedido.dataHoraPedido)} />
-                            <Tag type="status" value="Novo" />
+                            <Tag type="status" value={1} /> {/* Todo pedido chega como novo (status 1) */}
+                            <Tag type="statusPagamento" value={pedido.statusPagamento || 'pendente'} />
                         </div>
                     </div>
                     <DialogDescription className='text-sm text-muted-foreground'>
-                        <strong>Cliente:</strong> {pedido.cliente.nome} — 
+                        <strong>Cliente:</strong> {pedido.cliente.nome} —
                         <strong>Telefone: </strong>
                         <Link href={formatToWhatsAppLink(pedido.cliente.foneCelular)} passHref legacyBehavior>
                             <a
@@ -118,8 +103,8 @@ const NovoPedidoDialog: React.FC<NovoPedidoDialogProps> = ({ isOpen, onClose, pe
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button variant="orange">Aceitar Pedido</Button>
-                    <Button variant="destructive" onClick={onClose}>Cancelar Pedido</Button>
+                    <Button variant="orange" onClick={handleAceitarPedido}>Aceitar Pedido</Button>
+                    <Button variant="destructive" onClick={handleCancelarPedido}>Cancelar Pedido</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

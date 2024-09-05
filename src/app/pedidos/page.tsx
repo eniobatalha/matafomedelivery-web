@@ -250,8 +250,10 @@ const PedidosPage = () => {
                             isOpen={pedidoDialogOpen}
                             onClose={handleCloseDialog}
                             pedido={pedidoAtual}
+                            atualizarStatusPedido={atualizarStatusPedido}
                         />
                     </Dialog>
+
                     <div className="px-8 mb-8">
                         <div className="mb-4">
                             <Tabs value={filtroStatus} className="space-y-4" onValueChange={(value) => setFiltroStatus(value)}>
