@@ -137,12 +137,19 @@ const PedidosPage = () => {
         setFilaPedidos((prevFila) => prevFila.slice(1)); // Remove o primeiro pedido da fila
     };
 
-    const atualizarStatusPedido = async (idPedido: number, novoStatus: string, novoStatusPagamento?: string) => {
+    // Função para atualizar status do pedido ou status do pagamento
+    const atualizarStatusPedido = async (idPedido: number, novoStatus: string, isPagamento: boolean = false) => {
         try {
-            const endpoint = `/pedidos/${idPedido}/status`;
+            const endpoint = isPagamento
+                ? `/pedidos/${idPedido}/statusPagamento`
+                : `/pedidos/${idPedido}/statusPedido`;
+            const body = isPagamento
+                ? { novoStatusPagamento: novoStatus }
+                : { novoStatusPedido: novoStatus };
+
             console.log(`Requisição PATCH para ${endpoint} com status: ${novoStatus}`);
 
-            const response = await axiosInstance.patch(endpoint, novoStatus, {
+            const response = await axiosInstance.patch(endpoint, body, {
                 headers: { 'Content-Type': 'application/json' },
             });
 
@@ -153,27 +160,28 @@ const PedidosPage = () => {
                     pedido.id === idPedido
                         ? {
                             ...pedido,
-                            status: novoStatus,
-                            statusPagamento: novoStatusPagamento || pedido.statusPagamento,
+                            status: !isPagamento ? novoStatus : pedido.status,
+                            statusPagamento: isPagamento ? novoStatus : pedido.statusPagamento,
                         }
                         : pedido
                 )
             );
 
             toast({
-                title: `Status do pedido ${idPedido} atualizado para ${novoStatus}`,
+                title: `Status ${isPagamento ? 'do pagamento' : 'do pedido'} ${idPedido} atualizado para ${novoStatus}`,
                 variant: 'success',
                 duration: 3000,
             });
         } catch (error) {
-            console.error('Erro ao atualizar status do pedido:', error);
+            console.error(`Erro ao atualizar status ${isPagamento ? 'do pagamento' : 'do pedido'}:`, error);
             toast({
-                title: `Erro ao atualizar status do pedido ${idPedido}`,
+                title: `Erro ao atualizar status ${isPagamento ? 'do pagamento' : 'do pedido'} ${idPedido}`,
                 variant: 'destructive',
                 duration: 3000,
             });
         }
     };
+
 
     const handleDateSelect = (range: DateRange | undefined) => {
         setDateRange(range);
@@ -297,12 +305,13 @@ const PedidosPage = () => {
                                                                             </DropdownMenuItem>
                                                                             <DropdownMenuItem
                                                                                 className="focus:bg-red-600 focus:text-white"
-                                                                                onClick={() => atualizarStatusPedido(pedido.id, 'CANCELADO', 'cancelado')}
+                                                                                onClick={() => atualizarStatusPedido(pedido.id, 'CANCELADO')}
                                                                             >
-                                                                                Cancelar
+                                                                                Cancelar pedido
                                                                             </DropdownMenuItem>
                                                                         </>
                                                                     )}
+
                                                                     {mapStatus(pedido.status) === 2 && (
                                                                         <>
                                                                             <DropdownMenuItem
@@ -313,12 +322,13 @@ const PedidosPage = () => {
                                                                             </DropdownMenuItem>
                                                                             <DropdownMenuItem
                                                                                 className="focus:bg-red-600 focus:text-white"
-                                                                                onClick={() => atualizarStatusPedido(pedido.id, 'CANCELADO', 'cancelado')}
+                                                                                onClick={() => atualizarStatusPedido(pedido.id, 'CANCELADO')}
                                                                             >
-                                                                                Cancelar
+                                                                                Cancelar pedido
                                                                             </DropdownMenuItem>
                                                                         </>
                                                                     )}
+
                                                                     {mapStatus(pedido.status) === 3 && (
                                                                         <>
                                                                             <DropdownMenuItem
@@ -329,20 +339,32 @@ const PedidosPage = () => {
                                                                             </DropdownMenuItem>
                                                                             <DropdownMenuItem
                                                                                 className="focus:bg-red-600 focus:text-white"
-                                                                                onClick={() => atualizarStatusPedido(pedido.id, 'CANCELADO', 'cancelado')}
+                                                                                onClick={() => atualizarStatusPedido(pedido.id, 'CANCELADO')}
                                                                             >
-                                                                                Cancelar
+                                                                                Cancelar pedido
                                                                             </DropdownMenuItem>
                                                                         </>
                                                                     )}
-                                                                    {pedido.statusPagamento === 'pendente' && (
+
+                                                                    {pedido.statusPagamento !== 'pago' && (
                                                                         <DropdownMenuItem
                                                                             className="focus:bg-green-600 focus:text-white"
-                                                                            onClick={() => atualizarStatusPedido(pedido.id, pedido.status, 'pago')}
+                                                                            onClick={() => atualizarStatusPedido(pedido.id, 'APROVADO', true)}
                                                                         >
                                                                             Confirmar pagamento
                                                                         </DropdownMenuItem>
                                                                     )}
+
+                                                                    {pedido.statusPagamento === 'pago' && pedido.status === 'CANCELADO' && (
+                                                                        <DropdownMenuItem
+                                                                            className="focus:bg-purple-600 focus:text-white"
+                                                                            onClick={() => atualizarStatusPedido(pedido.id, 'REEMBOLSADO', true)}
+                                                                        >
+                                                                            Reembolsar pagamento
+                                                                        </DropdownMenuItem>
+                                                                    )}
+
+
                                                                 </DropdownMenuContent>
                                                             </DropdownMenu>
                                                         </div>
@@ -428,4 +450,3 @@ const PedidosPage = () => {
 };
 
 export default PedidosPage;
-

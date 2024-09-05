@@ -10,10 +10,16 @@ const statusMap: { [key: number]: { text: string, variant: string } } = {
 };
 
 const statusPagamentoMap: { [key: string]: { text: string, variant: string } } = {
-    'pago': { text: '🤑 Pago', variant: 'pago' },
+    // 'pago': { text: '🤑 Pago', variant: 'pago' },
+    'aprovado': { text: '🤑 Pago', variant: 'pago' }, // Mapeando "aprovado" para "pago"
     'pendente': { text: '👀 Pendente', variant: 'pendente' },
     'cancelado': { text: '🤬 Cancelado', variant: 'cancelado' },
+    'em_analise': { text: '🔍 Em Análise', variant: 'emAnalise' },
+    'recusado': { text: '❌ Recusado', variant: 'recusado' },
+    'reembolsado': { text: '💸 Reembolsado', variant: 'reembolsado' },
+    'falha': { text: '⚠️ Falha', variant: 'falha' },
 };
+
 
 interface TagProps {
     type: 'status' | 'time' | 'statusPagamento';
