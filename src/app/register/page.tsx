@@ -152,11 +152,26 @@ const RegisterPage = () => {
     }
   };
 
+  const categoriaMap: Record<string, string> = {
+    acaiteria: 'ACAITERIA',
+    cafeteria: 'CAFETERIA',
+    churrascaria: 'CHURRASCARIA',
+    comedoria: 'COMEDORIA',
+    hamburgueria: 'HAMBURGUERIA',
+    lanchonete: 'LANCHONETE',
+    outro: 'OUTRO',
+    padaria: 'PADARIA',
+    pizzaria: 'PIZZARIA',
+    restaurante: 'RESTAURANTE',
+    sorveteria: 'SORVETERIA',
+    sushibar: 'SUSHI_BAR',
+  };
+
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     const formatCNPJ = (cnpj: string) => cnpj.replace(/\D/g, '');
 
     try {
-      setIsRegistering(true); // Ativa o estado de registrando
+      setIsRegistering(true);
 
       const url_api_empresa = '/empresas';
 
@@ -175,7 +190,7 @@ const RegisterPage = () => {
         cidade: data.cidade,
         estado: data.estado,
         complemento: data.complemento || "",
-        categoria: data.categoria,
+        categoria: categoriaMap[data.categoria],
         horario_abertura: data.horarioAbertura + ":00",
         horario_fechamento: data.horarioFechamento + ":00",
         img_capa: "teste.png",
