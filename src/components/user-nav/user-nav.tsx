@@ -24,11 +24,14 @@ import DialogMudarSenha from '../dialog-mudar-senha/dialog-mudar-senha';
 import DialogConfirmarLogout from '../dialog-confirmar-logout/dialog-confirmar-logout';
 import DialogGerenciarDadosEmpresa from '../dialog-gerenciar-dados-empresa/dialog-gerenciar-dados-empresa';
 import DialogGerenciarEndereco from '../dialog-gerenciar-endereco-empresa/dialog-gerenciar-endereco-empresa';
+import DialogGerenciarImagens from '../dialog-gerenciar-imagens/dialog-gerenciar-imagens';
 
 export function UserNav() {
   const [isDialogOpen, setIsDialogOpen] = useState<string | null>(null);
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
-
+  const [idEmpresa, setIdEmpresa] = useState(0);
+  const [imgPerfilAtual, setImgPerfilAtual] = useState('');
+  const [imgCapaAtual, setImgCapaAtual] = useState('');
   const [razaoSocial, setRazaoSocial] = useState('');
   const [nomeFantasia, setNomeFantasia] = useState('');
   const [email, setEmail] = useState('');
@@ -49,6 +52,7 @@ export function UserNav() {
 
     const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
     if (empresaData && empresaData.endereco) {
+      setIdEmpresa(empresaData.id);
       setRazaoSocial(empresaData.razaoSocial || '');
       setNomeFantasia(empresaData.nomeFantasia || '');
       setEmail(empresaData.usuario.username || '');
@@ -57,6 +61,8 @@ export function UserNav() {
       setCategoria(empresaData.categoria || '');
       setHorarioAbertura(empresaData.horarioAbertura || '');
       setHorarioFechamento(empresaData.horarioFechamento || '');
+      setImgPerfilAtual(empresaData.imgPerfil || '');
+      setImgCapaAtual(empresaData.imgCapa || '');
     }
   }, [router]);
 
@@ -135,6 +141,13 @@ export function UserNav() {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem
+              onClick={() => handleOpenDialog('Gerenciar Imagens')}
+              className="focus:bg-orange-500 focus:text-white"
+            >
+              Gerenciar Imagens
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
               onClick={() => handleOpenDialog('Gerenciar Informações da Empresa')}
               className="focus:bg-orange-500 focus:text-white"
             >
@@ -162,6 +175,15 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <DialogGerenciarImagens
+        isOpen={isDialogOpen === 'Gerenciar Imagens'}
+        onClose={handleCloseDialog}
+        empresaId={idEmpresa} // ID da empresa
+        imgPerfilAtual={imgPerfilAtual} // Imagem de perfil atual
+        imgCapaAtual={imgCapaAtual} // Imagem de capa atual
+      />
+
 
       <DialogGerenciarDadosEmpresa
         isOpen={isDialogOpen === 'Gerenciar Informações da Empresa'}

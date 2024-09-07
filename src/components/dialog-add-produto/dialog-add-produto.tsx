@@ -133,7 +133,7 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({ onClose, onProductA
                         <Button onClick={onClose} variant="destructive">Cancelar</Button>
                     </div>
                 </div>
-                <div className="w-1/2 pl-4 shadow-2xl bg-orange-50"> {/* Metade direita para a pré-visualização */}
+                <div className="w-1/2 ml-4 shadow-2xl bg-orange-50"> {/* Metade direita para a pré-visualização */}
                     <h3 className="text-lg text-slate-400 font-semibold my-4 text-center">Preview do Produto</h3>
                     <div className="flex flex-col items-center">
                         {newProduct.urlImagem ? (

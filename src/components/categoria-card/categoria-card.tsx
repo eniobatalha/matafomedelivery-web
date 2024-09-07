@@ -174,7 +174,7 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
 
             {/* Dialog de Detalhes do Produto */}
             {isDetailDialogOpen && selectedProduct && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 dialog-overlay">
                     <div className="bg-white p-6 rounded-lg shadow-lg">
                         <h3 className="text-lg font-semibold mb-4">Detalhes do Produto</h3>
                         <img src={selectedProduct.urlImagem} alt={selectedProduct.descricao} className="w-48 h-48 object-cover mb-4" />

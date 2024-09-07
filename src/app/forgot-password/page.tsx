@@ -6,13 +6,10 @@ import { Label } from '@/components/ui/label';
 import { Button } from "@/components/ui/button";
 import Steps from '@/components/steps/steps';
 import { useForm } from '@/hooks/useForm';
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Cookies from 'js-cookie';
+import axios from '@/app/axiosConfig'; // Usando axiosInstance configurado
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
@@ -21,6 +18,7 @@ const ForgotPasswordPage = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState<{ email?: string; otp?: string; password?: string; confirmPassword?: string }>({});
   const [showAlert, setShowAlert] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Para controle de carregamento
 
   const router = useRouter();
 
@@ -32,7 +30,7 @@ const ForgotPasswordPage = () => {
     }
   }, [router]);
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setErrors({});
     const newErrors: { email?: string; otp?: string; password?: string; confirmPassword?: string } = {};
@@ -50,13 +48,38 @@ const ForgotPasswordPage = () => {
       return;
     }
 
-    if (currentStep < 2) {
-      changeStep(currentStep + 1);
-    } else {
-      setShowAlert(true);
-      setTimeout(() => {
-        router.push('/login');
-      }, 4000);
+    try {
+      setIsLoading(true); // Ativar loading ao fazer requisições
+      if (currentStep === 0) {
+        // Enviar código de recuperação para o email
+        await axios.post('/login/enviarCodigoDeRecuperacao', { email });
+        changeStep(currentStep + 1);
+      } else if (currentStep === 1) {
+        // Validar código OTP enviado para o email
+        await axios.post('/login/validarCodigoDeRecuperacao', {
+          email,
+          codigo: Number(otp),
+        });
+        changeStep(currentStep + 1);
+      } else if (currentStep === 2) {
+        // Trocar a senha do usuário
+        await axios.post('/login/trocarSenha', {
+          email,
+          novaSenha: password,
+        });
+        setShowAlert(true);
+        setTimeout(() => {
+          router.push('/login');
+        }, 4000);
+      }
+    } catch (error) {
+      console.error('Erro ao processar solicitação:', error);
+      setErrors({
+        ...errors,
+        otp: 'Houve um erro ao validar o código ou alterar a senha.',
+      });
+    } finally {
+      setIsLoading(false); // Desativar loading
     }
   };
 
@@ -82,16 +105,14 @@ const ForgotPasswordPage = () => {
       {errors.email && <p className="text-orange-500 text-sm">{errors.email}</p>}
     </div>,
     <div key="step2">
-      <Label htmlFor="otp" className="text-xs font-semibold text-center">Digite o código de verificação que foi enviado para o seu email</Label>
+      <Label htmlFor="otp" className="text-xs font-semibold text-center">Digite o código de verificação de 4 dígitos enviado para o seu email</Label>
       <div className="flex justify-center w-full max-w-md mt-2">
-        <InputOTP maxLength={6} onChange={setOtp}>
+        <InputOTP maxLength={4} onChange={setOtp}> {/* Ajustado para 4 dígitos */}
           <InputOTPGroup>
             <InputOTPSlot index={0} />
             <InputOTPSlot index={1} />
             <InputOTPSlot index={2} />
             <InputOTPSlot index={3} />
-            <InputOTPSlot index={4} />
-            <InputOTPSlot index={5} />
           </InputOTPGroup>
         </InputOTP>
       </div>
@@ -137,14 +158,20 @@ const ForgotPasswordPage = () => {
               )}
               {currentStep === 0 && (
                 <div className="flex-row w-full">
-                  <Button variant="orange" type="submit" className="w-full mb-2">Recuperar</Button>
+                  <Button variant="orange" type="submit" className="w-full mb-2" disabled={isLoading}>
+                    {isLoading ? "Enviando..." : "Recuperar"}
+                  </Button>
                   <Button type="button" variant="orangeLink" onClick={() => router.push('/login')} className="w-full">
                     Voltar para Login
                   </Button>
                 </div>
               )}
-              {currentStep === 1 && <Button variant="orange" type="submit" className="w-full">Confirmar</Button>}
-              {currentStep === 2 && <Button variant="orange" type="submit" className="w-full">Salvar</Button>}
+              {currentStep === 1 && <Button variant="orange" type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Validando..." : "Confirmar"}
+              </Button>}
+              {currentStep === 2 && <Button variant="orange" type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Salvando..." : "Salvar"}
+              </Button>}
             </div>
           </div>
         </form>

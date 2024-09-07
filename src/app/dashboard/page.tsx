@@ -172,7 +172,7 @@ export default function DashboardPage() {
                   <CardHeader>
                     <CardTitle>Visão Geral</CardTitle>
                   </CardHeader>
-                  <CardContent className="pl-2">
+                  <CardContent className="ml-2">
                     <Overview />
                   </CardContent>
                 </Card>
@@ -298,7 +298,7 @@ export default function DashboardPage() {
                       TOP 5 Produtos mais vendidos no período selecionado
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="pl-2">
+                  <CardContent className="ml-2">
                     <PieChart />
                   </CardContent>
                 </Card>
@@ -431,7 +431,7 @@ export default function DashboardPage() {
                       Conheça o perfil da sua freguesia
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="pl-2">
+                  <CardContent className="ml-2">
                     <TableClientes />
                   </CardContent>
                 </Card>
