@@ -10,7 +10,7 @@ const data_pie = [
   { id: 4, value: 3, label: 'Coxinha' },
 ];
 
-const PieChart = () => {
+const PizzaProdutos = () => {
   return (
     <MUIPieChart
       series={[
@@ -25,4 +25,4 @@ const PieChart = () => {
   );
 };
 
-export default PieChart;
+export default PizzaProdutos;

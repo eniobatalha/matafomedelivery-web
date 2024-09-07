@@ -1,4 +1,4 @@
-'use client'; // Isso indica que o componente deve ser renderizado no cliente
+'use client';
 import * as React from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
 
@@ -18,7 +18,7 @@ const colorMap = {
   colors: colors,
 };
 
-const BasicBars = () => {
+const BarrasProdutos = () => {
   return (
     <BarChart
       xAxis={[
@@ -31,7 +31,6 @@ const BasicBars = () => {
       series={[
         {
           data: data.map(item => item.value),
-          // Não é necessário definir a cor aqui se você usar colorMap
         }
       ]}
       width={500}
@@ -40,4 +39,4 @@ const BasicBars = () => {
   );
 };
 
-export default BasicBars;
+export default BarrasProdutos;

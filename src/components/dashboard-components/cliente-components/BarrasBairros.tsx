@@ -18,7 +18,7 @@ const colorMap = {
   colors: colors,
 };
 
-const BairroBars = () => {
+const BarrasBairros = () => {
   return (
     <BarChart
       xAxis={[
@@ -39,4 +39,4 @@ const BairroBars = () => {
   );
 };
 
-export default BairroBars;
+export default BarrasBairros;
