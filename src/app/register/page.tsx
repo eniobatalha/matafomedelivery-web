@@ -193,9 +193,9 @@ const RegisterPage = () => {
         categoria: categoriaMap[data.categoria],
         horario_abertura: data.horarioAbertura + ":00",
         horario_fechamento: data.horarioFechamento + ":00",
-        img_capa: "",
-        img_perfil: "",
         tempo_entrega: "00:30:00"
+        // img_capa: "",
+        // img_perfil: "",
       };
 
       const response = await axios.post(url_api_empresa, payload);
