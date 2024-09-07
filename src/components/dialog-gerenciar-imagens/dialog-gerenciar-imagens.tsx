@@ -15,8 +15,7 @@ interface DialogGerenciarImagensProps {
 }
 
 const DialogGerenciarImagens: React.FC<DialogGerenciarImagensProps> = ({ isOpen, onClose, empresaId, imgPerfilAtual, imgCapaAtual }) => {
-    if (!isOpen) return null;
-
+    // Hooks devem ser chamados fora de qualquer condição
     const [imgPerfil, setImgPerfil] = useState<File | null>(null);
     const [imgCapa, setImgCapa] = useState<File | null>(null);
     const [isUploading, setIsUploading] = useState(false);
@@ -88,6 +87,9 @@ const DialogGerenciarImagens: React.FC<DialogGerenciarImagensProps> = ({ isOpen,
         }
     };
 
+    // Renderizar o conteúdo condicionalmente
+    if (!isOpen) return null;
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50 dialog-overlay">
             <div className="bg-white p-6 rounded-lg shadow-lg flex w-2/3 max-w-screen-lg mx-auto">
@@ -130,7 +132,6 @@ const DialogGerenciarImagens: React.FC<DialogGerenciarImagensProps> = ({ isOpen,
         </div>
 
     );
-
 };
 
 export default DialogGerenciarImagens;
