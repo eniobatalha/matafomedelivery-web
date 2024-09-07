@@ -72,6 +72,9 @@ export function UserNav() {
 
   const handleCloseDialog = () => {
     setIsDialogOpen(null);
+    const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
+    setImgPerfilAtual(empresaData.imgPerfil || '');
+    setImgCapaAtual(empresaData.imgCapa || '');
   };
 
   const handleLogout = () => {
@@ -118,7 +121,7 @@ export function UserNav() {
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-8 w-8 mr-8 rounded-full">
             <Avatar className="h-12 w-12">
-              <AvatarImage src="" alt="@MataFome" />
+              <AvatarImage className='shadow-md shadow-white' src={imgPerfilAtual} alt={'Logo da ' + nomeFantasia} />
               <AvatarFallback>
                 {nomeFantasia
                   .split(' ')

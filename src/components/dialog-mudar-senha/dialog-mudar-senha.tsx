@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input'; 
@@ -15,16 +15,32 @@ const DialogMudarSenha: React.FC<DialogMudarSenhaProps> = ({ isOpen, onClose }) 
     const [newPassword, setNewPassword] = useState('');
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [email, setEmail] = useState<string | null>(null);
 
     const { toast } = useToast();
-    const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
-    const email = empresaData?.usuario?.username;
+
+    // Usar useEffect para garantir que o código que acessa o localStorage só seja executado no cliente
+    useEffect(() => {
+        if (typeof window !== 'undefined') { // Garante que está sendo executado no lado do cliente
+            const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
+            setEmail(empresaData?.usuario?.username || null);
+        }
+    }, []);
 
     const handleSave = async () => {
         if (newPassword !== confirmNewPassword) {
             toast({
                 title: "Erro",
                 description: "As senhas não conferem.",
+                variant: "destructive",
+            });
+            return;
+        }
+
+        if (!email) {
+            toast({
+                title: "Erro",
+                description: "Email do usuário não encontrado.",
                 variant: "destructive",
             });
             return;
