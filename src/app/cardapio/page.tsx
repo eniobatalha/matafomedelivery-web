@@ -12,6 +12,7 @@ import DialogAddProduct from '@/components/dialog-add-produto/dialog-add-produto
 import { DndContext, MouseSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { useToast } from "@/components/ui/use-toast";
 import { Progress } from "@/components/ui/progress";
+import DialogAlertaConexao from '@/components/dialog-alerta-conexao/dialog-alerta-conexao';
 
 interface Categoria {
     id: number;
@@ -28,6 +29,7 @@ const CardapioPage: React.FC = () => {
     const [progress, setProgress] = useState(0);
     const [newProduct, setNewProduct] = useState<Produto | null>(null);
     const { toast } = useToast();
+    const [isDialogAlertaOpen, setIsDialogAlertaOpen] = useState(false);
 
     const mouseSensor = useSensor(MouseSensor, {
         activationConstraint: {
@@ -67,6 +69,13 @@ const CardapioPage: React.FC = () => {
         const interval = setInterval(simulateProgress, 1000);
 
         return () => clearInterval(interval); // Limpa o intervalo quando o componente desmonta
+    }, []);
+
+    useEffect(() => {
+        const conexaoHabilitada = localStorage.getItem("conexaoHabilitada") === "true";
+        if (!conexaoHabilitada) {
+            setIsDialogAlertaOpen(true);
+        }
     }, []);
 
     const handleProductEdit = (produto: Produto) => {
@@ -228,6 +237,15 @@ const CardapioPage: React.FC = () => {
                     </div>
                 </DndContext>
             </div>
+
+            <DialogAlertaConexao
+                isOpen={isDialogAlertaOpen}
+                onClose={() => setIsDialogAlertaOpen(false)}
+                title="ATENÇÃO!"
+                description="O recebimento de pedidos está desabilitado, portanto você não será notificado sobre novos pedidos. Habilite-o no interruptor localizado no canto superior direito da página de pedidos."
+                showSwitch={false}
+            />
+
             <Footer />
         </div>
     );

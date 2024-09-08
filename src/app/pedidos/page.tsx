@@ -23,6 +23,7 @@ import { DatePickerHistorico } from "@/components/datepicker-historico/datepicke
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import { Switch } from "@/components/ui/switch";
+import DialogAlertaConexao from "@/components/dialog-alerta-conexao/dialog-alerta-conexao";
 
 const PedidosPage = () => {
     const [filtroStatus, setFiltroStatus] = useState<string>("novo");
@@ -41,10 +42,11 @@ const PedidosPage = () => {
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [filaPedidos, setFilaPedidos] = useState<any[]>([]);
     const [pedidoAtual, setPedidoAtual] = useState<any | null>(null);
+    const [isDialogAlertaOpen, setIsDialogAlertaOpen] = useState(false);
 
     useEffect(() => {
         audioRef.current = new Audio('/sounds/alert.mp3');
-        
+
         const alertaSalvo = localStorage.getItem("alertaSonoroHabilitado");
         const conexaoSalva = localStorage.getItem("conexaoHabilitada");
 
@@ -115,6 +117,22 @@ const PedidosPage = () => {
             setPedidoDialogOpen(true);
         }
     }, [pedidoDialogOpen, filaPedidos]);
+
+    useEffect(() => {
+        const conexaoHabilitada = localStorage.getItem("conexaoHabilitada") === "true";
+        if (!conexaoHabilitada) {
+            setIsDialogAlertaOpen(true); // Exibe imediatamente ao carregar a página
+        }
+
+        const interval = setInterval(() => {
+            const conexaoHabilitada = localStorage.getItem("conexaoHabilitada") === "true";
+            if (!conexaoHabilitada) {
+                setIsDialogAlertaOpen(true);
+            }
+        }, 60000); // 60 segundos
+
+        return () => clearInterval(interval); // Limpa o intervalo ao desmontar o componente
+    }, []);
 
     const handleCloseDialog = () => {
         if (pedidoAtual) {
@@ -212,11 +230,11 @@ const PedidosPage = () => {
                     <div className="flex justify-between p-8">
                         <h2 className="text-3xl font-bold tracking-tight">Acompanhamento de Pedidos</h2>
                         <label className="flex items-center space-x-2">
+                            <span>{conexaoHabilitada ? "Desativar recebimento de pedidos" : "Ativar recebimento de pedidos"}</span>
                             <Switch
                                 checked={conexaoHabilitada}
                                 onCheckedChange={handleSwitchChange}
                             />
-                            <span>{conexaoHabilitada ? "Desativar recebimento de pedidos" : "Ativar recebimento de pedidos"}</span>
                         </label>
                     </div>
 
@@ -228,6 +246,15 @@ const PedidosPage = () => {
                             atualizarStatusPedido={atualizarStatusPedido}
                         />
                     </Dialog>
+
+                    <DialogAlertaConexao
+                        isOpen={isDialogAlertaOpen}
+                        onClose={() => setIsDialogAlertaOpen(false)}
+                        onSwitchChange={handleSwitchChange} // Mesma função para alterar a conexão
+                        conexaoHabilitada={conexaoHabilitada}
+                        title="ATENÇÃO!"
+                        description="O recebimento de pedidos está desabilitado, portanto você não será notificado sobre novos pedidos. Habilite-o no interruptor abaixo ou no canto superior direito dessa página ao fechar esse aviso."
+                    />
 
                     <div className="px-8 mb-8">
                         <div className="mb-4">

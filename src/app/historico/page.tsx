@@ -11,6 +11,7 @@ import { isWithinInterval, startOfDay, endOfDay } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { DatePickerHistorico } from "@/components/datepicker-historico/datepicker-historico";
 import { Button } from "@/components/ui/button";
+import DialogAlertaConexao from "@/components/dialog-alerta-conexao/dialog-alerta-conexao";
 
 interface Pedido {
     id: number;
@@ -25,6 +26,7 @@ interface Pedido {
 const HistoricoPedidosPage: React.FC = () => {
     const [pedidos, setPedidos] = useState<Pedido[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [isDialogAlertaOpen, setIsDialogAlertaOpen] = useState(false);
     const [filters, setFilters] = useState({
         id: "",
         dateRange: undefined as DateRange | undefined,
@@ -44,6 +46,7 @@ const HistoricoPedidosPage: React.FC = () => {
             valorMax: "",
         });
     };
+    
     
 
     useEffect(() => {
@@ -68,6 +71,13 @@ const HistoricoPedidosPage: React.FC = () => {
         }
 
         fetchPedidos();
+    }, []);
+
+    useEffect(() => {
+        const conexaoHabilitada = localStorage.getItem("conexaoHabilitada") === "true";
+        if (!conexaoHabilitada) {
+            setIsDialogAlertaOpen(true);
+        }
     }, []);
 
     const handleDateSelect = (range: DateRange | undefined) => {
@@ -151,6 +161,15 @@ const HistoricoPedidosPage: React.FC = () => {
                     <DataTable columns={columns} data={filteredPedidos} />
                 )}
             </div>
+
+            <DialogAlertaConexao
+                isOpen={isDialogAlertaOpen}
+                onClose={() => setIsDialogAlertaOpen(false)}
+                title="ATENÇÃO!"
+                description="O recebimento de pedidos está desabilitado, portanto você não será notificado sobre novos pedidos. Habilite-o no interruptor localizado no canto superior direito da página de pedidos."
+                showSwitch={false}
+            />
+
             <Footer />
         </div>
     );

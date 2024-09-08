@@ -1,4 +1,5 @@
 "use client";
+import React, { useEffect, useState } from "react";
 import MenuCompleto from '@/components/menu-completo/menu-completo';
 import { Footer } from '@/components/footer/footer';
 import {
@@ -10,8 +11,19 @@ import {
 import OverviewTab from '@/components/dashboard-components/overviewTab-components/OverviewTab';
 import ProdutoTab from '@/components/dashboard-components/produtoTab-components/ProdutoTab';
 import ClienteTab from '@/components/dashboard-components/clienteTab-components/ClienteTab';
+import DialogAlertaConexao from "@/components/dialog-alerta-conexao/dialog-alerta-conexao";
 
 const DashboardPage = () => {
+
+  const [isDialogAlertaOpen, setIsDialogAlertaOpen] = useState(false);
+
+  useEffect(() => {
+    const conexaoHabilitada = localStorage.getItem("conexaoHabilitada") === "true";
+    if (!conexaoHabilitada) {
+      setIsDialogAlertaOpen(true);
+    }
+  }, []);
+
   return (
     <>
       <MenuCompleto />
@@ -21,6 +33,14 @@ const DashboardPage = () => {
           <div className="flex items-center justify-between space-y-2">
             <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
           </div>
+
+          <DialogAlertaConexao
+            isOpen={isDialogAlertaOpen}
+            onClose={() => setIsDialogAlertaOpen(false)}
+            title="ATENÇÃO!"
+            description="O recebimento de pedidos está desabilitado, portanto você não será notificado sobre novos pedidos. Habilite-o no interruptor localizado no canto superior direito da página de pedidos."
+            showSwitch={false}
+          />
 
           {/* Tabs e Conteúdo */}
           <Tabs defaultValue="overview" className="space-y-4">

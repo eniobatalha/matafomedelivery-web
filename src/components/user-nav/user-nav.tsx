@@ -81,6 +81,8 @@ export function UserNav() {
     Cookies.remove('token');
     localStorage.removeItem('empresaData');
     localStorage.removeItem('username');
+    localStorage.removeItem('alertaSonoroHabilitado');
+    localStorage.removeItem('conexaoHabilitada');
     router.push('/login');
   };
 
