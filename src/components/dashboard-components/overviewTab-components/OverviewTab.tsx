@@ -76,22 +76,24 @@ const OverviewTab = () => {
 
   // Renderização do DatePickerHistorico e atualização das datas
   const handleDateSelect = (range: DateRange | undefined) => {
-    setDateRange(range); // Atualiza o range de datas selecionadas
+    setDateRange(range);
+    fetchOverviewData(range); // Busca os dados automaticamente quando o range de datas for alterado
   };
+
 
   return (
     <>
       {/* Seletor de datas e botão de aplicar */}
       <div className="flex justify-end items-center space-x-2 mb-4">
         <DatePickerHistorico onDateSelect={handleDateSelect} initialRange={dateRange} />
-        <Button variant="orange" onClick={handleApplyClick}>Aplicar</Button>
+        {/* <Button variant="orange" onClick={handleApplyClick}>Aplicar</Button> */}
       </div>
 
       {/* Cards do Dashboard */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <DashboardGenericCard
           title="Total Vendas Período"
-          value={`R$${overviewData.totalVendas ? overviewData.totalVendas.toFixed(2).replace('.', ',') : '0,00'}`}
+          value={`R$${overviewData.totalVendas !== null ? overviewData.totalVendas.toFixed(2).replace('.', ',') : '0,00'}`}
           subtitle="Total de vendas no período selecionado"
           svgIcon={
             <svg
@@ -111,7 +113,7 @@ const OverviewTab = () => {
 
         <DashboardGenericCard
           title="Clientes"
-          value={`+${overviewData.quantidadeClientes}`}
+          value={`+${overviewData.quantidadeClientes !== null ? overviewData.quantidadeClientes : 0}`}
           subtitle="Total de clientes no período selecionado"
           svgIcon={
             <svg
@@ -133,7 +135,7 @@ const OverviewTab = () => {
 
         <DashboardGenericCard
           title="Pedidos"
-          value={`+${overviewData.quantidadePedidos}`}
+          value={`+${overviewData.quantidadePedidos !== null ? overviewData.quantidadePedidos : 0}`}
           subtitle="Total de pedidos no período selecionado"
           svgIcon={
             <svg
@@ -175,12 +177,12 @@ const OverviewTab = () => {
 
       {/* Gráfico de vendas por período */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mt-4">
-        <div className="col-span-4">
-          <h3 className="text-lg font-semibold mb-2">Visão Geral de Vendas</h3>
-          <BarrasPeriodo 
-            data={overviewData.pedidosUltimos7Dias} 
-            startDate={dateRange?.from || new Date()} 
-            endDate={dateRange?.to || new Date()} 
+        <div className="col-span-4 shadow-xl">
+          <h3 className="text-lg font-semibold mb-5">Visão Geral de Vendas</h3>
+          <BarrasPeriodo
+            data={overviewData.pedidosUltimos7Dias}
+            startDate={dateRange?.from || new Date()}
+            endDate={dateRange?.to || new Date()}
           />
         </div>
 

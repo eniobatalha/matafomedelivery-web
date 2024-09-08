@@ -6,7 +6,6 @@ import { Footer } from "@/components/footer/footer";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { MdDeliveryDining } from "react-icons/md";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -25,11 +24,9 @@ import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import { Switch } from "@/components/ui/switch";
 
-
 const PedidosPage = () => {
     const [filtroStatus, setFiltroStatus] = useState<string>("novo");
     const [pedidoDialogOpen, setPedidoDialogOpen] = useState<boolean>(false);
-    const [pedidoAleatorio, setPedidoAleatorio] = useState<any>(null);
     const [pedidos, setPedidos] = useState<any[]>([]);
     const { toast } = useToast();
     const [currentPage, setCurrentPage] = useState(1);
@@ -40,14 +37,19 @@ const PedidosPage = () => {
     });
     const [isLoading, setIsLoading] = useState(true);
     const [alertaSonoroHabilitado, setAlertaSonoroHabilitado] = useState(false);
+    const [conexaoHabilitada, setConexaoHabilitada] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
-
-    // Fila de pedidos e pedido atual
-    const [filaPedidos, setFilaPedidos] = useState<any[]>([]); // Fila de pedidos recebidos
-    const [pedidoAtual, setPedidoAtual] = useState<any | null>(null); // Pedido atual exibido no dialog
+    const [filaPedidos, setFilaPedidos] = useState<any[]>([]);
+    const [pedidoAtual, setPedidoAtual] = useState<any | null>(null);
 
     useEffect(() => {
         audioRef.current = new Audio('/sounds/alert.mp3');
+        
+        const alertaSalvo = localStorage.getItem("alertaSonoroHabilitado");
+        const conexaoSalva = localStorage.getItem("conexaoHabilitada");
+
+        if (alertaSalvo) setAlertaSonoroHabilitado(JSON.parse(alertaSalvo));
+        if (conexaoSalva) setConexaoHabilitada(JSON.parse(conexaoSalva));
     }, []);
 
     useEffect(() => {
@@ -76,28 +78,20 @@ const PedidosPage = () => {
         const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
         const empresaId = empresaData?.id;
 
-        if (!empresaId) {
-            console.error("Empresa ID não encontrado no localStorage");
+        if (!empresaId || !conexaoHabilitada) {
             return;
         }
 
-        // Conectando ao WebSocket
         const socket = new SockJS("https://matafome-api.whiteglacier-7456d729.brazilsouth.azurecontainerapps.io/ws");
         const stompClient = Stomp.over(socket);
 
         stompClient.connect({}, () => {
-            console.log("Conectado ao WebSocket");
-
             stompClient.subscribe(`/topic/pedidoEmpresa/${empresaId}`, (message) => {
                 const novoPedido = JSON.parse(message.body);
-                console.log("Novo pedido recebido:", novoPedido);
-
-                // Adiciona o novo pedido à fila
                 setFilaPedidos((prevFila) => [...prevFila, novoPedido]);
 
-                // Dispara o alarme
                 if (alertaSonoroHabilitado && audioRef.current) {
-                    audioRef.current.play().catch((error: any) => console.log('Erro ao tocar o áudio:', error));
+                    audioRef.current.play().catch((error) => console.log('Erro ao tocar o áudio:', error));
                 }
 
                 toast({
@@ -110,34 +104,26 @@ const PedidosPage = () => {
         });
 
         return () => {
-            if (stompClient) {
-                stompClient.disconnect(() => {
-                    console.log("Desconectado do WebSocket");
-                });
-            }
+            if (stompClient) stompClient.disconnect();
         };
-    }, [alertaSonoroHabilitado]);
+    }, [conexaoHabilitada, alertaSonoroHabilitado]);
 
-    // Verifica se há pedidos na fila e exibe um de cada vez
     useEffect(() => {
         if (!pedidoDialogOpen && filaPedidos.length > 0) {
-            const proximoPedido = filaPedidos[0]; // Pega o primeiro pedido da fila
+            const proximoPedido = filaPedidos[0];
             setPedidoAtual(proximoPedido);
-            setPedidoDialogOpen(true); // Abre o dialog
+            setPedidoDialogOpen(true);
         }
     }, [pedidoDialogOpen, filaPedidos]);
 
     const handleCloseDialog = () => {
-        // Adiciona o pedido atual à lista de pedidos já carregados
         if (pedidoAtual) {
             setPedidos((prevPedidos) => [...prevPedidos, pedidoAtual]);
         }
-
         setPedidoDialogOpen(false);
-        setFilaPedidos((prevFila) => prevFila.slice(1)); // Remove o primeiro pedido da fila
+        setFilaPedidos((prevFila) => prevFila.slice(1));
     };
 
-    // Função para atualizar status do pedido ou status do pagamento
     const atualizarStatusPedido = async (idPedido: number, novoStatus: string, isPagamento: boolean = false) => {
         try {
             const endpoint = isPagamento
@@ -147,13 +133,7 @@ const PedidosPage = () => {
                 ? { novoStatusPagamento: novoStatus }
                 : { novoStatusPedido: novoStatus };
 
-            console.log(`Requisição PATCH para ${endpoint} com status: ${novoStatus}`);
-
-            const response = await axiosInstance.patch(endpoint, body, {
-                headers: { 'Content-Type': 'application/json' },
-            });
-
-            console.log('Resposta da API:', response.data);
+            const response = await axiosInstance.patch(endpoint, body);
 
             setPedidos((pedidos) =>
                 pedidos.map((pedido) =>
@@ -173,7 +153,6 @@ const PedidosPage = () => {
                 duration: 3000,
             });
         } catch (error) {
-            console.error(`Erro ao atualizar status ${isPagamento ? 'do pagamento' : 'do pedido'}:`, error);
             toast({
                 title: `Erro ao atualizar status ${isPagamento ? 'do pagamento' : 'do pedido'} ${idPedido}`,
                 variant: 'destructive',
@@ -181,7 +160,6 @@ const PedidosPage = () => {
             });
         }
     };
-
 
     const handleDateSelect = (range: DateRange | undefined) => {
         setDateRange(range);
@@ -198,26 +176,15 @@ const PedidosPage = () => {
             })
             : true;
 
-        return (
-            matchesDateRange &&
+        return matchesDateRange &&
             (filtroStatus === "todos" || (
                 (filtroStatus === "novo" && statusMapped === 1) ||
                 (filtroStatus === "empreparo" && statusMapped === 2) ||
                 (filtroStatus === "ementrega" && statusMapped === 3) ||
                 (filtroStatus === "entregues" && statusMapped === 4) ||
                 (filtroStatus === "cancelados" && statusMapped === 5)
-            ))
-        );
+            ));
     });
-
-    const handleNovoPedido = () => {
-        const pedido = pedidos[Math.floor(Math.random() * pedidos.length)];
-        setPedidoAleatorio(pedido);
-        setPedidoDialogOpen(true);
-        if (audioRef.current) {
-            audioRef.current.play().catch(error => console.log('Erro ao tocar o áudio:', error));
-        }
-    };
 
     const handlePageChange = (pageNumber: number) => {
         if (pageNumber < 1 || pageNumber > Math.ceil(pedidosFiltrados.length / itemsPerPage)) return;
@@ -227,6 +194,14 @@ const PedidosPage = () => {
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = pedidosFiltrados.slice(indexOfFirstItem, indexOfLastItem);
+
+    const handleSwitchChange = (checked: boolean) => {
+        setConexaoHabilitada(checked);
+        setAlertaSonoroHabilitado(checked);
+
+        localStorage.setItem("alertaSonoroHabilitado", JSON.stringify(checked));
+        localStorage.setItem("conexaoHabilitada", JSON.stringify(checked));
+    };
 
     return (
         <>
@@ -238,10 +213,10 @@ const PedidosPage = () => {
                         <h2 className="text-3xl font-bold tracking-tight">Acompanhamento de Pedidos</h2>
                         <label className="flex items-center space-x-2">
                             <Switch
-                                checked={alertaSonoroHabilitado}
-                                onCheckedChange={(checked) => setAlertaSonoroHabilitado(checked)}
+                                checked={conexaoHabilitada}
+                                onCheckedChange={handleSwitchChange}
                             />
-                            <span>Habilitar alerta sonoro</span>
+                            <span>{conexaoHabilitada ? "Desativar recebimento de pedidos" : "Ativar recebimento de pedidos"}</span>
                         </label>
                     </div>
 
@@ -365,8 +340,6 @@ const PedidosPage = () => {
                                                                             Reembolsar pagamento
                                                                         </DropdownMenuItem>
                                                                     )}
-
-
                                                                 </DropdownMenuContent>
                                                             </DropdownMenu>
                                                         </div>
@@ -436,7 +409,6 @@ const PedidosPage = () => {
                                 </TabsContent>
                             </Tabs>
                         </div>
-                        {/* Componente de Paginação */}
                         <PaginationControls
                             currentPage={currentPage}
                             totalItems={pedidosFiltrados.length}
