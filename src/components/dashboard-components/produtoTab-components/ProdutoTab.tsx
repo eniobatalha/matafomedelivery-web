@@ -89,14 +89,14 @@ const ProdutoTab = () => {
       </div>
 
       {/* Inclusão dos gráficos de pizza e barras */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mt-4">
-        <div className="col-span-4">
-          <div className="p-4 bg-white shadow rounded-lg">
-            <h3 className="text-lg font-bold">Produtos Mais Vendidos</h3>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mt-4 ">
+        <div className="col-span-4 shadow-lg">
+          <div className="p-4 bg-white rounded-lg">
+            <h3 className="text-lg font-bold mb-12">Produtos Mais Vendidos</h3>
             <PizzaProdutos />
           </div>
         </div>
-        <div className="col-span-3">
+        <div className="col-span-3 shadow-lg">
           <div className="p-4 bg-white shadow rounded-lg">
             <h3 className="text-lg font-bold">Categorias Mais Vendidas</h3>
             <BarrasProdutos />

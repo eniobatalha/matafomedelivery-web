@@ -187,7 +187,7 @@ const OverviewTab = () => {
         </div>
 
         {/* Vendas Recentes */}
-        <div className="col-span-3">
+        <div className="col-span-3 shadow-xl">
           <h3 className="text-lg font-semibold mb-2">Vendas Recentes</h3>
           <VendasRecentes data={overviewData.ultimasVendas} />
         </div>

@@ -14,8 +14,8 @@ export function Footer({
           &copy; {new Date().getFullYear()} Mata Fome Delivery. Todos os direitos reservados.
         </p>
         <p className="text-xs mt-2">
-          <a href="" className="hover:underline">Política de Privacidade</a> | 
-          <a href="" className="hover:underline"> Termos de Serviço</a>
+          <a href="#" className="hover:underline">Política de Privacidade</a> | 
+          <a href="#" className="hover:underline"> Termos de Serviço</a>
         </p>
       </div>
     </footer>

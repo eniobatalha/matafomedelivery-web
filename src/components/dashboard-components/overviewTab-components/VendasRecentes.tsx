@@ -12,7 +12,7 @@ export const VendasRecentes = ({ data }: { data: any[] }) => {
   };
 
   return (
-    <div className="space-y-8 p-4 shadow-xl">
+    <div className="space-y-8 p-4">
       {data
         .slice() // Faz uma cópia do array
         .reverse() // Inverte a ordem dos dados

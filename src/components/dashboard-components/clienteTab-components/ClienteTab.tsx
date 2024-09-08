@@ -96,14 +96,14 @@ const ClienteTab = () => {
 
       {/* Inclusão dos gráficos e tabela */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mt-4">
-        <div className="col-span-4">
-          <div className="p-4 bg-white shadow rounded-lg">
+        <div className="col-span-4 p-4 shadow-lg">
+          <div className=" bg-white rounded-lg">
             <h3 className="text-lg font-bold">Clientes Mais Frequentes</h3>
             <TableTopClientes />
           </div>
         </div>
-        <div className="col-span-3">
-          <div className="p-4 bg-white shadow rounded-lg">
+        <div className="col-span-3 p-4 shadow-lg">
+          <div className=" bg-white rounded-lg">
             <h3 className="text-lg font-bold">Bairros Mais Frequentes</h3>
             <BarrasBairros />
           </div>
