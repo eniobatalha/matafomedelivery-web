@@ -8,7 +8,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import Tag from '@/components/tag-pedido/tag-pedido';
-import CardConteudoProduto from '@/components/card-conteudo-produto/card-conteudo-produto';
+import CardConteudoPedido from '@/components/card-conteudo-produto/card-conteudo-pedido';
 import { Button } from '@/components/ui/button';
 import { Pedido } from '@/types/types';
 import Link from 'next/link';
@@ -40,7 +40,7 @@ const NovoPedidoDialog: React.FC<NovoPedidoDialogProps> = ({ isOpen, onClose, pe
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[450px]">
+            <DialogContent className="sm:max-w-[550px]">
                 <DialogHeader className="border-b border-gray-300 pb-2 mb-2">
                     <div className="flex justify-between items-center">
                         <div className="flex gap-4 mb-2">
@@ -81,7 +81,7 @@ const NovoPedidoDialog: React.FC<NovoPedidoDialogProps> = ({ isOpen, onClose, pe
                 </DialogHeader>
                 <div className="grid gap-4 py-4 max-h-96 overflow-y-auto pr-2">
                     {pedido.itensPedido.map((item) => (
-                        <CardConteudoProduto
+                        <CardConteudoPedido
                             key={item.id}
                             id={Number(item.produto.id)}
                             name={item.produto.nome}
@@ -91,10 +91,12 @@ const NovoPedidoDialog: React.FC<NovoPedidoDialogProps> = ({ isOpen, onClose, pe
                             unitPrice={Number(item.produto.preco)}
                             totalPrice={Number(item.produto.preco) * item.quantidade}
                             additions={item.produto.adicionais || []}
+                            observacao={pedido.observacao || "Não há observações."}
                         />
                     ))}
                 </div>
                 <div className="h-20 border-t border-gray-300 pt-6">
+                    <div className="text-md text-gray-500 mx-6 mb-4"><strong>Observações:</strong> {pedido.observacao}</div>
                     <div className="flex justify-between px-6 mb-4">
                         <div className="text-xl text-orange-500 font-extrabold">Total</div>
                         <div className="text-2xl text-orange-500 font-extrabold tracking-tight">
@@ -103,8 +105,10 @@ const NovoPedidoDialog: React.FC<NovoPedidoDialogProps> = ({ isOpen, onClose, pe
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button variant="orange" onClick={handleAceitarPedido}>Aceitar Pedido</Button>
-                    <Button variant="destructive" onClick={handleCancelarPedido}>Cancelar Pedido</Button>
+                    <div className="flex gap-4 mt-4">
+                        <Button variant="orange" onClick={handleAceitarPedido}>Aceitar Pedido</Button>
+                        <Button variant="destructive" onClick={handleCancelarPedido}>Cancelar Pedido</Button>
+                    </div>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

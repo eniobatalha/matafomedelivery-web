@@ -76,17 +76,36 @@
   li::before {
     content: none !important;
   }
+
   .dropdown-menu-item-hover:hover {
-    background-color: #fb923c; /* Tailwind CSS orange-500 */
-    color: #ffffff; /* white */
+    background-color: #fb923c;
+    /* Tailwind CSS orange-500 */
+    color: #ffffff;
+    /* white */
   }
+
   .dialog-overlay {
-    z-index: 1000; /* Um valor alto para garantir que os diálogos fiquem no topo */
+    z-index: 1000;
+    /* Um valor alto para garantir que os diálogos fiquem no topo */
   }
+
   .pagination-link-disabled {
     pointer-events: none;
     color: #ddd;
     cursor: not-allowed;
+  }
+
+  .draggable {
+    transition: transform 0.2s ease;
+    opacity: 1;
+  }
+
+  .draggableDragging {
+    opacity: 0.5;
+  }
+
+  .draggableTransformed {
+    transform: translate3d(var(--x), var(--y), 0);
   }
 
 }

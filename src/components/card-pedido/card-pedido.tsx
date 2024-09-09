@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import Tag from '@/components/tag-pedido/tag-pedido';
-import CardConteudoProduto from '@/components/card-conteudo-produto/card-conteudo-produto';
+import CardConteudoPedido from '@/components/card-conteudo-produto/card-conteudo-pedido';
 import Link from "next/link";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { formatDateTime, formatToGoogleMapsLink, formatToWhatsAppLink, mapStatus, mapStatusPagamento } from "@/lib/formatters";
@@ -33,63 +33,11 @@ export const PedidoCard: React.FC<PedidoCardProps> = ({ pedido, onUpdateStatus }
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-56" align="end" forceMount>
-                            {mapStatus(pedido.status) === 1 && (
-                                <>
-                                    <DropdownMenuItem
-                                        className="focus:bg-orange-600 focus:text-white"
-                                        onClick={() => onUpdateStatus(pedido.id, 'PROCESSANDO')}
-                                    >
-                                        Iniciar preparo
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        className="focus:bg-red-600 focus:text-white"
-                                        onClick={() => onUpdateStatus(pedido.id, 'CANCELADO', 'cancelado')}
-                                    >
-                                        Cancelar
-                                    </DropdownMenuItem>
-                                </>
-                            )}
-                            {mapStatus(pedido.status) === 2 && (
-                                <>
-                                    <DropdownMenuItem
-                                        onClick={() => onUpdateStatus(pedido.id, 'EM_TRANSITO')}
-                                    >
-                                        Enviar pedido
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        className="focus:bg-red-600 focus:text-white"
-                                        onClick={() => onUpdateStatus(pedido.id, 'CANCELADO', 'cancelado')}
-                                    >
-                                        Cancelar
-                                    </DropdownMenuItem>
-                                </>
-                            )}
-                            {mapStatus(pedido.status) === 3 && (
-                                <>
-                                    <DropdownMenuItem
-                                        onClick={() => onUpdateStatus(pedido.id, 'ENTREGUE')}
-                                    >
-                                        Confirmar entrega
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        className="focus:bg-red-600 focus:text-white"
-                                        onClick={() => onUpdateStatus(pedido.id, 'CANCELADO', 'cancelado')}
-                                    >
-                                        Cancelar
-                                    </DropdownMenuItem>
-                                </>
-                            )}
-                            {pedido.statusPagamento === 'pendente' && (
-                                <DropdownMenuItem
-                                    className="focus:bg-green-600 focus:text-white"
-                                    onClick={() => onUpdateStatus(pedido.id, pedido.status, 'pago')}
-                                >
-                                    Confirmar pagamento
-                                </DropdownMenuItem>
-                            )}
+                            {/* Menu de ações */}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
+
                 <h3 className='text-sm text-muted-foreground'>
                     <strong>Cliente:</strong> {pedido.cliente?.nome} —
                     <strong>Telefone: </strong>
@@ -103,6 +51,13 @@ export const PedidoCard: React.FC<PedidoCardProps> = ({ pedido, onUpdateStatus }
                         </a>
                     </Link>
                 </h3>
+
+                {/* Exibe a observação, se existir */}
+                {pedido.observacao && (
+                    <h3 className='text-sm text-muted-foreground'>
+                        <strong>Observação:</strong> {pedido.observacao}
+                    </h3>
+                )}
 
                 {pedido.enderecoEntrega && (
                     <>
@@ -124,10 +79,11 @@ export const PedidoCard: React.FC<PedidoCardProps> = ({ pedido, onUpdateStatus }
                     </>
                 )}
             </CardHeader>
+
             <CardContent className="pb-2 mb-4 mt-4 flex-1">
                 {Array.isArray(pedido.itensPedido) && pedido.itensPedido.length > 0 ? (
                     pedido.itensPedido.map((item: any) => (
-                        <CardConteudoProduto
+                        <CardConteudoPedido
                             key={item.id}
                             id={item.produto.id}
                             name={item.produto.nome}
@@ -137,17 +93,17 @@ export const PedidoCard: React.FC<PedidoCardProps> = ({ pedido, onUpdateStatus }
                             unitPrice={item.produto.preco}
                             totalPrice={item.produto.preco * item.quantidade}
                             additions={item.produto.adicionais || []}
+                            observacao={pedido.observacao || "Não há observações."}
                         />
                     ))
                 ) : (
                     <p>Nenhum produto encontrado</p>
                 )}
             </CardContent>
+            <div className="text-lg text-gray-500 mx-6"><strong>Observações:</strong> {pedido.observacao}</div>
             <div className="h-20 border-t border-gray-300 pt-6">
-                <div className="flex justify-between px-6 mb-4">
-                    <div className="text-xl text-orange-500 font-extrabold">Total</div>
-                    <div className="text-2xl text-orange-500 font-extrabold tracking-tight">R$ {pedido.valorTotal}</div>
-                </div>
+                <div className="text-xl text-orange-500 font-extrabold">Total</div>
+                <div className="text-2xl text-orange-500 font-extrabold tracking-tight">R$ {pedido.valorTotal}</div>
             </div>
         </Card>
     );

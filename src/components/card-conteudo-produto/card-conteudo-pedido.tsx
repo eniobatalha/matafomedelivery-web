@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface CardConteudoProdutoProps {
+interface CardConteudoPedidoProps {
     id: number;
     name: string;
     image: string;
@@ -9,9 +9,10 @@ interface CardConteudoProdutoProps {
     unitPrice: number;
     totalPrice: number;
     additions: { id: number; nome: string; valor: number }[];
+    observacao: string;
 }
 
-const CardConteudoProduto: React.FC<CardConteudoProdutoProps> = ({
+const CardConteudoPedido: React.FC<CardConteudoPedidoProps> = ({
     id,
     name,
     image,
@@ -20,6 +21,7 @@ const CardConteudoProduto: React.FC<CardConteudoProdutoProps> = ({
     unitPrice,
     totalPrice,
     additions,
+    observacao,
 }) => {
     return (
         <div className="flex mb-4">
@@ -37,10 +39,11 @@ const CardConteudoProduto: React.FC<CardConteudoProdutoProps> = ({
                         <p>Sem adicionais</p>
                     )}
                 </div>
+                
                 <div className="text-lg font-bold text-orange-500 mt-2">Total: R$ {totalPrice.toFixed(2)}</div>
             </div>
         </div>
     );
 };
 
-export default CardConteudoProduto;
+export default CardConteudoPedido;

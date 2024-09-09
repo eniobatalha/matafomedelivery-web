@@ -9,9 +9,10 @@ interface DraggableProdutoProps {
     onProductDelete: (produto: Produto) => void;
     onDetailClick: (produto: Produto) => void;
     onEditClick: (produto: Produto) => void;
+    onManageOpcionaisClick: (produto: Produto) => void;
 }
 
-const DraggableProduto: React.FC<DraggableProdutoProps> = ({ produto, onProductDelete, onDetailClick, onEditClick }) => {
+const DraggableProduto: React.FC<DraggableProdutoProps> = ({ produto, onProductDelete, onDetailClick, onEditClick, onManageOpcionaisClick }) => {
     const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
         id: produto.id.toString(),
     });
@@ -56,13 +57,18 @@ const DraggableProduto: React.FC<DraggableProdutoProps> = ({ produto, onProductD
                     <p className="font-bold">{produto.nome}</p>
                     <p className="text-sm text-gray-600">{produto.descricao}</p>
                     <p className="text-sm text-gray-600">R${produto.preco}</p>
-                    <Button onClick={() => onDetailClick(produto)} variant="outline">Detalhes</Button>
+                    <div className="flex gap-2">
+                        <Button onClick={() => onDetailClick(produto)} variant="orangeLink">Detalhes</Button>
+                        <Button onClick={() => onManageOpcionaisClick(produto)} variant="orangeLink">
+                            Gerenciar Opcionais
+                        </Button>
+                    </div>
                 </div>
             </div>
             <div className='flex gap-4'>
                 <Button onClick={() => onEditClick(produto)} variant="outlineOrange">Editar</Button>
-                <Button 
-                    onClick={handleDeleteClick} 
+                <Button
+                    onClick={handleDeleteClick}
                     variant="destructive"
                     disabled={isDeleting} // Desabilita o botão durante a exclusão
                 >

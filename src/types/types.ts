@@ -71,6 +71,7 @@ export interface Pedido {
   statusPagamento: string;
   taxaEntrega: number;
   valorTotal: number;
+  observacao?: string;
 }
 
 export type NovoProduto = Omit<Produto, 'id'>;

@@ -1,5 +1,3 @@
-"use client";
-
 import React from 'react';
 import {
     Dialog,
@@ -10,10 +8,9 @@ import {
     DialogFooter,
 } from "@/components/ui/dialog";
 import Tag from '@/components/tag-pedido/tag-pedido';
-import CardConteudoProduto from '@/components/card-conteudo-produto/card-conteudo-produto';
+import CardConteudoPedido from '@/components/card-conteudo-produto/card-conteudo-pedido';
 import { Button } from '@/components/ui/button';
 
-// Função para mapear o status da API para o formato usado no frontend
 function mapStatus(status: string): number {
     switch (status) {
         case "PENDENTE":
@@ -31,7 +28,6 @@ function mapStatus(status: string): number {
     }
 }
 
-// Função para formatar a data, se necessário
 function formatDateTime(dateTimeString: string): string {
     const isoFormatRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3,}$/;
 
@@ -63,7 +59,8 @@ const DialogDetalhesPedido: React.FC<DialogDetalhesPedidoProps> = ({ isOpen, onC
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[600px]">
+            {/* Aumentando o tamanho do diálogo */}
+            <DialogContent className="sm:max-w-[800px]">
                 <DialogHeader>
                     <DialogTitle>Detalhes do Pedido #{pedido.id}</DialogTitle>
                     <div className="flex gap-4 mt-4">
@@ -77,9 +74,11 @@ const DialogDetalhesPedido: React.FC<DialogDetalhesPedidoProps> = ({ isOpen, onC
                         <p><strong>Endereço:</strong> {pedido.enderecoEntrega.logradouro}, {pedido.enderecoEntrega.numero} - {pedido.enderecoEntrega.bairro}, {pedido.enderecoEntrega.cidade}</p>
                         <p><strong>Data do Pedido:</strong> {formatDateTime(pedido.dataHoraPedido)}</p>
                     </div>
-                    <div className="mt-4">
+
+                    {/* Garantindo mais espaço entre os itens */}
+                    <div className="mt-6 space-y-4">
                         {pedido.itensPedido.map((item: any) => (
-                            <CardConteudoProduto
+                            <CardConteudoPedido
                                 key={item.id}
                                 id={item.produto.id}
                                 name={item.produto.nome}
@@ -89,14 +88,21 @@ const DialogDetalhesPedido: React.FC<DialogDetalhesPedidoProps> = ({ isOpen, onC
                                 unitPrice={item.produto.preco}
                                 totalPrice={item.produto.preco * item.quantidade}
                                 additions={item.adicionais}
+                                observacao={pedido.observacao || "Não há observações."}
                             />
                         ))}
                     </div>
-                    <div className="mt-4">
+
+                    <div className="mt-6">
                         <p className="text-xl font-bold text-right">Valor Total: R$ {totalValue.toFixed(2)}</p>
                     </div>
                 </DialogDescription>
-                <DialogFooter>
+                
+                {/* Movendo as observações para dentro da área de descrição */}
+                <DialogFooter className="flex flex-col items-start">
+                    <div className="text-md text-gray-500 mx-6 mb-4">
+                        <strong>Observações:</strong> {pedido.observacao ? pedido.observacao : "Não há observações."}
+                    </div>
                     <Button variant="destructive" onClick={onClose}>Fechar</Button>
                 </DialogFooter>
             </DialogContent>

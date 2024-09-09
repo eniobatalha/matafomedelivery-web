@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import Tag from '@/components/tag-pedido/tag-pedido';
-import CardConteudoProduto from '@/components/card-conteudo-produto/card-conteudo-produto';
+import CardConteudoPedido from '@/components/card-conteudo-produto/card-conteudo-pedido';
 import NovoPedidoDialog from '@/components/novo-pedido-dialog/novo-pedido.dialog';
 import axiosInstance from '@/app/axiosConfig';
 import { PaginationControls } from "@/components/pagination-controls/pagination-controls";
@@ -407,7 +407,7 @@ const PedidosPage = () => {
                                                     <CardContent className="pb-2 mb-4 mt-4 flex-1">
                                                         {Array.isArray(pedido.itensPedido) && pedido.itensPedido.length > 0 ? (
                                                             pedido.itensPedido.map((item: any) => (
-                                                                <CardConteudoProduto
+                                                                <CardConteudoPedido
                                                                     key={item.id}
                                                                     id={item.produto.id}
                                                                     name={item.produto.nome}
@@ -417,12 +417,15 @@ const PedidosPage = () => {
                                                                     unitPrice={item.produto.preco}
                                                                     totalPrice={item.produto.preco * item.quantidade}
                                                                     additions={item.produto.adicionais || []} // Garantindo que additions é um array
+                                                                    observacao={pedido.observacao || "Não há observações."}
                                                                 />
                                                             ))
                                                         ) : (
                                                             <p>Nenhum produto encontrado</p>
                                                         )}
                                                     </CardContent>
+
+                                                    <div className="text-lg text-gray-500 mx-6"><strong>Observações:</strong> {pedido.observacao}</div>
                                                     <div className="h-20 border-t border-gray-300 pt-6">
                                                         <div className="flex justify-between px-6 mb-4">
                                                             <div className="text-xl text-orange-500 font-extrabold">Total</div>

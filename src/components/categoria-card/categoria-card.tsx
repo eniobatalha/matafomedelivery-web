@@ -12,6 +12,9 @@ import { Produto } from '@/types/types';
 import { useDroppable } from "@dnd-kit/core";
 import DraggableProduto from "@/components/draggable-produto/draggable-produto";
 import DialogAddProduct from "@/components/dialog-add-produto/dialog-add-produto";
+import DialogDetalhesProduto from "../cardapioPage-components/dialog-detalhes-produto";
+import DialogGerenciarOpcionais from "../cardapioPage-components/dialog-gerenciar-opcionais";
+
 
 interface CategoriaCardProps {
     categoriaId: string;
@@ -36,6 +39,9 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // Para editar o produto
     const [isEditCategoryDialogOpen, setIsEditCategoryDialogOpen] = useState(false); // Para editar a categoria
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [isOpcionaisDialogOpen, setIsOpcionaisDialogOpen] = useState(false);
+    const [selectedProductForOpcionais, setSelectedProductForOpcionais] = useState<Produto | null>(null);
+
 
     const { isOver, setNodeRef } = useDroppable({
         id: `categoria-${categoriaId}`,
@@ -89,6 +95,16 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
         setIsDeleteDialogOpen(false);
     };
 
+    const handleOpenOpcionaisDialog = (produto: Produto) => {
+        setSelectedProductForOpcionais(produto);
+        setIsOpcionaisDialogOpen(true);
+    };
+
+    const handleCloseOpcionaisDialog = () => {
+        setIsOpcionaisDialogOpen(false);
+        setSelectedProductForOpcionais(null);
+    };
+
     return (
         <Card ref={setNodeRef} style={cardStyle} className="border border-gray-100 rounded-lg mb-4 shadow-lg">
             <CardHeader className="bg-orange-200 flex flex-row justify-between">
@@ -117,12 +133,13 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
             </CardHeader>
             <CardContent>
                 {produtos.map((produto) => (
-                    <DraggableProduto 
-                        key={produto.id} 
-                        produto={produto} 
-                        onProductDelete={() => onProductDelete(produto)} 
-                        onDetailClick={() => handleOpenDetailDialog(produto)} 
-                        onEditClick={() => handleOpenEditDialog(produto)} // Adiciona a opção de editar
+                    <DraggableProduto
+                        key={produto.id}
+                        produto={produto}
+                        onProductDelete={() => onProductDelete(produto)}
+                        onDetailClick={() => handleOpenDetailDialog(produto)}
+                        onEditClick={() => handleOpenEditDialog(produto)}
+                        onManageOpcionaisClick={() => handleOpenOpcionaisDialog(produto)}
                     />
                 ))}
             </CardContent>
@@ -172,18 +189,22 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
                 />
             )}
 
-            {/* Dialog de Detalhes do Produto */}
-            {isDetailDialogOpen && selectedProduct && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 dialog-overlay">
-                    <div className="bg-white p-6 rounded-lg shadow-lg">
-                        <h3 className="text-lg font-semibold mb-4">Detalhes do Produto</h3>
-                        <img src={selectedProduct.urlImagem} alt={selectedProduct.descricao} className="w-48 h-48 object-cover mb-4" />
-                        <p className="text-lg font-bold">{selectedProduct.nome}</p>
-                        <p className="text-sm text-gray-600">{selectedProduct.descricao}</p>
-                        <p className="text-sm text-gray-600">Preço Unitário: R${selectedProduct.preco}</p>
-                        <Button onClick={handleCloseDetailDialog} variant="destructive" className="mt-4">Fechar</Button>
-                    </div>
-                </div>
+            {/* Dialog de Detalhes do Produto usando o novo componente */}
+            {selectedProduct && (
+                <DialogDetalhesProduto
+                    produto={selectedProduct}
+                    isOpen={isDetailDialogOpen}
+                    onClose={handleCloseDetailDialog}
+                />
+            )}
+
+            {isOpcionaisDialogOpen && selectedProductForOpcionais && (
+                <DialogGerenciarOpcionais
+                    isOpen={isOpcionaisDialogOpen}
+                    onClose={handleCloseOpcionaisDialog}
+                    produtoId={selectedProductForOpcionais.id}
+                    categoriaId={parseInt(categoriaId, 10)}
+                />
             )}
         </Card>
     );
