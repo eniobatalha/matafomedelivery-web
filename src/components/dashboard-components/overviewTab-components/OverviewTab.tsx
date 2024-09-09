@@ -178,7 +178,7 @@ const OverviewTab = () => {
       {/* Gráfico de vendas por período */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mt-4">
         <div className="col-span-4 shadow-xl">
-          <h3 className="text-lg font-semibold mb-5">Visão Geral de Vendas</h3>
+          <h3 className="text-lg font-bold mb-5">Visão Geral de Vendas</h3>
           <BarrasPeriodo
             data={overviewData.pedidosUltimos7Dias}
             startDate={dateRange?.from || new Date()}
@@ -188,7 +188,7 @@ const OverviewTab = () => {
 
         {/* Vendas Recentes */}
         <div className="col-span-3 shadow-xl">
-          <h3 className="text-lg font-semibold mb-2">Vendas Recentes</h3>
+          <h3 className="text-lg font-bold mb-2">Vendas Recentes</h3>
           <VendasRecentes data={overviewData.ultimasVendas} />
         </div>
       </div>

@@ -9,9 +9,9 @@ import { Label } from "../ui/label";
 
 interface DialogAddProductProps {
     onClose: () => void;
-    onProductAdded: () => void; // Função para ser chamada após o produto ser adicionado/atualizado
-    productToEdit?: Produto; // Produto a ser editado
-    categoriaId: number; // ID da categoria onde o produto será adicionado
+    onProductAdded: () => void;
+    productToEdit?: Produto;
+    categoriaId: number;
 }
 
 const DialogAddProduct: React.FC<DialogAddProductProps> = ({ onClose, onProductAdded, productToEdit, categoriaId }) => {
@@ -68,6 +68,9 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({ onClose, onProductA
                 imageUrl = await getDownloadURL(storageRef);
             }
 
+            const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
+            const empresaId = empresaData.id;
+
             const produto: Omit<Produto, 'id'> = {
                 urlImagem: imageUrl,
                 nome: newProduct.nome,
@@ -76,16 +79,14 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({ onClose, onProductA
             };
 
             if (productToEdit) {
-                // Atualiza o produto existente
-                await axios.put(`/empresas/{empresaId}/prateleiras/${categoriaId}/produtos/${productToEdit.id}`, produto);
+                await axios.put(`/empresas/${empresaId}/prateleiras/${categoriaId}/produtos/${productToEdit.id}`, produto);
             } else {
-                // Cria um novo produto
-                await axios.post(`/empresas/{empresaId}/prateleiras/${categoriaId}/produtos`, produto);
+                await axios.post(`/empresas/${empresaId}/prateleiras/${categoriaId}/produtos`, produto);
             }
 
-            onProductAdded(); // Atualiza a lista de categorias/produtos
+            onProductAdded(); 
             setIsUploading(false);
-            onClose(); // Fecha o diálogo
+            onClose();
         } catch (error) {
             console.error('Erro ao salvar o produto:', error);
             setIsUploading(false);
@@ -94,8 +95,8 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({ onClose, onProductA
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 dialog-overlay">
-            <div className="bg-white p-6 rounded-lg shadow-lg flex w-2/3"> {/* Aumenta o tamanho do dialog para 2/3 da tela */}
-                <div className="w-1/2 pr-4"> {/* Metade esquerda para o formulário */}
+            <div className="bg-white p-6 rounded-lg shadow-lg flex w-2/3">
+                <div className="w-1/2 pr-4">
                     <h3 className="text-lg font-semibold mb-4">{productToEdit ? "Editar Produto" : "Adicionar Produto"}</h3>
                     <Label>Imagem</Label>
                     <Input
@@ -115,7 +116,7 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({ onClose, onProductA
                     <Input
                         value={newProduct.descricao}
                         onChange={(e) => handleChange(e, 'descricao')}
-                        placeholder="Ex: Pizza de Calabresa Grande (8 pedaços)" 
+                        placeholder="Ex: Tamanho Grande (8 pedaços)" 
                         className="mb-4"
                     />
                     <Label>Preço Unitário</Label>
@@ -128,12 +129,12 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({ onClose, onProductA
                     />
                     <div className="flex gap-4 mt-4">
                         <Button onClick={handleSave} variant="orange" disabled={isUploading}>
-                            {isUploading ? "Salvando..." : "Salvar"}
+                            {isUploading ? "Salvando..." : "Salvar Produto"}
                         </Button>
                         <Button onClick={onClose} variant="destructive">Cancelar</Button>
                     </div>
                 </div>
-                <div className="w-1/2 ml-4 shadow-2xl bg-orange-50"> {/* Metade direita para a pré-visualização */}
+                <div className="w-1/2 ml-4 shadow-2xl bg-orange-50">
                     <h3 className="text-lg text-slate-400 font-semibold my-4 text-center">Preview do Produto</h3>
                     <div className="flex flex-col items-center">
                         {newProduct.urlImagem ? (

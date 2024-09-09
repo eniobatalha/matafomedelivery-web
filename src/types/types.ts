@@ -1,4 +1,10 @@
-// src/types/pedido.ts
+export interface Adicional {
+  id: number;
+  nome: string;
+  valor: number;
+  qtd: number;
+  descricao: string;
+}
 
 export interface Produto {
   id: number;
@@ -6,7 +12,7 @@ export interface Produto {
   descricao: string;
   urlImagem: string;
   preco: number;
-  adicionais?: any[]; // ou um tipo mais específico se você tiver essa informação
+  adicionais?: Adicional[]; // Definido o tipo correto para adicionais
 }
 
 export interface ItensPedido {
@@ -66,4 +72,5 @@ export interface Pedido {
   taxaEntrega: number;
   valorTotal: number;
 }
+
 export type NovoProduto = Omit<Produto, 'id'>;

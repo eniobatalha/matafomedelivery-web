@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Nunito } from "next/font/google"; // Importa Nunito de next/font
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
-const inter = Inter({ subsets: ["latin"] });
+// Configura a fonte Nunito
+const nunito = Nunito({
+  subsets: ["latin"],
+  weight: ["200", "300", "400", "600", "700", "800", "900"], // Ajuste os pesos conforme necessário
+  style: ["normal", "italic"], // Se você usar estilo itálico
+});
 
 export const metadata: Metadata = {
   title: "Mata Fome Delivery",
@@ -17,7 +22,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} flex flex-col min-h-screen`}>
+      {/* Aplica Nunito como a fonte global */}
+      <body className={`${nunito.className} flex flex-col min-h-screen`}>
         <main className="flex-grow">{children}</main>
         <Toaster />
       </body>
