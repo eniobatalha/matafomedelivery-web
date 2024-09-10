@@ -63,7 +63,7 @@ const NovoPedidoDialog: React.FC<NovoPedidoDialogProps> = ({ isOpen, onClose, pe
                             </a>
                         </Link>
                     </DialogDescription>
-                    <DialogDescription className='text-xs text-muted-foreground'>
+                    <DialogDescription className='text-sm text-muted-foreground'>
                         <strong>Endereço: </strong>
                         <Link href={formatToGoogleMapsLink(pedido.enderecoEntrega)} passHref legacyBehavior>
                             <a
@@ -75,7 +75,7 @@ const NovoPedidoDialog: React.FC<NovoPedidoDialogProps> = ({ isOpen, onClose, pe
                             </a>
                         </Link>
                     </DialogDescription>
-                    <DialogDescription className='text-xs text-muted-foreground'>
+                    <DialogDescription className='text-sm text-muted-foreground'>
                         <strong>Complemento:</strong> {pedido.enderecoEntrega.complemento}
                     </DialogDescription>
                 </DialogHeader>
@@ -96,7 +96,7 @@ const NovoPedidoDialog: React.FC<NovoPedidoDialogProps> = ({ isOpen, onClose, pe
                     ))}
                 </div>
                 <div className="h-20 border-t border-gray-300 pt-6">
-                    <div className="text-md text-gray-500 mx-6 mb-4"><strong>Observações:</strong> {pedido.observacao}</div>
+                    <div className="text-sm text-gray-500 mx-6 mb-4"><strong>Observações:</strong> {pedido.observacao}</div>
                     <div className="flex justify-between px-6 mb-4">
                         <div className="text-xl text-orange-500 font-extrabold">Total</div>
                         <div className="text-2xl text-orange-500 font-extrabold tracking-tight">
@@ -105,7 +105,7 @@ const NovoPedidoDialog: React.FC<NovoPedidoDialogProps> = ({ isOpen, onClose, pe
                     </div>
                 </div>
                 <DialogFooter>
-                    <div className="flex gap-4 mt-4">
+                    <div className="flex gap-4 pt-12">
                         <Button variant="orange" onClick={handleAceitarPedido}>Aceitar Pedido</Button>
                         <Button variant="destructive" onClick={handleCancelarPedido}>Cancelar Pedido</Button>
                     </div>

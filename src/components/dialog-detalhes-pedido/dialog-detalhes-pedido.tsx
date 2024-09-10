@@ -59,7 +59,6 @@ const DialogDetalhesPedido: React.FC<DialogDetalhesPedidoProps> = ({ isOpen, onC
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            {/* Aumentando o tamanho do diálogo */}
             <DialogContent className="sm:max-w-[800px]">
                 <DialogHeader>
                     <DialogTitle>Detalhes do Pedido #{pedido.id}</DialogTitle>
@@ -75,7 +74,6 @@ const DialogDetalhesPedido: React.FC<DialogDetalhesPedidoProps> = ({ isOpen, onC
                         <p><strong>Data do Pedido:</strong> {formatDateTime(pedido.dataHoraPedido)}</p>
                     </div>
 
-                    {/* Garantindo mais espaço entre os itens */}
                     <div className="mt-6 space-y-4">
                         {pedido.itensPedido.map((item: any) => (
                             <CardConteudoPedido

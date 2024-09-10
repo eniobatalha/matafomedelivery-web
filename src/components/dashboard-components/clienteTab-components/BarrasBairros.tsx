@@ -34,7 +34,7 @@ const BarrasBairros = () => {
         }
       ]}
       width={500}
-      height={400}
+      height={528}
     />
   );
 };

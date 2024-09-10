@@ -18,7 +18,7 @@ export const BarrasPeriodo = ({ data, startDate, endDate }: { data: any, startDa
   });
 
   return (
-    <div style={{ width: '100%', height: '88%' }}>
+    <div style={{ width: '100%'}}>
       <BarChart
         xAxis={[
           {
@@ -33,7 +33,7 @@ export const BarrasPeriodo = ({ data, startDate, endDate }: { data: any, startDa
           }
         ]}
         width={undefined} // Remove o width fixo
-        height={undefined}
+        height={500}
       />
     </div>
   );

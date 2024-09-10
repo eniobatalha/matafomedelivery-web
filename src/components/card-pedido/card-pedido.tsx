@@ -100,7 +100,7 @@ export const PedidoCard: React.FC<PedidoCardProps> = ({ pedido, onUpdateStatus }
                     <p>Nenhum produto encontrado</p>
                 )}
             </CardContent>
-            <div className="text-lg text-gray-500 mx-6"><strong>Observações:</strong> {pedido.observacao}</div>
+            <div className="text-sm text-gray-500 mx-6"><strong>Observações:</strong> {pedido.observacao}</div>
             <div className="h-20 border-t border-gray-300 pt-6">
                 <div className="text-xl text-orange-500 font-extrabold">Total</div>
                 <div className="text-2xl text-orange-500 font-extrabold tracking-tight">R$ {pedido.valorTotal}</div>

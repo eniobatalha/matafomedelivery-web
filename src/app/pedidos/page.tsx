@@ -386,7 +386,7 @@ const PedidosPage = () => {
 
                                                         {pedido.enderecoEntrega && (
                                                             <>
-                                                                <h3 className='text-xs text-muted-foreground'>
+                                                                <h3 className='text-sm text-muted-foreground'>
                                                                     <strong>Endereço: </strong>
                                                                     <Link href={formatToGoogleMapsLink(pedido.enderecoEntrega)} passHref legacyBehavior>
                                                                         <a
@@ -398,7 +398,7 @@ const PedidosPage = () => {
                                                                         </a>
                                                                     </Link>
                                                                 </h3>
-                                                                <h3 className='text-xs text-muted-foreground'>
+                                                                <h3 className='text-sm text-muted-foreground'>
                                                                     <strong>Complemento:</strong> {pedido.enderecoEntrega.complemento}
                                                                 </h3>
                                                             </>
@@ -425,7 +425,8 @@ const PedidosPage = () => {
                                                         )}
                                                     </CardContent>
 
-                                                    <div className="text-lg text-gray-500 mx-6"><strong>Observações:</strong> {pedido.observacao}</div>
+                                                    {/* Card que exibe o pedido na tela de pedidos */}
+                                                    <div className="text-md text-gray-500 mx-6"><strong>Observações:</strong> {pedido.observacao}</div>
                                                     <div className="h-20 border-t border-gray-300 pt-6">
                                                         <div className="flex justify-between px-6 mb-4">
                                                             <div className="text-xl text-orange-500 font-extrabold">Total</div>

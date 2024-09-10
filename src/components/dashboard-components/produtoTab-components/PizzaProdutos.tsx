@@ -1,26 +1,29 @@
-'use client'; // Isso indica que o componente deve ser renderizado no cliente
-
+'use client';
 import { PieChart as MUIPieChart } from '@mui/x-charts/PieChart';
 
-const data_pie = [
-  { id: 0, value: 20, label: 'Açaí' },
-  { id: 1, value: 15, label: 'Hamburguer' },
-  { id: 2, value: 10, label: 'Pizza' },
-  { id: 3, value: 5, label: 'Cachorro Quente' },
-  { id: 4, value: 3, label: 'Coxinha' },
-];
+interface ProdutoData {
+  nomeProduto: string;
+  quantidadeVendida: number;
+}
 
-const PizzaProdutos = () => {
+const PizzaProdutos = ({ data }: { data: ProdutoData[] }) => {
+  const formatData = data.map((item, index) => ({
+    id: index,
+    value: item.quantidadeVendida,
+    label: item.nomeProduto,
+  }));
+
   return (
     <MUIPieChart
       series={[
         {
-          data: data_pie,
+          data: formatData,
           highlightScope: { faded: 'global', highlighted: 'item' },
           faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
         },
       ]}
-      height={350}
+      margin={{ top: 0, right: 0, bottom: 0, left: -300 }}
+      height={460}
     />
   );
 };
