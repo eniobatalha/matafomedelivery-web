@@ -19,7 +19,10 @@ interface DataTableProps<TData> {
 }
 
 export function DataTable<TData>({ columns, data }: DataTableProps<TData>) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  // Defina o sorting inicial para ordenar pela coluna de dataHoraPedido em ordem descendente
+  const [sorting, setSorting] = React.useState<SortingState>([
+    { id: 'dataHoraPedido', desc: true }
+  ]);
 
   const table = useReactTable({
     data,
@@ -85,3 +88,4 @@ export function DataTable<TData>({ columns, data }: DataTableProps<TData>) {
     </div>
   );
 }
+
