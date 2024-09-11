@@ -102,7 +102,7 @@ const ProdutoTab = () => {
 
   return (
     <>
-      <div className="flex justify-end items-center space-x-2 mb-4">
+      <div className="flex justify-end items-center space-x-2 -mt-14 mb-8">
         <DatePickerHistorico onDateSelect={handleDateSelect} initialRange={dateRange} />
       </div>
 

@@ -84,7 +84,7 @@ const OverviewTab = () => {
   return (
     <>
       {/* Seletor de datas e botão de aplicar */}
-      <div className="flex justify-end items-center space-x-2 mb-4">
+      <div className="flex justify-end items-center space-x-2 -mt-14 mb-8">
         <DatePickerHistorico onDateSelect={handleDateSelect} initialRange={dateRange} />
         {/* <Button variant="orange" onClick={handleApplyClick}>Aplicar</Button> */}
       </div>
