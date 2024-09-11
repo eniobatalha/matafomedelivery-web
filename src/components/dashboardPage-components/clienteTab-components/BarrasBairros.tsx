@@ -1,40 +1,35 @@
-'use client'; // Isso indica que o componente deve ser renderizado no cliente
-import * as React from 'react';
+'use client';
+import React from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
 
-const colors = ['#ff1020', '#FFA500', '#FFFF00', '#8B4513', '#4CAF50'];
+interface BairroData {
+  bairro: string;
+  totalPedidos: number;
+}
 
-const data = [
-  { category: 'Engenho Velho', value: 60 },
-  { category: 'Vila Rica', value: 59 },
-  { category: 'Piedade', value: 30 },
-  { category: 'Cajueiro Seco', value: 23 },
-  { category: 'Muribeca', value: 16 },
-];
+const BarrasBairros = ({ data }: { data: BairroData[] }) => {
+  const formatData = data.map(item => ({
+    category: item.bairro || 'Bairro desconhecido',
+    value: item.totalPedidos,
+  }));
 
-const colorMap = {
-  type: "piecewise" as const,
-  thresholds: data.map(item => item.value),
-  colors: colors,
-};
-
-const BarrasBairros = () => {
   return (
     <BarChart
       xAxis={[
         {
           scaleType: 'band',
-          data: data.map(item => item.category),
-          colorMap: colorMap,
+          data: formatData.map(item => item.category),
         }
       ]}
       series={[
         {
-          data: data.map(item => item.value),
+          data: formatData.map(item => item.value),
+          color: '#FF7300',
         }
       ]}
-      width={500}
-      height={528}
+      margin={{ top: 25, right: 25, bottom: 25, left: 25 }}
+      width={undefined}
+      height={480}
     />
   );
 };

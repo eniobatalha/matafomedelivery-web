@@ -1,15 +1,71 @@
+import React, { useEffect, useState } from 'react';
 import DashboardGenericCard from "../generic-card/dashboard-generic-card";
 import BarrasBairros from "./BarrasBairros";
 import { TableTopClientes } from "./TableTopClientes";
+import { DatePickerHistorico } from '@/components/datepicker-historico/datepicker-historico';
+import { DateRange } from "react-day-picker";
+import { subDays } from 'date-fns';
+import axios from '@/app/axiosConfig';
+
+// Função para formatar a data no formato YYYY-MM-DD
+const formatDateForApi = (date: Date) => {
+  return date.toISOString().split('T')[0];
+};
 
 const ClienteTab = () => {
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: subDays(new Date(), 6),
+    to: new Date(),
+  });
+
+  const [clientData, setClientData] = useState({
+    novosClientes: 0,
+    clientesAtivos: 0,
+    taxaRentecao: 0,
+    cepsAtendidos: 0,
+    clientesMaisFrequentes: [],
+    bairrosMaisFrequentes: [],
+  });
+
+  const fetchClientData = async (range?: DateRange) => {
+    const empresaId = JSON.parse(localStorage.getItem('empresaData') || '{}').id;
+    const startDateFormatted = formatDateForApi(range?.from || subDays(new Date(), 6));
+    const endDateFormatted = formatDateForApi(range?.to || new Date());
+
+    try {
+      const response = await axios.get(`/pedidos/historicoClientes`, {
+        params: {
+          empresaId,
+          startDate: startDateFormatted,
+          endDate: endDateFormatted,
+        },
+      });
+      setClientData(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar dados de cliente:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchClientData(); // Busca os dados ao carregar a página
+  }, []);
+
+  const handleDateSelect = (range: DateRange | undefined) => {
+    setDateRange(range);
+    fetchClientData(range); // Busca os dados ao selecionar o período
+  };
+
   return (
     <>
+      <div className="flex justify-end items-center space-x-2 -mt-14 mb-8">
+        <DatePickerHistorico onDateSelect={handleDateSelect} initialRange={dateRange} />
+      </div>
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <DashboardGenericCard
           title="Novos Clientes"
-          value="+41"
-          subtitle="41 novos clientes no período informado"
+          value={`+${clientData.novosClientes}`}
+          subtitle={`${clientData.novosClientes} novos clientes no período informado`}
           svgIcon={
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -30,8 +86,8 @@ const ClienteTab = () => {
 
         <DashboardGenericCard
           title="Total de Clientes Ativos"
-          value="27"
-          subtitle="27 fregueses pediram mais de uma vez no período informado"
+          value={`${clientData.clientesAtivos}`}
+          subtitle={`${clientData.clientesAtivos} fregueses pediram mais de uma vez no período informado`}
           svgIcon={
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -51,9 +107,9 @@ const ClienteTab = () => {
         />
 
         <DashboardGenericCard
-          title="Total Clientes Cadastrados"
-          value="120"
-          subtitle="120 clientes fizeram cadastro no período informado"
+          title="Taxa de Retenção de Clientes"
+          value={`${clientData.taxaRentecao}%`}
+          subtitle={`${clientData.taxaRentecao}% dos clientes ativos pediram mais de uma vez`}
           svgIcon={
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -74,8 +130,8 @@ const ClienteTab = () => {
 
         <DashboardGenericCard
           title="Bairros Atendidos"
-          value="14"
-          subtitle="Seu negócio atende 14 bairros diferentes"
+          value={`${clientData.cepsAtendidos}`}
+          subtitle={`Seu negócio atende ${clientData.cepsAtendidos} bairros diferentes`}
           svgIcon={
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -96,16 +152,16 @@ const ClienteTab = () => {
 
       {/* Inclusão dos gráficos e tabela */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mt-4">
-        <div className="col-span-4 p-4 shadow-lg">
-          <div className=" bg-white rounded-lg">
+        <div className="col-span-4 p-4 shadow-md">
+          <div className="bg-white rounded-lg">
             <h3 className="text-lg font-bold">Clientes Mais Frequentes</h3>
-            <TableTopClientes />
+            <TableTopClientes data={clientData.clientesMaisFrequentes} />
           </div>
         </div>
-        <div className="col-span-3 p-4 shadow-lg">
-          <div className=" bg-white rounded-lg">
+        <div className="col-span-3 p-4 shadow-md">
+          <div className="bg-white rounded-lg">
             <h3 className="text-lg font-bold">Bairros Mais Frequentes</h3>
-            <BarrasBairros />
+            <BarrasBairros data={clientData.bairrosMaisFrequentes} />
           </div>
         </div>
       </div>
