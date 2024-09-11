@@ -30,7 +30,7 @@ const BarrasCategorias = ({ data }: { data: CategoriaData[] }) => {
       margin={{ top: 25, right: 15, bottom: 25, left: 15 }}
 
       width={500}
-      height={473}
+      height={490}
     />
   );
 };

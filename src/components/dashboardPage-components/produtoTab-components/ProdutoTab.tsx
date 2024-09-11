@@ -189,7 +189,7 @@ const ProdutoTab = () => {
       </div>
 
       {/* Inclusão dos gráficos de pizza e barras */}
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-7 mt-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mt-4">
         <div className="col-span-4">
           <div className="bg-white rounded-lg shadow-md p-4">
             <h3 className="text-lg font-bold mb-3">Produtos Mais Vendidos</h3>

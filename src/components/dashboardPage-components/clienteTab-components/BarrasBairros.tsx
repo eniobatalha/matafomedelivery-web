@@ -29,7 +29,7 @@ const BarrasBairros = ({ data }: { data: BairroData[] }) => {
       ]}
       margin={{ top: 25, right: 25, bottom: 25, left: 25 }}
       width={undefined}
-      height={480}
+      height={500}
     />
   );
 };

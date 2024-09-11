@@ -23,7 +23,7 @@ const PizzaProdutos = ({ data }: { data: ProdutoData[] }) => {
         },
       ]}
       margin={{ top: 0, right: 0, bottom: 0, left: -300 }}
-      height={460}
+      height={480}
     />
   );
 };

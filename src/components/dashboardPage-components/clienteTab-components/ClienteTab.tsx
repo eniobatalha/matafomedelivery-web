@@ -108,8 +108,8 @@ const ClienteTab = () => {
 
         <DashboardGenericCard
           title="Taxa de Retenção de Clientes"
-          value={`${clientData.taxaRentecao}%`}
-          subtitle={`${clientData.taxaRentecao}% dos clientes ativos pediram mais de uma vez`}
+          value={`${clientData.taxaRentecao.toFixed(1).replace('.', ',')}%`}
+          subtitle={`${clientData.taxaRentecao.toFixed(2).replace('.', ',')}% dos clientes ativos pediram mais de uma vez`}
           svgIcon={
             <svg
               xmlns="http://www.w3.org/2000/svg"
