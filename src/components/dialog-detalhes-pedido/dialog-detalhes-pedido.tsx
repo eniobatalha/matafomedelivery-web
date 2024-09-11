@@ -91,16 +91,17 @@ const DialogDetalhesPedido: React.FC<DialogDetalhesPedidoProps> = ({ isOpen, onC
                         ))}
                     </div>
 
-                    <div className="mt-6">
+                    <div className="mt-4">
+                        <div className="text-center text-base text-gray-500 mb-4">
+                            <strong>Observações:</strong> {pedido.observacao ? pedido.observacao : "Não houveram observações."}
+                        </div>
                         <p className="text-xl font-bold text-right">Valor Total: R$ {totalValue.toFixed(2)}</p>
                     </div>
                 </DialogDescription>
-                
+
                 {/* Movendo as observações para dentro da área de descrição */}
                 <DialogFooter className="flex flex-col items-start">
-                    <div className="text-md text-gray-500 mx-6 mb-4">
-                        <strong>Observações:</strong> {pedido.observacao ? pedido.observacao : "Não há observações."}
-                    </div>
+
                     <Button variant="destructive" onClick={onClose}>Fechar</Button>
                 </DialogFooter>
             </DialogContent>

@@ -31,7 +31,7 @@ export const states = [
 ];
 
 export const categorias = [
-  { value: 'acaiteria', label: 'Açaíteria' },
+  { value: 'acaiteria', label: 'Açaiteria' },
   { value: 'cafeteria', label: 'Cafeteria' },
   { value: 'churrascaria', label: 'Churrascaria' },
   { value: 'comedoria', label: 'Comedoria' },

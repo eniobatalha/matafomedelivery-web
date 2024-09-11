@@ -8,9 +8,9 @@ import Cookies from 'js-cookie';
 
 import { Button } from '@/components/ui/button';
 import { categoriaMap } from '@/lib/constants';
-import EmpresaDataForm from '@/components/register-components/EmpresaDataForm';
-import EnderecoForm from '@/components/register-components/EnderecoForm';
-import UserCredentialsForm from '@/components/register-components/UserCredentialsForm';
+import EmpresaDataForm from '@/components/registerPage-components/EmpresaDataForm';
+import EnderecoForm from '@/components/registerPage-components/EnderecoForm';
+import UserCredentialsForm from '@/components/registerPage-components/UserCredentialsForm';
 
 type FormValues = {
   razaoSocial: string;
@@ -117,6 +117,7 @@ const RegisterPage = () => {
         variant: "destructive",
         duration: 3000,
       });
+      console.log("Erro ao registrar:", error.message);
     } finally {
       setIsRegistering(false);
     }

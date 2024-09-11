@@ -3,8 +3,7 @@
 import React, { useState, useEffect } from "react";
 import MenuCompleto from "@/components/menu-completo/menu-completo";
 import { Footer } from "@/components/footer/footer";
-import { DataTable } from "./data-table";
-import { columns } from "./columns";
+
 import { Input } from "@/components/ui/input";
 import axiosInstance from '@/app/axiosConfig';
 import { isWithinInterval, startOfDay, endOfDay } from "date-fns";
@@ -12,6 +11,8 @@ import { DateRange } from "react-day-picker";
 import { DatePickerHistorico } from "@/components/datepicker-historico/datepicker-historico";
 import { Button } from "@/components/ui/button";
 import DialogAlertaConexao from "@/components/dialog-alerta-conexao/dialog-alerta-conexao";
+import { DataTable } from "@/components/historicoPage-components/data-table";
+import { columns } from "@/components/historicoPage-components/columns";
 
 interface Pedido {
     id: number;

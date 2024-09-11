@@ -8,9 +8,9 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs';
-import OverviewTab from '@/components/dashboard-components/overviewTab-components/OverviewTab';
-import ProdutoTab from '@/components/dashboard-components/produtoTab-components/ProdutoTab';
-import ClienteTab from '@/components/dashboard-components/clienteTab-components/ClienteTab';
+import OverviewTab from '@/components/dashboardPage-components/overviewTab-components/OverviewTab';
+import ProdutoTab from '@/components/dashboardPage-components/produtoTab-components/ProdutoTab';
+import ClienteTab from '@/components/dashboardPage-components/clienteTab-components/ClienteTab';
 import DialogAlertaConexao from "@/components/dialog-alerta-conexao/dialog-alerta-conexao";
 
 const DashboardPage = () => {

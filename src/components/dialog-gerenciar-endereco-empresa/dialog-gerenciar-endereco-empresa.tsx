@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import axios from '@/app/axiosConfig';
+import axiosInstance from '@/app/axiosConfig';
 import { FaSearch } from 'react-icons/fa';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/components/ui/use-toast';
@@ -128,7 +129,7 @@ const DialogGerenciarEndereco: React.FC<DialogGerenciarEnderecoProps> = ({
                 estado,
             };
 
-            await axios.patch(`/empresas/${empresaId}/endereco`, enderecoPayload);
+            await axiosInstance.patch(`/empresas/${empresaId}/enderecos`, enderecoPayload);
 
             // Atualiza o localStorage com o novo endereço
             const updatedEmpresaData = {

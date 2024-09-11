@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import Tag from "@/components/tag-pedido/tag-pedido";
 import ActionCell from "./action-cell";
 
+
 // Função para mapear o status da API para o formato usado no frontend
 function mapStatus(status: string): number {
     switch (status) {

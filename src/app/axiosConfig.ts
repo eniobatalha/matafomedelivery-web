@@ -31,12 +31,20 @@ axiosInstance.interceptors.response.use(
                     case 500:
                         const fullMessage = error.response.request.response || 'Erro no servidor.';
                         const duplicateKeyMatch = fullMessage.match(/duplicate key value violates unique constraint "usuario_username_key"/);
-
+                        
+                        // Verificação para o e-mail já usado.
                         if (duplicateKeyMatch) {
                             const emailMatch = fullMessage.match(/Key \(username\)=\((.*?)\)/);
                             const email = emailMatch ? emailMatch[1] : 'desconhecido';
                             errorMessage = `Já existe uma empresa registrada com esse e-mail: ${email}`;
-                        } else {
+                        }
+                        // Verificação para o CNPJ já usado.
+                        else if (fullMessage.match(/Key \(cnpj\)=\((.*?)\)/)) {
+                            const cnpjMatch = fullMessage.match(/Key \(cnpj\)=\((.*?)\)/);
+                            const cnpj = cnpjMatch ? cnpjMatch[1] : 'desconhecido';
+                            errorMessage = `Já existe uma empresa registrada com esse CNPJ: ${cnpj}`;
+                        }
+                        else {
                             errorMessage = fullMessage;
                         }
                         break;

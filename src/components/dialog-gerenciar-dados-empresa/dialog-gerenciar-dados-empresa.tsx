@@ -7,21 +7,7 @@ import axios from '@/app/axiosConfig';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
 import { convertTo24HourFormat } from '@/lib/formatters';
-
-const categorias = [
-  { value: 'hamburgueria', label: 'Hamburgueria' },
-  { value: 'sorveteria', label: 'Sorveteria' },
-  { value: 'acaiteria', label: 'Açaíteria' },
-  { value: 'lanchonete', label: 'Lanchonete' },
-  { value: 'pizzaria', label: 'Pizzaria' },
-  { value: 'comedoria', label: 'Comedoria' },
-  { value: 'churrascaria', label: 'Churrascaria' },
-  { value: 'cafeteria', label: 'Cafeteria' },
-  { value: 'padaria', label: 'Padaria' },
-  { value: 'sushibar', label: 'Sushi Bar' },
-  { value: 'restaurante', label: 'Restaurante' },
-  { value: 'outro', label: 'Outro' },
-];
+import { categorias, categoriaMap } from '@/lib/constants';
 
 interface DialogGerenciarDadosEmpresaProps {
   isOpen: boolean;
@@ -49,7 +35,7 @@ const DialogGerenciarDadosEmpresa: React.FC<DialogGerenciarDadosEmpresaProps> = 
   const [localRazaoSocial, setLocalRazaoSocial] = useState(razaoSocial);
   const [localNomeFantasia, setLocalNomeFantasia] = useState(nomeFantasia);
   const [localTelefone, setLocalTelefone] = useState(telefone);
-  const [localCategoria, setLocalCategoria] = useState(categoria);
+  const [localCategoria, setLocalCategoria] = useState('');
   const [localHorarioAbertura, setLocalHorarioAbertura] = useState(horarioAbertura);
   const [localHorarioFechamento, setLocalHorarioFechamento] = useState(horarioFechamento);
   const [isSaving, setIsSaving] = useState(false);
@@ -62,29 +48,16 @@ const DialogGerenciarDadosEmpresa: React.FC<DialogGerenciarDadosEmpresaProps> = 
         setLocalRazaoSocial(empresaData.razaoSocial || '');
         setLocalNomeFantasia(empresaData.nomeFantasia || '');
         setLocalTelefone(empresaData.telefone || '');
-        setLocalCategoria(empresaData.categoria || '');
+
+        // Ajusta o value do select baseado no label salvo
+        const categoriaValue = categorias.find(c => c.label.toLowerCase() === empresaData.categoria.toLowerCase())?.value || '';
+        setLocalCategoria(categoriaValue);
+
         setLocalHorarioAbertura(empresaData.horarioAbertura || '');
         setLocalHorarioFechamento(empresaData.horarioFechamento || '');
       }
     }
   }, [isOpen]);
-
-  const formatPhone = (value: string) => {
-    const cleanedValue = value.replace(/\D/g, '');
-    if (cleanedValue.length > 10) {
-      return cleanedValue.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-    } else if (cleanedValue.length > 5) {
-      return cleanedValue.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
-    } else if (cleanedValue.length > 2) {
-      return cleanedValue.replace(/(\d{2})(\d{0,5})/, '($1) $2');
-    } else {
-      return cleanedValue.replace(/(\d{0,2})/, '($1');
-    }
-  };
-
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLocalTelefone(formatPhone(e.target.value));
-  };
 
   const handleSave = async () => {
     try {
@@ -95,7 +68,7 @@ const DialogGerenciarDadosEmpresa: React.FC<DialogGerenciarDadosEmpresaProps> = 
         razaoSocial: localRazaoSocial,
         nomeFantasia: localNomeFantasia,
         telefone: localTelefone,
-        categoria: localCategoria,
+        categoria: categoriaMap[localCategoria], // Converte para o valor correto que a API espera
         horarioAbertura: convertTo24HourFormat(localHorarioAbertura),
         horarioFechamento: convertTo24HourFormat(localHorarioFechamento),
       };
@@ -113,7 +86,10 @@ const DialogGerenciarDadosEmpresa: React.FC<DialogGerenciarDadosEmpresaProps> = 
       setLocalHorarioAbertura(updatedEmpresaData.horarioAbertura);
       setLocalHorarioFechamento(updatedEmpresaData.horarioFechamento);
 
-      localStorage.setItem('empresaData', JSON.stringify(updatedEmpresaData));
+      localStorage.setItem('empresaData', JSON.stringify({
+        ...updatedEmpresaData,
+        categoria: categorias.find(c => c.value === updatedEmpresaData.categoria)?.label || updatedEmpresaData.categoria
+      }));
 
       onUpdate('razaoSocial', updatedEmpresaData.razaoSocial);
       onUpdate('nomeFantasia', updatedEmpresaData.nomeFantasia);
@@ -181,21 +157,19 @@ const DialogGerenciarDadosEmpresa: React.FC<DialogGerenciarDadosEmpresaProps> = 
               id="telefone"
               type="text"
               value={localTelefone}
-              onChange={handlePhoneChange}
+              onChange={(e) => setLocalTelefone(e.target.value)}
               placeholder="Ex: (99) 98765-4321"
               maxLength={15}
               disabled={isSaving}
             />
           </div>
-          <div>
+
+          {/* Select com Shadcn UI */}
+          <div className="flex-1">
             <Label htmlFor="categoria">Categoria</Label>
-            <Select
-              value={localCategoria}
-              onValueChange={setLocalCategoria}
-              disabled={isSaving}
-            >
+            <Select value={localCategoria} onValueChange={setLocalCategoria} disabled={isSaving}>
               <SelectTrigger>
-                <SelectValue placeholder="Categoria do Estabelecimento" />
+                <SelectValue placeholder="Selecione uma categoria" />
               </SelectTrigger>
               <SelectContent>
                 {categorias.map((categoria) => (
@@ -206,6 +180,7 @@ const DialogGerenciarDadosEmpresa: React.FC<DialogGerenciarDadosEmpresaProps> = 
               </SelectContent>
             </Select>
           </div>
+
           <div className="flex space-x-4">
             <div className='flex-1'>
               <Label htmlFor="horarioAbertura">Horário de Abertura</Label>
@@ -236,9 +211,6 @@ const DialogGerenciarDadosEmpresa: React.FC<DialogGerenciarDadosEmpresaProps> = 
           <Button variant="orange" onClick={handleSave} disabled={isSaving}>
             {isSaving ? "Salvando..." : "Salvar"}
           </Button>
-          {/* <Button variant="outline" onClick={showPayload}>
-            Ver Payload
-          </Button> */}
         </DialogFooter>
       </DialogContent>
     </Dialog>
