@@ -132,15 +132,17 @@ const CardapioPage: React.FC = () => {
         const produtoId = active.id;
         const novaCategoriaId = over.id.replace("categoria-", "");
 
+        // Encontra a categoria de origem do produto
         const categoriaOrigem = categorias.find(categoria =>
             categoria.produtos.some(produto => produto.id.toString() === produtoId)
         );
 
+        // Se o produto foi solto na mesma categoria, não faz nada
         if (categoriaOrigem && categoriaOrigem.id.toString() === novaCategoriaId) {
             return;
         }
 
-        setIsMoving(true); 
+        setIsMoving(true);
         toast({
             title: "Movendo produto...",
             description: "Por favor, aguarde.",
@@ -152,28 +154,19 @@ const CardapioPage: React.FC = () => {
         const empresaId = empresaData.id;
 
         try {
-            const getProdutoResponse = await axios.get(`/empresas/${empresaId}/prateleiras/${produtoId}/produtos/${produtoId}`);
-            const produto = getProdutoResponse.data;
-
-            await axios.post(`/empresas/${empresaId}/prateleiras/${novaCategoriaId}/produtos`, {
-                nome: produto.nome,
-                preco: produto.preco,
-                descricao: produto.descricao,
-                urlImagem: produto.urlImagem
-            });
-
-            await axios.delete(`/empresas/${empresaId}/prateleiras/${produtoId}/produtos/${produtoId}`);
+            // Faz o PATCH para mover o produto para a nova categoria
+            await axios.patch(`/empresas/${empresaId}/prateleiras/${categoriaOrigem?.id}/produtos/${produtoId}/prateleira/${novaCategoriaId}`);
 
             toast({
                 title: "Produto movido com sucesso!",
                 variant: "success",
                 duration: 3000,
             });
-            handleAddCategory();
+            handleAddCategory(); // Atualiza as categorias após o movimento
         } catch (error) {
             toast({
                 title: "Erro ao mover produto",
-                description: (error as Error).message ||  "Ocorreu um erro ao tentar mover o produto.",
+                description: (error as Error).message || "Ocorreu um erro ao tentar mover o produto.",
                 variant: "destructive",
                 duration: 5000,
             });
@@ -181,6 +174,7 @@ const CardapioPage: React.FC = () => {
             setIsMoving(false);
         }
     };
+
 
     return (
         <div className="flex flex-col min-h-screen relative">

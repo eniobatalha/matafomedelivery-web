@@ -1,24 +1,28 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import axios from '@/app/axiosConfig';
-import { Input } from '../ui/input';
-import { useToast } from '@/components/ui/use-toast';  // Importando o hook de toast
+import { useToast } from '@/components/ui/use-toast';
+import DialogConfirmDelete from "@/components/dialog-confirm-delete/dialog-confirm-delete";
 
-interface DialogEditCategoryProps {
+interface DialogDeleteCategoryProps {
     categoriaId: string;
     categoriaNome: string;
     onClose: () => void;
     onCategoryUpdated: () => void;
 }
 
-const DialogEditCategory: React.FC<DialogEditCategoryProps> = ({ categoriaId, categoriaNome, onClose, onCategoryUpdated }) => {
-    const [categoriaNomeEdit, setCategoriaNomeEdit] = useState(categoriaNome);
-    const [isSaving, setIsSaving] = useState(false); // Estado para controlar o salvamento
-    const { toast } = useToast(); // Inicializando o hook de toast
+const DialogDeleteCategory: React.FC<DialogDeleteCategoryProps> = ({
+    categoriaId,
+    categoriaNome,
+    onClose,
+    onCategoryUpdated,
+}) => {
+    const [isDeleting, setIsDeleting] = useState(false); // Para controlar o estado de exclusão
+    const { toast } = useToast(); // Hook de toast para exibir mensagens
 
-    const handleEditCategory = async () => {
+    const handleDeleteCategory = async () => {
         try {
-            setIsSaving(true); // Inicia o estado de salvamento
+            setIsDeleting(true); // Inicia o estado de exclusão
             const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
             const empresaId = empresaData.id;
 
@@ -29,61 +33,42 @@ const DialogEditCategory: React.FC<DialogEditCategoryProps> = ({ categoriaId, ca
                     variant: "destructive",
                     duration: 5000,
                 });
-                setIsSaving(false);
+                setIsDeleting(false);
                 return;
             }
 
-            const url = `/empresas/${empresaId}/prateleiras/${categoriaId}`;
-
-            await axios.put(url, {
-                id: Number(categoriaId),
-                nomePrateleira: categoriaNomeEdit,
-                produtos: [], // Supondo que os produtos sejam atualizados separadamente
-            });
+            // Faz a requisição de exclusão para o endpoint correto
+            await axios.delete(`/empresas/${empresaId}/prateleiras/${categoriaId}`);
 
             toast({
-                title: "Sucesso",
-                description: `Categoria "${categoriaNomeEdit}" foi atualizada com sucesso.`,
+                title: "Categoria excluída com sucesso!",
+                description: `A categoria "${categoriaNome}" foi removida.`,
                 variant: "success",
                 duration: 5000,
             });
 
-            onCategoryUpdated();
+            onCategoryUpdated(); // Atualiza as categorias após exclusão
             onClose();
         } catch (error: any) {
             toast({
-                title: "Erro ao editar categoria",
-                description: error.message || "Ocorreu um erro ao tentar editar a categoria.",
+                title: "Erro ao excluir categoria",
+                description: error.message || "Ocorreu um erro ao tentar excluir a categoria.",
                 variant: "destructive",
                 duration: 5000,
             });
         } finally {
-            setIsSaving(false); // Finaliza o estado de salvamento
+            setIsDeleting(false); // Finaliza o estado de exclusão
         }
     };
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 dialog-overlay">
-            <div className="bg-white p-6 rounded-lg shadow-lg">
-                <h3 className="text-lg font-semibold mb-4">Editar Categoria</h3>
-                <Input
-                    value={categoriaNomeEdit}
-                    onChange={(e) => setCategoriaNomeEdit(e.target.value)}
-                    placeholder="Nome da Categoria"
-                    className="mb-4"
-                    disabled={isSaving} // Desabilita o input enquanto está salvando
-                />
-                <div className="flex gap-4">
-                    <Button onClick={handleEditCategory} variant="orange" disabled={isSaving}>
-                        {isSaving ? "Salvando..." : "Salvar"}
-                    </Button>
-                    <Button onClick={onClose} variant="destructive" disabled={isSaving}>
-                        Cancelar
-                    </Button>
-                </div>
-            </div>
-        </div>
+        <DialogConfirmDelete
+            message={`Tem certeza que deseja excluir a categoria "${categoriaNome}"?`}
+            onConfirm={handleDeleteCategory} // Executa a exclusão
+            onCancel={onClose} // Fecha o diálogo se o usuário cancelar
+            isDeleting={isDeleting} // Passa o estado de exclusão para o componente de diálogo
+        />
     );
 };
 
-export default DialogEditCategory;
+export default DialogDeleteCategory;
