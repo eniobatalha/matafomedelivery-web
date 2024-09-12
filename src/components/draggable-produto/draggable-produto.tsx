@@ -81,6 +81,7 @@ const DraggableProduto: React.FC<DraggableProdutoProps> = ({ produto, onProductD
                     onConfirm={handleConfirmDelete}
                     onCancel={handleCancelDelete}
                     message={`Tem certeza que deseja excluir o produto "${produto.nome}"?`}
+                    isDeleting={isDeleting}
                 />
             )}
         </div>
