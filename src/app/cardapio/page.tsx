@@ -49,7 +49,12 @@ const CardapioPage: React.FC = () => {
                 const response = await axios.get(`/empresas/${empresaId}/prateleiras`);
                 setCategorias(response.data.prateleiras);
             } catch (error) {
-                console.error('Erro ao buscar categorias:', error);
+                toast({
+                    title: "Erro ao buscar categorias",
+                    description: (error as Error).message || "Ocorreu um erro ao buscar as categorias.",
+                    variant: "destructive",
+                    duration: 5000,
+                });
             } finally {
                 setIsLoading(false);
             }
@@ -97,12 +102,11 @@ const CardapioPage: React.FC = () => {
             });
             handleAddCategory();
         } catch (error) {
-            console.error('Erro ao excluir produto:', error);
             toast({
                 title: "Erro ao excluir produto",
                 description: "Ocorreu um erro ao tentar excluir o produto.",
                 variant: "destructive",
-                duration: 3000,
+                duration: 5000,
             });
         }
     };
@@ -114,7 +118,12 @@ const CardapioPage: React.FC = () => {
             const response = await axios.get(`/empresas/${empresaId}/prateleiras`);
             setCategorias(response.data.prateleiras);
         } catch (error) {
-            console.error('Erro ao atualizar categorias:', error);
+            toast({
+                title: "Erro ao atualizar categorias",
+                description: (error as Error).message || "Ocorreu um erro ao tentar atualizar as categorias.",
+                variant: "destructive",
+                duration: 5000,
+            });
         }
     };
 
@@ -123,23 +132,20 @@ const CardapioPage: React.FC = () => {
         const produtoId = active.id;
         const novaCategoriaId = over.id.replace("categoria-", "");
 
-        // Encontre a categoria original do produto
         const categoriaOrigem = categorias.find(categoria =>
             categoria.produtos.some(produto => produto.id.toString() === produtoId)
         );
 
         if (categoriaOrigem && categoriaOrigem.id.toString() === novaCategoriaId) {
-            // Se a categoria de origem é a mesma que a categoria de destino, não faça nada
             return;
         }
 
-        // Se a categoria for diferente, prossiga com a movimentação
-        setIsMoving(true); // Inicia o estado de movimento
+        setIsMoving(true); 
         toast({
             title: "Movendo produto...",
             description: "Por favor, aguarde.",
             variant: "loading",
-            duration: 5000, // Mantém o toast visível por 5 segundos
+            duration: 5000,
         });
 
         const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
@@ -165,18 +171,16 @@ const CardapioPage: React.FC = () => {
             });
             handleAddCategory();
         } catch (error) {
-            console.error('Erro ao mover produto:', error);
             toast({
                 title: "Erro ao mover produto",
-                description: "Ocorreu um erro ao tentar mover o produto.",
+                description: (error as Error).message ||  "Ocorreu um erro ao tentar mover o produto.",
                 variant: "destructive",
-                duration: 3000,
+                duration: 5000,
             });
         } finally {
-            setIsMoving(false); // Termina o estado de movimento
+            setIsMoving(false);
         }
     };
-
 
     return (
         <div className="flex flex-col min-h-screen relative">
@@ -203,7 +207,6 @@ const CardapioPage: React.FC = () => {
                         {isLoading && progress < 100 ? (
                             <div>
                                 <p>Carregando suas categorias...</p>
-                                {/* <Progress value={progress} className="w-full" /> */}
                             </div>
                         ) : categorias.length === 0 ? (
                             <p>Nenhuma categoria encontrada.</p>
@@ -251,4 +254,4 @@ const CardapioPage: React.FC = () => {
     );
 };
 
-export default CardapioPage;
+export default CardapioPage

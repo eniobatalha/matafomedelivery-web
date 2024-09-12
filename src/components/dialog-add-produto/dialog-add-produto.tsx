@@ -6,6 +6,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Produto } from '@/types/types';
 import axios from '@/app/axiosConfig';
 import { Label } from "../ui/label";
+import { useToast } from "@/components/ui/use-toast";  // Importa o hook de toast
 
 interface DialogAddProductProps {
     onClose: () => void;
@@ -23,6 +24,7 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({ onClose, onProductA
     });
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [isUploading, setIsUploading] = useState(false);
+    const { toast } = useToast();  // Inicializa o hook de toast
 
     useEffect(() => {
         if (productToEdit) {
@@ -79,16 +81,33 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({ onClose, onProductA
             };
 
             if (productToEdit) {
-                await axios.put(`/empresas/${empresaId}/prateleiras/${categoriaId}/produtos/${productToEdit.id}`, produto);
+                await axios.patch(`/empresas/${empresaId}/prateleiras/${categoriaId}/produtos/${productToEdit.id}`, produto);
+                toast({
+                    title: "Produto atualizado com sucesso!",
+                    description: "O produto foi atualizado com sucesso.",
+                    variant: "success",
+                    duration: 5000,
+                });
             } else {
                 await axios.post(`/empresas/${empresaId}/prateleiras/${categoriaId}/produtos`, produto);
+                toast({
+                    title: "Produto adicionado com sucesso!",
+                    description: "O novo produto foi adicionado.",
+                    variant: "success",
+                    duration: 5000,
+                });
             }
 
-            onProductAdded(); 
+            onProductAdded();
             setIsUploading(false);
             onClose();
-        } catch (error) {
-            console.error('Erro ao salvar o produto:', error);
+        } catch (error: any) {
+            toast({
+                title: "Erro ao salvar o produto",
+                description: error.message || "Ocorreu um erro ao salvar o produto.",
+                variant: "destructive",
+                duration: 5000,
+            });
             setIsUploading(false);
         }
     };
@@ -131,7 +150,9 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({ onClose, onProductA
                         <Button onClick={handleSave} variant="orange" disabled={isUploading}>
                             {isUploading ? "Salvando..." : "Salvar Produto"}
                         </Button>
-                        <Button onClick={onClose} variant="destructive">Cancelar</Button>
+                        <Button onClick={onClose} variant="destructive" disabled={isUploading}>
+                            Cancelar
+                        </Button>
                     </div>
                 </div>
                 <div className="w-1/2 ml-4 shadow-2xl bg-orange-50">

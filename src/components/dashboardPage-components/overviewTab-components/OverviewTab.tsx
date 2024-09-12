@@ -7,6 +7,7 @@ import { DatePickerHistorico } from '@/components/datepicker-historico/datepicke
 import { DateRange } from "react-day-picker";
 import { subDays } from 'date-fns';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/use-toast'; // Importando o hook de toast
 
 // Função para formatar a data no formato YYYY-MM-DD
 const formatDateForApi = (date: Date) => {
@@ -31,6 +32,8 @@ const OverviewTab = () => {
     ultimasVendas: []
   });
 
+  const { toast } = useToast(); // Inicializando o hook de toast
+
   // Obter o empresaId do localStorage no lado do cliente
   useEffect(() => {
     const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
@@ -40,7 +43,12 @@ const OverviewTab = () => {
   // Função para buscar os dados da API
   const fetchOverviewData = async (range?: DateRange) => {
     if (!empresaId) {
-      console.error("Empresa ID não encontrado");
+      toast({
+        title: "Erro",
+        description: "Empresa ID não encontrado",
+        variant: "destructive",
+        duration: 5000
+      });
       return;
     }
 
@@ -57,8 +65,13 @@ const OverviewTab = () => {
       });
 
       setOverviewData(response.data);
-    } catch (error) {
-      console.error('Erro ao buscar dados de overview:', error);
+    } catch (error: any) {
+      toast({
+        title: "Erro ao buscar dados",
+        description: error.message || "Ocorreu um erro ao buscar os dados do overview.",
+        variant: "destructive",
+        duration: 5000
+      });
     }
   };
 
@@ -69,24 +82,17 @@ const OverviewTab = () => {
     }
   }, [empresaId]);
 
-  // Função que será chamada ao clicar no botão "Aplicar"
-  const handleApplyClick = () => {
-    fetchOverviewData(dateRange); // Carrega com as datas selecionadas ao clicar em "Aplicar"
-  };
-
   // Renderização do DatePickerHistorico e atualização das datas
   const handleDateSelect = (range: DateRange | undefined) => {
     setDateRange(range);
     fetchOverviewData(range); // Busca os dados automaticamente quando o range de datas for alterado
   };
 
-
   return (
     <>
       {/* Seletor de datas e botão de aplicar */}
       <div className="flex justify-end items-center space-x-2 -mt-14 mb-8">
         <DatePickerHistorico onDateSelect={handleDateSelect} initialRange={dateRange} />
-        {/* <Button variant="orange" onClick={handleApplyClick}>Aplicar</Button> */}
       </div>
 
       {/* Cards do Dashboard */}

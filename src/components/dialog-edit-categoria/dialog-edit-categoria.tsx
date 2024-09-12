@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import axios from '@/app/axiosConfig';
 import { Input } from '../ui/input';
+import { useToast } from "@/components/ui/use-toast"; // Importando o hook de toast
 
 interface DialogEditCategoryProps {
     categoriaId: string;
@@ -13,6 +14,7 @@ interface DialogEditCategoryProps {
 const DialogEditCategory: React.FC<DialogEditCategoryProps> = ({ categoriaId, categoriaNome, onClose, onCategoryUpdated }) => {
     const [categoriaNomeEdit, setCategoriaNomeEdit] = useState(categoriaNome);
     const [isSaving, setIsSaving] = useState(false); // Estado para controlar o salvamento
+    const { toast } = useToast(); // Inicializando o hook de toast
 
     const handleEditCategory = async () => {
         try {
@@ -21,7 +23,12 @@ const DialogEditCategory: React.FC<DialogEditCategoryProps> = ({ categoriaId, ca
             const empresaId = empresaData.id;
 
             if (!categoriaId || !empresaId) {
-                console.error('ID da categoria ou empresa inválido');
+                toast({
+                    title: "Erro",
+                    description: "ID da categoria ou empresa inválido.",
+                    variant: "destructive",
+                    duration: 5000,
+                });
                 setIsSaving(false);
                 return;
             }
@@ -34,10 +41,22 @@ const DialogEditCategory: React.FC<DialogEditCategoryProps> = ({ categoriaId, ca
                 produtos: [], // Supondo que os produtos sejam atualizados separadamente
             });
 
+            toast({
+                title: "Sucesso",
+                description: `Categoria "${categoriaNomeEdit}" foi atualizada com sucesso.`,
+                variant: "success",
+                duration: 5000,
+            });
+
             onCategoryUpdated();
             onClose();
-        } catch (error) {
-            console.error('Erro ao editar categoria:', error);
+        } catch (error: any) {
+            toast({
+                title: "Erro ao editar categoria",
+                description: error.message || "Ocorreu um erro ao tentar editar a categoria.",
+                variant: "destructive",
+                duration: 5000,
+            });
         } finally {
             setIsSaving(false); // Finaliza o estado de salvamento
         }

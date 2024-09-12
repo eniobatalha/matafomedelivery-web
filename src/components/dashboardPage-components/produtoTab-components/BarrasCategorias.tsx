@@ -7,9 +7,19 @@ interface CategoriaData {
   quantidadeVendida: number;
 }
 
+// Function to abbreviate the last word if there are multiple words
+const abbreviateLastWord = (category: string) => {
+  const words = category.split(' '); // Split the string into words
+  if (words.length === 1) {
+    return category; // If there's only one word, return it as is
+  }
+  const lastWord = words.pop(); // Get the last word
+  return `${words.join(' ')} ${lastWord![0]}.`; // Abbreviate the last word and return the string
+};
+
 const BarrasCategorias = ({ data }: { data: CategoriaData[] }) => {
   const formatData = data.map(item => ({
-    category: item.nomeCategoria || 'Categoria sem Nome',
+    category: abbreviateLastWord(item.nomeCategoria) || 'Categoria sem Nome',
     value: item.quantidadeVendida,
   }));
 
@@ -27,9 +37,8 @@ const BarrasCategorias = ({ data }: { data: CategoriaData[] }) => {
           color: '#FF7300',
         }
       ]}
-      margin={{ top: 25, right: 15, bottom: 25, left: 15 }}
-
-      width={500}
+      margin={{ top: 50, right: 50, bottom: 50, left: 50 }}
+      width={undefined}
       height={490}
     />
   );

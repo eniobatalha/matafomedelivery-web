@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import axios from '@/app/axiosConfig';
 import { Input } from '../ui/input';
+import { useToast } from "@/components/ui/use-toast"; // Importando o hook de toast
 
 interface DialogAddCategoryProps {
     onClose: () => void;
@@ -11,6 +12,7 @@ interface DialogAddCategoryProps {
 const DialogAddCategory: React.FC<DialogAddCategoryProps> = ({ onClose, onCategoryAdded }) => {
     const [categoriaNome, setCategoriaNome] = useState('');
     const [isAdding, setIsAdding] = useState(false); // Estado para controlar o carregamento
+    const { toast } = useToast(); // Inicializando o hook de toast
 
     const handleAddCategory = async () => {
         try {
@@ -21,10 +23,23 @@ const DialogAddCategory: React.FC<DialogAddCategoryProps> = ({ onClose, onCatego
             await axios.post(`/empresas/${empresaId}/prateleiras`, {
                 nomePrateleira: categoriaNome,
             });
+
+            toast({
+                title: "Categoria adicionada com sucesso!",
+                description: "A nova categoria foi adicionada.",
+                variant: "success",
+                duration: 5000,
+            });
+
             onCategoryAdded();  // Atualize a lista de categorias
             onClose();  // Feche o diálogo
-        } catch (error) {
-            console.error('Erro ao adicionar categoria:', error);
+        } catch (error: any) {
+            toast({
+                title: "Erro ao adicionar categoria",
+                description: error.message || "Ocorreu um erro ao tentar adicionar a categoria.",
+                variant: "destructive",
+                duration: 5000,
+            });
         } finally {
             setIsAdding(false); // Encerra o estado de carregamento
         }

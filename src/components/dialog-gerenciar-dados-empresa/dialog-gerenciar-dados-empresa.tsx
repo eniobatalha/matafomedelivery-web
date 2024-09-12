@@ -73,7 +73,7 @@ const DialogGerenciarDadosEmpresa: React.FC<DialogGerenciarDadosEmpresaProps> = 
         horarioFechamento: convertTo24HourFormat(localHorarioFechamento),
       };
 
-      console.log("Payload:", payload);
+      // console.log("Payload:", payload);
 
       const response = await axios.patch(`/empresas/${empresaId}`, payload);
 
@@ -107,10 +107,9 @@ const DialogGerenciarDadosEmpresa: React.FC<DialogGerenciarDadosEmpresaProps> = 
 
       onClose();
     } catch (error) {
-      console.error('Erro ao atualizar a conta:', error);
       toast({
         title: "Erro",
-        description: "Ocorreu um erro ao tentar atualizar as informações.",
+        description: (error as Error).message || "Ocorreu um erro ao tentar atualizar as informações.",
         variant: "destructive",
         duration: 3000,
       });

@@ -147,10 +147,9 @@ const DialogGerenciarEndereco: React.FC<DialogGerenciarEnderecoProps> = ({
                 duration: 3000,
             });
         } catch (error) {
-            console.error('Erro ao atualizar o endereço:', error);
             toast({
                 title: "Erro ao atualizar o endereço",
-                description: "Ocorreu um erro ao tentar atualizar o endereço.",
+                description: (error as Error).message || "Ocorreu um erro ao tentar atualizar o endereço.",
                 variant: "destructive",
                 duration: 3000,
             });

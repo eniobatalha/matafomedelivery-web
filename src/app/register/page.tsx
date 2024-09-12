@@ -113,11 +113,10 @@ const RegisterPage = () => {
     } catch (error: any) {
       toast({
         title: "Erro ao registrar",
-        description: error.message,
+        description: error.message || "Ocorreu um erro ao tentar registrar a empresa.",
         variant: "destructive",
         duration: 3000,
       });
-      console.log("Erro ao registrar:", error.message);
     } finally {
       setIsRegistering(false);
     }

@@ -5,7 +5,7 @@ import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Tag from "@/components/tag-pedido/tag-pedido";
 import ActionCell from "./action-cell";
-
+import { useToast } from "@/components/ui/use-toast";
 
 // Função para mapear o status da API para o formato usado no frontend
 function mapStatus(status: string): number {
@@ -43,7 +43,13 @@ function formatDateTime(dateTimeString: string): string {
 
         return `${day}/${month}/${year} ${hours}:${minutes}`;
     } catch (error) {
-        console.error("Erro ao formatar a data:", error);
+        const { toast } = useToast(); // Inicializa o hook de toast
+        toast({
+            title: "Erro ao formatar a data",
+            description: "Não foi possível formatar a data corretamente.",
+            variant: "destructive",
+            duration: 5000,
+        });
         return dateTimeString;
     }
 }

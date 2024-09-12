@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import DialogAlertaConexao from "@/components/dialog-alerta-conexao/dialog-alerta-conexao";
 import { DataTable } from "@/components/historicoPage-components/data-table";
 import { columns } from "@/components/historicoPage-components/columns";
+import { useToast } from "@/components/ui/use-toast";  // Importação do toast
 
 interface Pedido {
     id: number;
@@ -37,6 +38,8 @@ const HistoricoPedidosPage: React.FC = () => {
         valorMax: "",
     });
 
+    const { toast } = useToast();  // Iniciando o toast
+
     const handleClearFilters = () => {
         setFilters({
             id: "",
@@ -47,8 +50,6 @@ const HistoricoPedidosPage: React.FC = () => {
             valorMax: "",
         });
     };
-    
-    
 
     useEffect(() => {
         async function fetchPedidos() {
@@ -57,15 +58,25 @@ const HistoricoPedidosPage: React.FC = () => {
                 const empresaId = empresaData?.id;
 
                 if (!empresaId) {
-                    console.error("Empresa ID não encontrado no localStorage");
+                    toast({
+                        title: "Erro",
+                        description: "Empresa ID não encontrado no localStorage",
+                        variant: "destructive",
+                        duration: 5000,
+                    });
                     setLoading(false);
                     return;
                 }
 
                 const response = await axiosInstance.get(`/empresas/${empresaId}/pedidos`);
                 setPedidos(response.data);
-            } catch (error) {
-                console.error("Erro ao buscar os pedidos:", error);
+            } catch (error: any) {
+                toast({
+                    title: "Erro ao buscar os pedidos",
+                    description: error.message || "Ocorreu um erro ao carregar os pedidos.",
+                    variant: "destructive",
+                    duration: 5000,
+                });
             } finally {
                 setLoading(false);
             }

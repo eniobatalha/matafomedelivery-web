@@ -6,6 +6,7 @@ import PizzaProdutos from "./PizzaProdutos";
 import { DateRange } from "react-day-picker";
 import { subDays } from "date-fns";
 import { DatePickerHistorico } from "@/components/datepicker-historico/datepicker-historico";
+import { useToast } from "@/components/ui/use-toast"; // Importando o hook de toast
 
 // Tipos dos dados retornados pela API
 interface ProdutoVendido {
@@ -56,6 +57,8 @@ const ProdutoTab = () => {
     prateleirasMaisLucrativas: []
   });
 
+  const { toast } = useToast(); // Inicializando o hook de toast
+
   // Obter o empresaId do localStorage no lado do cliente
   useEffect(() => {
     const empresaData = JSON.parse(localStorage.getItem('empresaData') || '{}');
@@ -65,7 +68,12 @@ const ProdutoTab = () => {
   // Função para buscar os dados da API
   const fetchProdutoData = async (range?: DateRange) => {
     if (!empresaId) {
-      console.error("Empresa ID não encontrado");
+      toast({
+        title: "Erro",
+        description: "Empresa ID não encontrado",
+        variant: "destructive",
+        duration: 5000,
+      });
       return;
     }
 
@@ -82,8 +90,13 @@ const ProdutoTab = () => {
       });
 
       setProdutoData(response.data);
-    } catch (error) {
-      console.error("Erro ao buscar dados de produto:", error);
+    } catch (error: any) {
+      toast({
+        title: "Erro ao buscar dados de produto",
+        description: error.message || "Ocorreu um erro ao buscar os dados.",
+        variant: "destructive",
+        duration: 5000,
+      });
     }
   };
 

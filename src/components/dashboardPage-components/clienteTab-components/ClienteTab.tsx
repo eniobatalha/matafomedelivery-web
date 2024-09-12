@@ -6,6 +6,7 @@ import { DatePickerHistorico } from '@/components/datepicker-historico/datepicke
 import { DateRange } from "react-day-picker";
 import { subDays } from 'date-fns';
 import axios from '@/app/axiosConfig';
+import { useToast } from '@/components/ui/use-toast'; // Importando o hook de toast
 
 // Função para formatar a data no formato YYYY-MM-DD
 const formatDateForApi = (date: Date) => {
@@ -27,6 +28,8 @@ const ClienteTab = () => {
     bairrosMaisFrequentes: [],
   });
 
+  const { toast } = useToast(); // Hook do toast
+
   const fetchClientData = async (range?: DateRange) => {
     const empresaId = JSON.parse(localStorage.getItem('empresaData') || '{}').id;
     const startDateFormatted = formatDateForApi(range?.from || subDays(new Date(), 6));
@@ -41,8 +44,13 @@ const ClienteTab = () => {
         },
       });
       setClientData(response.data);
-    } catch (error) {
-      console.error("Erro ao buscar dados de cliente:", error);
+    } catch (error: any) {
+      toast({
+        title: 'Erro ao buscar dados de cliente',
+        description: error.message || 'Ocorreu um erro ao carregar os dados.',
+        variant: 'destructive',
+        duration: 5000,
+      });
     }
   };
 

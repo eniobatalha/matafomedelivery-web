@@ -25,6 +25,7 @@ import { Stomp } from "@stomp/stompjs";
 import { Switch } from "@/components/ui/switch";
 import DialogAlertaConexao from "@/components/dialog-alerta-conexao/dialog-alerta-conexao";
 
+
 const PedidosPage = () => {
     const [filtroStatus, setFiltroStatus] = useState<string>("novo");
     const [pedidoDialogOpen, setPedidoDialogOpen] = useState<boolean>(false);
@@ -64,10 +65,20 @@ const PedidosPage = () => {
                     const response = await axiosInstance.get(`/empresas/${empresaId}/pedidos`);
                     setPedidos(response.data);
                 } else {
-                    console.error("Empresa ID não encontrado no localStorage");
+                    toast({
+                        title: "Erro",
+                        description: "Empresa ID não encontrado no localStorage.",
+                        variant: "destructive",
+                        duration: 5000,
+                    });
                 }
             } catch (error) {
-                console.error("Erro ao buscar os pedidos:", error);
+                toast({
+                    title: "Erro ao buscar os pedidos",
+                    description: (error as Error).message || "Ocorreu um erro ao carregar os pedidos.",
+                    variant: "destructive",
+                    duration: 5000,
+                });
             } finally {
                 setIsLoading(false);
             }

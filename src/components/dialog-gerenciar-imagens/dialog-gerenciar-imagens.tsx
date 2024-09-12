@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { storage } from "@/lib/firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import axios from '@/app/axiosConfig'; // Axios instance
+import { useToast } from "@/components/ui/use-toast";
 
 interface DialogGerenciarImagensProps {
     isOpen: boolean;
@@ -23,6 +24,7 @@ const DialogGerenciarImagens: React.FC<DialogGerenciarImagensProps> = ({ isOpen,
     const [previewCapa, setPreviewCapa] = useState(imgCapaAtual);
     const [nomeRestaurante, setNomeRestaurante] = useState('');
     const [taxaFrete, setTaxaFrete] = useState('');
+    const { toast } = useToast();
 
     // Carregar o nome do restaurante e a taxa de frete a partir do localStorage
     useEffect(() => {
@@ -81,7 +83,12 @@ const DialogGerenciarImagens: React.FC<DialogGerenciarImagensProps> = ({ isOpen,
 
             onClose();
         } catch (error) {
-            console.error("Erro ao salvar as imagens:", error);
+            toast({
+                title: "Erro ao salvar as imagens",
+                description: (error as Error).message || "Ocorreu um erro ao tentar salvar as imagens.",
+                variant: "destructive",
+                duration: 5000,
+            });
         } finally {
             setIsUploading(false);
         }

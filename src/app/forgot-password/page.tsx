@@ -10,6 +10,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Cookies from 'js-cookie';
 import axios from '@/app/axiosConfig'; // Usando axiosInstance configurado
+import { useToast } from "@/components/ui/use-toast"; // Importa o toast
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
@@ -19,11 +20,11 @@ const ForgotPasswordPage = () => {
   const [errors, setErrors] = useState<{ email?: string; otp?: string; password?: string; confirmPassword?: string }>({});
   const [showAlert, setShowAlert] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // Para controle de carregamento
+  const { toast } = useToast(); // Inicia o toast
 
   const router = useRouter();
 
   useEffect(() => {
-    // Verifica se o token já está presente, se sim, redireciona para o dashboard
     const token = Cookies.get('token');
     if (token) {
       router.push('/dashboard');
@@ -49,20 +50,17 @@ const ForgotPasswordPage = () => {
     }
 
     try {
-      setIsLoading(true); // Ativar loading ao fazer requisições
+      setIsLoading(true);
       if (currentStep === 0) {
-        // Enviar código de recuperação para o email
         await axios.post('/login/enviarCodigoDeRecuperacao', { email });
         changeStep(currentStep + 1);
       } else if (currentStep === 1) {
-        // Validar código OTP enviado para o email
         await axios.post('/login/validarCodigoDeRecuperacao', {
           email,
           codigo: Number(otp),
         });
         changeStep(currentStep + 1);
       } else if (currentStep === 2) {
-        // Trocar a senha do usuário
         await axios.post('/login/trocarSenha', {
           email,
           novaSenha: password,
@@ -72,14 +70,19 @@ const ForgotPasswordPage = () => {
           router.push('/login');
         }, 4000);
       }
-    } catch (error) {
-      console.error('Erro ao processar solicitação:', error);
+    } catch (error: any) {
+      toast({
+        title: "Erro ao processar solicitação",
+        description: error.message || 'Houve um erro ao processar sua solicitação.',
+        variant: "destructive",
+        duration: 5000,
+      });
       setErrors({
         ...errors,
         otp: 'Houve um erro ao validar o código ou alterar a senha.',
       });
     } finally {
-      setIsLoading(false); // Desativar loading
+      setIsLoading(false);
     }
   };
 
@@ -107,7 +110,7 @@ const ForgotPasswordPage = () => {
     <div key="step2">
       <Label htmlFor="otp" className="text-xs font-semibold text-center">Digite o código de verificação de 4 dígitos enviado para o seu email</Label>
       <div className="flex justify-center w-full max-w-md mt-2">
-        <InputOTP maxLength={4} onChange={setOtp}> {/* Ajustado para 4 dígitos */}
+        <InputOTP maxLength={4} onChange={setOtp}>
           <InputOTPGroup>
             <InputOTPSlot index={0} />
             <InputOTPSlot index={1} />

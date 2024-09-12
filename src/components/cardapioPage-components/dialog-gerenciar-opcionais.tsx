@@ -3,6 +3,7 @@ import axios from '@/app/axiosConfig';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/components/ui/use-toast'; // Importando o hook de toast
 
 interface Opcional {
     id?: number;
@@ -30,6 +31,7 @@ const DialogGerenciarOpcionais: React.FC<DialogGerenciarOpcionaisProps> = ({
     const [isLoading, setIsLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false); // Para saber se está editando um opcional existente
     const [opcionalToEditId, setOpcionalToEditId] = useState<number | null>(null); // Armazena o ID do opcional sendo editado
+    const { toast } = useToast(); // Hook do toast
 
     useEffect(() => {
         if (isOpen) {
@@ -45,8 +47,13 @@ const DialogGerenciarOpcionais: React.FC<DialogGerenciarOpcionaisProps> = ({
             const response = await axios.get(`/empresas/${empresaId}/prateleiras/${categoriaId}/produtos/${produtoId}/adicionais`);
 
             setOpcionais(response.data.adicionais || []);
-        } catch (error) {
-            console.error('Erro ao carregar opcionais:', error);
+        } catch (error: any) {
+            toast({
+                title: 'Erro ao carregar opcionais',
+                description: error.message || 'Ocorreu um erro ao buscar os opcionais.',
+                variant: 'destructive',
+                duration: 5000,
+            });
             setOpcionais([]);
         }
     };
@@ -71,8 +78,13 @@ const DialogGerenciarOpcionais: React.FC<DialogGerenciarOpcionaisProps> = ({
             setNewOpcional({ nome: '', valor: 0, descricao: '', qtd: 1 });
             setIsEditing(false); // Resetar o modo de edição
             setOpcionalToEditId(null); // Resetar o ID do opcional editado
-        } catch (error) {
-            console.error('Erro ao adicionar/atualizar opcional:', error);
+        } catch (error: any) {
+            toast({
+                title: 'Erro ao adicionar/atualizar opcional',
+                description: error.message || 'Ocorreu um erro ao salvar o opcional.',
+                variant: 'destructive',
+                duration: 5000,
+            });
         } finally {
             setIsLoading(false);
         }
@@ -92,8 +104,13 @@ const DialogGerenciarOpcionais: React.FC<DialogGerenciarOpcionaisProps> = ({
 
             await axios.delete(`/empresas/${empresaId}/prateleiras/${categoriaId}/produtos/${produtoId}/adicionais/${opcionalId}`);
             setOpcionais(opcionais.filter(opcional => opcional.id !== opcionalId));
-        } catch (error) {
-            console.error('Erro ao excluir opcional:', error);
+        } catch (error: any) {
+            toast({
+                title: 'Erro ao excluir opcional',
+                description: error.message || 'Ocorreu um erro ao tentar excluir o opcional.',
+                variant: 'destructive',
+                duration: 5000,
+            });
         } finally {
             setIsLoading(false);
         }
