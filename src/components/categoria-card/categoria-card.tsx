@@ -185,7 +185,7 @@ const CategoriaCard: React.FC<CategoriaCardProps> = ({
                     categoriaId={categoriaId}
                     categoriaNome={categoriaNome}
                     onClose={handleCloseDeleteDialog}
-                    onCategoryDeleted={onCategoryUpdated}
+                    onCategoryUpdated={onCategoryUpdated}
                 />
             )}
 
